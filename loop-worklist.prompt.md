@@ -92,7 +92,9 @@ small, reviewable, per-item commits are the point.
 Resolve the project's gates per `portfolio-prompts/project-layout.md` — first hit wins: a `Gates`
 section in `{PROJECT}/docs/project-contract.md`; else `npm run verify` if the project defines it;
 else stack defaults (`npx tsc --noEmit` for TypeScript, plus
-`npx cucumber-js --profile default --dry-run` where the project uses Cucumber); else ask. Run
+`npx cucumber-js --profile default --dry-run` where the project uses the cucumber-js runner — a
+`cucumber.js` config exists; a `features/` folder alone does not imply it, and playwright-bdd
+projects validate step binding via `bddgen` instead); else ask. Run
 every gate that applies to what you touched; all must pass before commit. In addition:
 
 - Suite, where feasible: run the narrowest set that exercises the change (a single feature, tag,
