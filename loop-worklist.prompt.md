@@ -45,7 +45,8 @@ small, reviewable, per-item commits are the point.
 3. Otherwise derive it, in this order of preference:
    - `WORKLIST_{PROJECT}.md` at the **portfolio root**, if one exists from a previous iteration;
    - the **Recommendations / Next Steps** of the most recent `.review/CODE_REVIEW_*` in the target
-     repo (ordered by the review's own severity: HIGH → MEDIUM → LOW);
+     repo — or in the review location its registry row records as a deviation (e.g. `DOCS/.review/`)
+     — ordered by the review's own severity: HIGH → MEDIUM → LOW;
    - open items in the project's `docs/backlog.md` (highest priority score first).
 
    **Cross-check every derived item against `docs/backlog.md` before materialising it** — the
@@ -91,8 +92,10 @@ small, reviewable, per-item commits are the point.
 ## Step 3 — Validate (mechanical gates)
 
 Resolve the project's gates per `portfolio-prompts/project-layout.md` — first hit wins: a `Gates`
-section in `{PROJECT}/docs/project-contract.md`; else `npm run verify` if the project defines it;
-else stack defaults (`npx tsc --noEmit` for TypeScript, plus
+section in `{PROJECT}/docs/project-contract.md`; else gates recorded in the project's registry row
+(e.g. per-`ci.yml` jobs for the stack(s) touched); else `npm run verify` if the project defines it
+at the root; else stack defaults run inside the touched stack's directory (`npx tsc --noEmit` for
+TypeScript, plus
 `npx cucumber-js --profile default --dry-run` where the project uses the cucumber-js runner — a
 `cucumber.js` config exists; a `features/` folder alone does not imply it, and playwright-bdd
 projects validate step binding via `bddgen` instead); else ask. Run

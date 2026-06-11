@@ -43,13 +43,18 @@ order — first hit wins:
 
 1. A **`Gates`** section in the project's `docs/project-contract.md`, if that file exists
    (one command per line, all must pass).
-2. **`npm run verify`** in the project's `package.json`, if defined.
-3. Stack defaults, stated explicitly in the report: `npx tsc --noEmit` for TypeScript projects,
+2. **Gates recorded in the project's README registry row** (e.g. "per `ci.yml`" for a
+   multi-stack repo with no root `package.json` — run the CI job steps for the stack(s) touched).
+3. **`npm run verify`** in the project's **root** `package.json`, if defined.
+4. Stack defaults, stated explicitly in the report: `npx tsc --noEmit` for TypeScript projects,
    plus `npx cucumber-js --profile default --dry-run` where the project uses the **cucumber-js
    runner** (a `cucumber.js`/`cucumber.{json,yaml}` config exists). A `features/` folder of
    Gherkin alone does not imply cucumber-js — **playwright-bdd** projects validate step binding
    via their `bddgen` script instead (generation fails on undefined steps).
-4. Otherwise: **ask the user** what "validated" means for this project.
+   In a **multi-stack repo** (no root toolchain config), run the stack defaults **inside the
+   touched stack's directory**, never at the repo root — a root `npx tsc --noEmit` with no root
+   `tsconfig.json` fails spuriously.
+5. Otherwise: **ask the user** what "validated" means for this project.
 
 ## Portfolio-level conventions (outside the repos)
 

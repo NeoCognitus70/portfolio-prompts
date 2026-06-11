@@ -40,7 +40,8 @@ prompts rely on are defined once in [project-layout.md](project-layout.md).
   versioned per project, UTC-timestamped, en-GB.
 - Implementation logs live **inside each repo** at
   `{PROJECT}/docs/implementation-logs/YYYY-MM-DD_short-slug.md` (tracked, append-only).
-- Validation gates resolve: project contract → `npm run verify` → stack defaults → ask.
+- Validation gates resolve: project contract → registry-row gates → `npm run verify` → stack
+  defaults (run inside the touched stack's directory in multi-stack repos) → ask.
 
 Usage: open the relevant `.prompt.md`, copy the text below its `---` divider, prepend
 `PROJECT=<folder>`, and paste it to the agent.
