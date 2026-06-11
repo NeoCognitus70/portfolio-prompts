@@ -12,7 +12,8 @@ root>` — if it did not, **ask which project**; never guess. Implementation log
 history of what was built, decided, broke, and learned in a development session — written for the
 engineer or agent who comes next.
 
-## Template and location (use exactly these)
+## Template and location (use exactly these, unless the project's registry row in
+`portfolio-prompts/README.md` records deviating paths — deviations override the defaults)
 - **Template:** `{PROJECT}/docs/templates/implementation-log.template.md` — read it
   first and follow its structure section-for-section. **If the project does not have this template
   yet,** copy it in from the portfolio-level `templates/implementation-log.template.md` as part of

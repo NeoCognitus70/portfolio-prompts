@@ -16,7 +16,8 @@ state where (a) a portfolio reviewer finds everything accurate, and (b) any futu
 
 ## Step 0 — Confirm closure is warranted
 
-Read `{PROJECT}/docs/backlog.md` in full. Closure requires every item to be
+Read `{PROJECT}/docs/backlog.md` (or the backlog path the project's registry row in
+`portfolio-prompts/README.md` records as a deviation) in full. Closure requires every item to be
 **done, closed, or explicitly deferred with a recorded reason**. If any item is genuinely open,
 **stop and report** — recommend either finishing it or formally deferring it (a user decision);
 do not close over an open item.

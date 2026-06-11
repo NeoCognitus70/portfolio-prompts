@@ -19,7 +19,8 @@ names the target as `PROJECT=<folder name at the portfolio root>` — if it did 
 project**; never guess. Conventions are defined in `portfolio-prompts/project-layout.md`.
 
 ## Ground truth — read these before writing anything
-1. **Source of truth:** `{PROJECT}/docs/backlog.md`. Item statuses here are authoritative.
+1. **Source of truth:** `{PROJECT}/docs/backlog.md` (or the backlog path the project's registry
+   row in `portfolio-prompts/README.md` records as a deviation). Item statuses here are authoritative.
 2. **The latest existing handover:** the highest-numbered
    `{PROJECT}_session-notes_v{N}_*.md` in the **`session-notes/`** folder at the
    portfolio root (`test-automation-portfolio/session-notes/`). Compare versions **only among

@@ -5,6 +5,11 @@ portfolio-level conventions the prompts rely on. Prompts cite this contract inst
 paths; if a project deviates, fix the project or record the deviation in the README registry —
 do not fork the prompts.
 
+**Before applying any default path below, read the project's registry row in the README.**
+Recorded deviations override the defaults (e.g. a project whose backlog lives at
+`DOCS/.planning/backlog.md` is fully onboarded — the "stop, not onboarded" rule applies only
+when neither the default path nor a registry-recorded alternative exists).
+
 ## The `PROJECT` parameter
 
 Every prompt is invoked against one project, named as `PROJECT=<folder name at the portfolio

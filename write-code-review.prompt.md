@@ -12,7 +12,9 @@ invocation names the target as `PROJECT=<folder name at the portfolio root>` - i
 
 ## Inputs and source of truth
 
-Use exactly these paths, relative to the portfolio root (`test-automation-portfolio/`):
+Use exactly these paths, relative to the portfolio root (`test-automation-portfolio/`) — except
+where the project's registry row in `portfolio-prompts/README.md` records a deviation (e.g. a
+different backlog path or an in-repo template set), which overrides the default:
 
 - **Repository:** `{PROJECT}/`
 - **Review template:** `templates/code-review.template.md`

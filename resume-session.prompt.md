@@ -33,11 +33,13 @@ first prompted session — say so explicitly, skip to Step 2, orient from the ba
 and recommend closing the session with `write-handover.prompt.md` to create v1.
 
 ## Step 2 — Load the source of truth
-Read `{PROJECT}/docs/backlog.md`. This is the authoritative record of item status, priorities, and
-any credibility checklist. Where the handover narrative and the backlog disagree, the **backlog
-wins** — but flag the discrepancy. **If the backlog does not exist, stop:** the project is not
-onboarded — recommend scaffolding it from `templates/backlog.template.md` (a user decision); do
-not improvise a status picture from other docs.
+Read `{PROJECT}/docs/backlog.md` — or the backlog path the project's registry row in
+`portfolio-prompts/README.md` records as a deviation. This is the authoritative record of item
+status, priorities, and any credibility checklist. Where the handover narrative and the backlog
+disagree, the **backlog wins** — but flag the discrepancy. **If no backlog exists at either the
+default or a registry-recorded path, stop:** the project is not onboarded — recommend scaffolding
+it from `templates/backlog.template.md` (a user decision); do not improvise a status picture from
+other docs.
 
 ## Step 3 — Verify against the live repo (don't trust, check)
 Run and read the actual state; the handover may be stale:
