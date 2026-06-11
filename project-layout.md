@@ -40,7 +40,10 @@ order — first hit wins:
    (one command per line, all must pass).
 2. **`npm run verify`** in the project's `package.json`, if defined.
 3. Stack defaults, stated explicitly in the report: `npx tsc --noEmit` for TypeScript projects,
-   plus `npx cucumber-js --profile default --dry-run` where the project uses Cucumber.
+   plus `npx cucumber-js --profile default --dry-run` where the project uses the **cucumber-js
+   runner** (a `cucumber.js`/`cucumber.{json,yaml}` config exists). A `features/` folder of
+   Gherkin alone does not imply cucumber-js — **playwright-bdd** projects validate step binding
+   via their `bddgen` script instead (generation fails on undefined steps).
 4. Otherwise: **ask the user** what "validated" means for this project.
 
 ## Portfolio-level conventions (outside the repos)

@@ -85,7 +85,9 @@ Before writing findings:
 5. Run lightweight validation if dependencies are available, resolving the project's gates per the
    layout contract: a `Gates` section in `docs/project-contract.md` if present, else
    `npm run verify`, else the stack defaults (`npx tsc --noEmit`; plus
-   `npx cucumber-js --profile default --dry-run` where the project uses Cucumber).
+   `npx cucumber-js --profile default --dry-run` where the project uses the cucumber-js runner -
+   a `cucumber.js` config exists; a `features/` folder alone does not imply it, and playwright-bdd
+   projects validate step binding via their `bddgen` script instead).
    - Do not start heavyweight infrastructure (e.g. a full Docker application stack) or a long E2E
      run unless explicitly asked. If you do not run tests, state that clearly in the review.
 
