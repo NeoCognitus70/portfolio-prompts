@@ -7,35 +7,42 @@ descriptive message.
 Invocation examples:
 
 ```text
-/loop Read and follow portfolio-prompts\loop-worklist.prompt.md
-/loop 10m Read and follow portfolio-prompts\loop-worklist.prompt.md using WORKLIST=<path-or-description>
+/loop Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=<folder>
+/loop 10m Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=<folder> WORKLIST=<path-or-description>
 ```
 
-If no `WORKLIST` is given, derive one (see Step 0). The loop is self-pacing when no interval is
-given: end the iteration when one item is fully done, and continue on the next wake-up.
+`PROJECT` is the project folder name at the portfolio root (see the README registry) — if the
+invocation does not name one, **ask before the first iteration**; never guess. A loop binds to
+exactly **one** project. If no `WORKLIST` is given, derive one (see Step 0). The loop is
+self-pacing when no interval is given: end the iteration when one item is fully done, and continue
+on the next wake-up.
 
 ---
 
-You are executing **one iteration of a work loop**. Each iteration completes exactly **one** item
-from the worklist: implement → validate → verify → commit → record. Do not start a second item in
-the same iteration, even if the first was quick — small, reviewable, per-item commits are the point.
+You are executing **one iteration of a work loop** against the **`{PROJECT}`** portfolio project.
+Each iteration completes exactly **one** item from the worklist: implement → validate → verify →
+commit → record. Do not start a second item in the same iteration, even if the first was quick —
+small, reviewable, per-item commits are the point.
 
 ## Step 0 — Orient and establish the worklist (first iteration only, then reuse)
 
 1. **Orient from the handover trail first** (fresh sessions have no prior context): read the
-   **highest-numbered** `session-notes/..._session-notes_v{N}_*.md` at the portfolio root and the
-   target repo's `docs/backlog.md`. The **backlog is authoritative** where they disagree — but flag
-   any handover/backlog/repo mismatch in this iteration's report rather than silently resolving it.
-   Use what you learn (open items, held branches, working norms, in-flight PRs) to inform worklist
-   derivation and Step 1's reality check. Do this once per loop, not per iteration.
+   **highest-numbered** `session-notes/{PROJECT}_session-notes_v{N}_*.md` at the portfolio root —
+   compare versions **only among files carrying the `{PROJECT}_` prefix** (several projects share
+   the folder) and compare `{N}` **numerically**, not by filename sort — and the project's
+   `{PROJECT}/docs/backlog.md`. If the project has **no handovers
+   yet**, orient from the backlog and repo alone and say so. The **backlog is authoritative**
+   where they disagree — but flag any handover/backlog/repo mismatch in this iteration's report
+   rather than silently resolving it. Use what you learn (open items, held branches, working
+   norms, in-flight PRs) to inform worklist derivation and Step 1's reality check. Do this once
+   per loop, not per iteration.
    **Session-boundary test:** if you have no memory of reading the latest handover and backlog in
    *this* session (e.g. the loop resumed in a fresh context window), perform this orientation
-   again before touching the worklist — `WORKLIST.md` existing is not evidence that *you* are
-   oriented.
+   again before touching the worklist — `WORKLIST_{PROJECT}.md` existing is not evidence that
+   *you* are oriented.
 2. If the invocation names a `WORKLIST` (a file, a section, or a described set of steps), use it.
 3. Otherwise derive it, in this order of preference:
-   - `WORKLIST.md` at the **portfolio root** (`test-automation-portfolio/WORKLIST.md`), if one
-     exists from a previous iteration;
+   - `WORKLIST_{PROJECT}.md` at the **portfolio root**, if one exists from a previous iteration;
    - the **Recommendations / Next Steps** of the most recent `.review/CODE_REVIEW_*` in the target
      repo (ordered by the review's own severity: HIGH → MEDIUM → LOW);
    - open items in the project's `docs/backlog.md` (highest priority score first).
@@ -44,22 +51,23 @@ the same iteration, even if the first was quick — small, reviewable, per-item 
    backlog is the source of truth and a review may be stale. Drop items the backlog records as
    done or closed (note each drop in this iteration's report rather than silently omitting it),
    and where the two disagree on priority, the backlog's view wins.
-4. Materialise it as a checklist file — `WORKLIST.md` at the **portfolio root**, beside
-   `session-notes/` and `portfolio-prompts/` and therefore **outside the repo's git history** — with one
-   line per item: `- [ ] <id> — <one-line description> — <source ref>` plus, per item, its
-   **acceptance criteria** (what "verified" means) and whether it is **docs-only** or **code**.
+4. Materialise it as a checklist file — `WORKLIST_{PROJECT}.md` at the **portfolio root**, beside
+   `session-notes/` and `portfolio-prompts/` and therefore **outside the repo's git history** —
+   with one line per item: `- [ ] <id> — <one-line description> — <source ref>` plus, per item,
+   its **acceptance criteria** (what "verified" means) and whether it is **docs-only** or **code**.
    This file is the loop's memory: every iteration reads it first and updates it last.
-5. If a `WORKLIST.md` already exists, do **not** regenerate it — pick up where it stands (the
-   orientation read in item 1 still applies if this session has not yet performed it).
+5. If a `WORKLIST_{PROJECT}.md` already exists, do **not** regenerate it — pick up where it stands
+   (the orientation read in item 1 still applies if this session has not yet performed it).
 
 ## Step 1 — Orient (every iteration)
 
-- `git status --porcelain` — the tree must be clean before starting. If it is dirty with changes you
-  do not recognise, **stop and report**; do not stash or discard someone else's work.
-- `git log --oneline -5` and `gh pr list` — confirm where the previous iteration left off and
-  whether a held branch or open PR is awaiting the user (if so, that is a stop condition — report).
-- Read `WORKLIST.md`; select the **first unchecked item**. If all items are checked, go to Step 6
-  (loop completion) and **do not schedule another iteration**.
+- `git -C {PROJECT} status --porcelain` — the tree must be clean before starting. If it is dirty
+  with changes you do not recognise, **stop and report**; do not stash or discard someone else's work.
+- `git -C {PROJECT} log --oneline -5` and `gh pr list` (from inside the repo) — confirm where the
+  previous iteration left off and whether a held branch or open PR is awaiting the user (if so,
+  that is a stop condition — report).
+- Read `WORKLIST_{PROJECT}.md`; select the **first unchecked item**. If all items are checked, go
+  to Step 6 (loop completion) and **do not schedule another iteration**.
 
 ## Step 2 — Implement the selected item
 
@@ -72,26 +80,30 @@ the same iteration, even if the first was quick — small, reviewable, per-item 
     separate commits; open it when the first item is ready and push subsequent items to the same
     branch unless the items are unrelated enough to deserve separate PRs.
 - Apply the repo's documented durable lessons from the start. The **single source** is the
-  "Durable lessons" section of the latest handover (read in Step 0) — examples of the kind of
-  thing it carries: explicit `Wait.upTo(15–20 s)` on any KO.js render, attribute assertions over
+  "Durable lessons" section of the project's latest handover (read in Step 0), plus
+  `{PROJECT}/docs/project-contract.md` if it exists — examples of the kind of thing carried there
+  (from the magento project): explicit waits on JS-framework renders, attribute assertions over
   occlusion-aware visibility, exactly one stdout formatter in the cucumber profile.
 - Stay on-scope: fix what the item names. If you discover an adjacent problem, add it to
-  `WORKLIST.md` as a new unchecked item rather than folding it in.
+  `WORKLIST_{PROJECT}.md` as a new unchecked item rather than folding it in.
 
 ## Step 3 — Validate (mechanical gates)
 
-Run every gate that applies to what you touched; all must pass before commit:
+Resolve the project's gates per `portfolio-prompts/project-layout.md` — first hit wins: a `Gates`
+section in `{PROJECT}/docs/project-contract.md`; else `npm run verify` if the project defines it;
+else stack defaults (`npx tsc --noEmit` for TypeScript, plus
+`npx cucumber-js --profile default --dry-run` where the project uses Cucumber); else ask. Run
+every gate that applies to what you touched; all must pass before commit. In addition:
 
-- TypeScript: `npx tsc --noEmit` — zero errors.
-- Step binding: `npx cucumber-js --profile default --dry-run` — zero undefined/ambiguous steps.
-- Suite, where feasible: run the narrowest set that exercises the change (a single feature or tag
-  locally if a store is available; otherwise rely on CI and say so). Do not start a full Magento
-  Docker stack or long E2E run unless the item itself requires it.
+- Suite, where feasible: run the narrowest set that exercises the change (a single feature, tag,
+  or test file locally if the runtime is available; otherwise rely on CI and say so). Do not start
+  heavyweight infrastructure (e.g. a full Docker application stack) or a long E2E run unless the
+  item itself requires it.
 - Docs-only items: check every relative link you added or moved resolves, and re-grep the docs for
   the claim you corrected to confirm no other file still states the stale version.
 - If a gate fails, fix it within the iteration. If it cannot be fixed without a decision that is
-  the user's to make, revert to a clean tree, mark the item `BLOCKED (reason)` in `WORKLIST.md`,
-  and report — never commit a failing state.
+  the user's to make, revert to a clean tree, mark the item `BLOCKED (reason)` in
+  `WORKLIST_{PROJECT}.md`, and report — never commit a failing state.
 
 ## Step 4 — Verify (acceptance criteria)
 
@@ -108,9 +120,9 @@ the item off on a partial.
   checkout messages region`. Reference the worklist/finding id in the message. Body lines for the
   *why* when the diff alone does not carry it. Never amend or squash existing history.
 - Push to the worklist branch and note the commit hash.
-- Update `WORKLIST.md`: check the item off with the commit hash and a one-line outcome. Update any
-  tracking docs the project mandates (e.g. `CHANGELOG.md` for user-visible changes, the review's
-  finding status if the worklist came from a review).
+- Update `WORKLIST_{PROJECT}.md`: check the item off with the commit hash and a one-line outcome.
+  Update any tracking docs the project mandates (e.g. `CHANGELOG.md` for user-visible changes, the
+  review's finding status if the worklist came from a review).
 - End the iteration with a short report: item done, evidence, commit(s), what the next iteration
   will pick up.
 
@@ -127,11 +139,12 @@ When every item is checked or blocked:
 
 ## Rules
 
-- en-GB spelling. One item per iteration. Never leave the tree dirty between iterations.
+- en-GB spelling. One item per iteration. One project per loop. Never leave the tree dirty
+  between iterations.
 - Never commit on red: all applicable gates pass, or the item is reverted and marked blocked.
 - Commit messages describe the change and its reason, not the process ("loop iteration 3" is not
   a commit message).
-- Report honestly: if a gate was skipped (e.g. no local store for an E2E check), say so in both
+- Report honestly: if a gate was skipped (e.g. no local runtime for an E2E check), say so in both
   the iteration report and the commit body, and rely on CI explicitly.
 - Stop conditions (report and end without scheduling): all items done; an item blocked on a user
   decision; an unrecognised dirty tree; a failing gate you cannot fix; any action that would be

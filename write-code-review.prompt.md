@@ -1,40 +1,49 @@
 # Prompt - Write a comprehensive code review
 
-Paste the text below to the agent when you want a full, evidence-backed review of the
-**magento-checkout-automation** portfolio project. It uses the shared code-review template and writes
-the finished review into the repo's `.review/` folder.
+Paste the text below to the agent when you want a full, evidence-backed review of a portfolio
+project, prefixed with `PROJECT=<project folder name>` (see the README registry). It uses the
+shared code-review template and writes the finished review into the repo's `.review/` folder.
 
 ---
 
-You are conducting a **comprehensive first-time code review** of the
-**magento-checkout-automation** project.
+You are conducting a **comprehensive code review** of the **`{PROJECT}`** portfolio project. The
+invocation names the target as `PROJECT=<folder name at the portfolio root>` - if it did not,
+**ask which project**; never guess.
 
 ## Inputs and source of truth
 
 Use exactly these paths, relative to the portfolio root (`test-automation-portfolio/`):
 
-- **Repository:** `magento-checkout-automation/`
+- **Repository:** `{PROJECT}/`
 - **Review template:** `templates/code-review.template.md`
-- **Project status source of truth:** `magento-checkout-automation/docs/backlog.md`
+- **Project status source of truth:** `{PROJECT}/docs/backlog.md`
+- **Layout contract:** `portfolio-prompts/project-layout.md`
 
-Read the review template first and follow it as the output contract. Then read `docs/backlog.md` and
-treat it as the canonical current project state. If other docs conflict with the backlog, call out the
-conflict in the review rather than silently choosing the nicer story.
+Read the review template first and follow it as the output contract. Then read `docs/backlog.md`
+and treat it as the canonical current project state (if it does not exist, note that as a finding
+in itself - the project is not onboarded to the portfolio conventions). If other docs conflict
+with the backlog, call out the conflict in the review rather than silently choosing the nicer story.
 
 ## Role and review standard
 
 Act as a Senior Test Automation Architect / Senior Software Engineer reviewing a portfolio repository
 for mid-level QA automation testers, software engineers, hiring managers, and technical leads.
 
-Review for:
+First establish the project's stack and intent from its `README.md` and `package.json`, then
+review for:
 
-- Correctness and reliability of the Cucumber + Serenity/JS + Playwright implementation.
-- Strength of the Screenplay architecture: Tasks, Questions, Abilities, interactions, and step glue.
-- Quality of the Gherkin specifications and whether they remain business-readable.
-- Test isolation, async waits, browser lifecycle, data setup, API usage, and checkout stability.
-- Magento-specific risks, including Knockout.js checkout behaviour, Docker target setup, CI, and the
-  custom payment-decline module.
-- Documentation consistency across README, backlog, ADRs, strategy docs, runbooks, and implementation logs.
+- Correctness and reliability of the test implementation for the stack the project declares
+  (e.g. Cucumber + Serenity/JS + Playwright; playwright-bdd; vitest).
+- Strength of the architectural pattern the project teaches or uses (e.g. Screenplay: Tasks,
+  Questions, Abilities, interactions, and step glue), and whether the implementation is faithful
+  to it.
+- Quality of any executable specifications (Gherkin or equivalent) and whether they remain
+  business-readable.
+- Test isolation, async waits, runtime lifecycle, data setup, API usage, and suite stability.
+- Stack-specific risks - derive these from the project's own README, docs, and configuration
+  rather than assuming another project's risk profile.
+- Documentation consistency across README, backlog, ADRs, strategy docs, runbooks, and
+  implementation logs (where present).
 - Portfolio credibility: whether the repo proves senior automation judgement in a reviewable way.
 
 Prioritise concrete findings over generic advice. Every significant issue must include file paths, line
@@ -42,22 +51,23 @@ numbers, impact, and a practical remediation strategy.
 
 ## Required scope
 
-Review the full repo, with special attention to:
+Map the repo first (`rg --files`), then review it in full, with special attention to:
 
-- `features/` - Gherkin specs, tags, scenario structure, deferred/quarantined coverage.
-- `src/hooks/`, `src/tasks/`, `src/questions/`, `src/interactions/`, `src/api/`, and
-  `src/step-definitions/` - Screenplay implementation and glue quality.
-- `cucumber.js`, `src/serenity.config.ts`, `tsconfig.json`, `package.json`, and `package-lock.json`.
-- `docker-compose.yml`, `docker-compose.ci.yml`, `Dockerfile.store-app`, `Dockerfile.store-db`,
-  `docker/nginx/default.conf`, and `.github/workflows/`.
-- `app/code/Portfolio/DeclinePayment/` - Magento module used to support deterministic payment failure.
-- `README.md`, `CHANGELOG.md`, `docs/backlog.md`, `docs/architecture.md`, `docs/qa-strategy.md`,
-  `docs/docker-magento-setup.md`, `docs/admin-api-token-guide.md`, `docs/screenplay-guide.md`,
-  `docs/gherkin-style-guide.md`, `docs/adr/`, and `docs/implementation-logs/`.
+- Executable specifications (`features/`, `spec/`, `tests/` - whatever the project uses): tags,
+  structure, deferred/quarantined coverage.
+- The source layers (`src/` and its subdivisions): pattern implementation and glue quality.
+- Build/runner configuration: `package.json`, `package-lock.json`, `tsconfig*.json`, and the test
+  runner configs the project uses (e.g. `cucumber.js`, `playwright.config.ts`, `vitest.config.ts`).
+- CI: `.github/workflows/`, plus any Docker/compose files and supporting infrastructure the
+  project ships.
+- Any application or fixture modules the repo carries to support the tests.
+- `README.md`, `CHANGELOG.md`, `docs/` (backlog, ADRs, guides, implementation logs - whatever
+  exists), and any `planning/` documents.
 
 Exclude generated or dependency-heavy folders from manual review unless a finding requires them:
-`node_modules/`, `.git/`, `vendor/`, `var/`, `generated/`, `pub/static/`, `target/`, Serenity generated
-reports, screenshots, traces, archives, and temporary probe files.
+`node_modules/`, `.git/`, `dist/`, `vendor/`, `var/`, `generated/`, `target/`, generated
+reports (`playwright-report/`, `test-results/`, Serenity output), screenshots, traces, archives,
+and temporary probe files.
 
 ## Fact-gathering workflow
 
@@ -68,17 +78,16 @@ Before writing findings:
    - `git log --oneline -10`
    - `rg --files`
 2. Read the review template completely.
-3. Read `docs/backlog.md` completely and summarise the current state in your notes:
-   - Active suite is expected to be green in CI.
-   - The published Serenity report is expected to be live.
-   - The main remaining backlog item is activating the deferred payment-failure scenario.
-   - Validate these statements against the repo where possible; do not assume they are true without evidence.
+3. Read `docs/backlog.md` completely and summarise its current claims in your notes (suite health,
+   published artefacts, open items). Validate those claims against the repo where possible; do not
+   assume they are true without evidence.
 4. Inspect the implementation and docs listed in the required scope.
-5. Run lightweight validation if dependencies are available:
-   - `npx cucumber-js --profile default --dry-run` — zero undefined/ambiguous steps.
-   - `npx tsc --noEmit`.
-   - Do not start a full Magento Docker stack or long E2E run unless explicitly asked. If you do not run
-     tests, state that clearly in the review.
+5. Run lightweight validation if dependencies are available, resolving the project's gates per the
+   layout contract: a `Gates` section in `docs/project-contract.md` if present, else
+   `npm run verify`, else the stack defaults (`npx tsc --noEmit`; plus
+   `npx cucumber-js --profile default --dry-run` where the project uses Cucumber).
+   - Do not start heavyweight infrastructure (e.g. a full Docker application stack) or a long E2E
+     run unless explicitly asked. If you do not run tests, state that clearly in the review.
 
 ## Review output
 
@@ -115,25 +124,27 @@ Create every file required by the template:
 - `07_MIGRATION_PLANS.md`
 - Optional `ANNEX/` files only when they add useful evidence, metrics, or deep dives
 
-This is a **single-project repository** — apply the template's "Single-repository reviews"
-customisation notes: `03_PROJECT_REVIEWS/` carries only `PROJECT_001_*.md`; treat
-`04_CROSS_PROJECT_ANALYSIS.md` as cross-cutting analysis within the repo (suite vs CI vs Docker
-vs docs vs the Magento module); and where a template section or checklist quantity does not
-apply, keep the heading and write `N/A - <one-line justification>` instead of padding.
+Each portfolio repo is a **single-project repository** - apply the template's "Single-repository
+reviews" customisation notes: `03_PROJECT_REVIEWS/` carries only `PROJECT_001_*.md`; treat
+`04_CROSS_PROJECT_ANALYSIS.md` as cross-cutting analysis within the repo (suite vs CI vs
+infrastructure vs docs vs any app/fixture modules); and where a template section or checklist
+quantity does not apply, keep the heading and write `N/A - <one-line justification>` instead of
+padding.
 
 The review must include, at minimum:
 
 - High-to-low risk list with evidence, impact, and remediation.
 - Strengths as well as weaknesses.
-- A specific assessment of the outstanding `@deferred` payment-failure work against the implemented
-  `Portfolio_DeclinePayment` Magento module.
-- A specific assessment of browser lifecycle, scenario isolation, waits, and Knockout.js checkout stability.
-- A specific assessment of API-driven Background setup and admin-token/2FA assumptions.
-- A CI and Docker assessment covering pre-baked images, health checks, GHCR dependency, secrets, Pages
-  publishing, and local reproducibility.
+- A specific assessment of any deferred, quarantined, or planned-but-unimplemented coverage the
+  backlog or planning docs name, against what the repo actually implements.
+- A specific assessment of runtime lifecycle, test isolation, waits/synchronisation, and suite
+  stability for the project's stack.
+- A specific assessment of data setup and any API/token/auth assumptions the suite makes.
+- A CI assessment covering workflow correctness, caching/image strategy, secrets, published
+  artefacts, and local reproducibility.
 - Documentation alignment against `docs/backlog.md`.
-- Architecture assessment against Test Pyramid, SOLID, KISS, YAGNI, REST/OpenAPI, ISTQB strategies, and
-  pedagogical value.
+- Architecture assessment against Test Pyramid, SOLID, KISS, YAGNI, REST/OpenAPI (where APIs are
+  involved), ISTQB strategies, and pedagogical value.
 
 ## Evidence rules
 
