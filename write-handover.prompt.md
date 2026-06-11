@@ -23,7 +23,9 @@ project**; never guess. Conventions are defined in `portfolio-prompts/project-la
 2. **The latest existing handover:** the highest-numbered
    `{PROJECT}_session-notes_v{N}_*.md` in the **`session-notes/`** folder at the
    portfolio root (`test-automation-portfolio/session-notes/`). Compare versions **only among
-   files carrying the `{PROJECT}_` prefix** — handovers for several projects share the folder.
+   files carrying the `{PROJECT}_` prefix** — handovers for several projects share the folder —
+   and compare `{N}` **numerically** (a plain filename sort orders `v9` after `v13`; a wrong
+   "latest" here causes a version collision in the file you are about to write).
    Read it in full — your new doc *supersedes* it and should only restate settled context by
    reference, not re-explain it. **First handover:** if no `{PROJECT}_` handover exists, this new
    doc is **v1** — there is nothing to supersede; orient from the backlog and repo alone.

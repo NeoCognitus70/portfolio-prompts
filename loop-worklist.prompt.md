@@ -28,8 +28,9 @@ small, reviewable, per-item commits are the point.
 
 1. **Orient from the handover trail first** (fresh sessions have no prior context): read the
    **highest-numbered** `session-notes/{PROJECT}_session-notes_v{N}_*.md` at the portfolio root —
-   compare versions **only among files carrying the `{PROJECT}_` prefix**; several projects share
-   the folder — and the project's `{PROJECT}/docs/backlog.md`. If the project has **no handovers
+   compare versions **only among files carrying the `{PROJECT}_` prefix** (several projects share
+   the folder) and compare `{N}` **numerically**, not by filename sort — and the project's
+   `{PROJECT}/docs/backlog.md`. If the project has **no handovers
    yet**, orient from the backlog and repo alone and say so. The **backlog is authoritative**
    where they disagree — but flag any handover/backlog/repo mismatch in this iteration's report
    rather than silently resolving it. Use what you learn (open items, held branches, working

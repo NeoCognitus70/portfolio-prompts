@@ -48,6 +48,8 @@ order — first hit wins:
 - **Handovers:** `session-notes/{PROJECT}_session-notes_v{N}_{YYYYMMDD}T{HHMM}Z.{md,html}` —
   the filename prefix is the namespace. Version sequences are **per project**: "highest version"
   comparisons are made only among files sharing the `{PROJECT}_` prefix, never across the folder.
+  **Compare versions numerically, not lexically** — a plain filename sort orders `v9` *after*
+  `v13`; parse `{N}` as a number before deciding which file is latest.
 - **Worklists:** `WORKLIST_{PROJECT}.md` at the portfolio root — one worklist per project; a
   `/loop` binds to exactly one.
 - **Shared templates:** `templates/` at the portfolio root — project-agnostic scaffolding
