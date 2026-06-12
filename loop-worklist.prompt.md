@@ -81,9 +81,15 @@ small, reviewable, per-item commits are the point.
 - Respect the project's working norms:
   - **All changes** (docs and code alike) go via a branch + PR — as of 2026-06-10 the harness
     blocks direct pushes to `main`, including docs-only ones. Create or reuse a branch named for
-    the worklist (e.g. `worklist/<id>-<slug>`). One PR may carry several worklist items as
+    the worklist (e.g. `worklist/<id>-<slug>`). **When creating it, branch from an up-to-date
+    default branch**: `git fetch`, switch to `main`, `pull --ff-only`, then branch — a stale
+    local `main`, or a checkout left sitting on an old merged branch, would otherwise put
+    unrelated history in the PR. (A clean tree on the wrong branch is not a dirty-tree stop —
+    switch, don't stop.) One PR may carry several worklist items as
     separate commits; open it when the first item is ready and push subsequent items to the same
-    branch unless the items are unrelated enough to deserve separate PRs.
+    branch unless the items are unrelated enough to deserve separate PRs. Your **own** open
+    worklist branch/PR is never the Step 1 stop condition — that refers to someone else's held
+    work awaiting the user.
 - Apply the repo's documented durable lessons from the start. The **single source** is the
   "Durable lessons" section of the project's latest handover (read in Step 0), plus
   `{PROJECT}/docs/project-contract.md` if it exists — examples of the kind of thing carried there
