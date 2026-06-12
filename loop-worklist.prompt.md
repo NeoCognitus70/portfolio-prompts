@@ -13,7 +13,10 @@ Invocation examples:
 
 `PROJECT` is the project folder name at the portfolio root (see the README registry) — if the
 invocation does not name one, **ask before the first iteration**; never guess. A loop binds to
-exactly **one** project. If no `WORKLIST` is given, derive one (see Step 0). The loop is
+exactly **one** project. If no `WORKLIST` is given, derive one (see Step 0). To prepare and
+review the worklist **before** starting the loop, run `derive-worklist.prompt.md` first — it
+writes `WORKLIST_{PROJECT}.md` in this prompt's format without actioning anything, and Step 0
+picks an existing file up as-is. The loop is
 self-pacing when no interval is given: end the iteration when one item is fully done, and continue
 on the next wake-up.
 
