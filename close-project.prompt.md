@@ -1,7 +1,9 @@
 # Prompt — Close out a project
 
 Paste the text below to the agent in the **final session** of a project, prefixed with
-`PROJECT=<project folder name>` (see the README registry), when the backlog is complete (or every
+`PROJECT=<project folder name>` (see the README registry) — or invoke it without pasting:
+`Read and follow portfolio-prompts\close-project.prompt.md using PROJECT=<folder>`.
+Use it when the backlog is complete (or every
 remaining item has been explicitly deferred with a reason) and the project is being archived as a
 finished portfolio piece. It verifies the public-facing claims, retires the process artefacts, and
 writes a terminal handover so the project can rest without a successor session being expected.

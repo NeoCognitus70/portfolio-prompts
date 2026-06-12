@@ -1,7 +1,9 @@
 # Prompt — Resume from the latest handover
 
 Paste the text below to the agent at the **start** of a new session, prefixed with
-`PROJECT=<project folder name>` (see the README registry). It picks up the project's most recent
+`PROJECT=<project folder name>` (see the README registry) — or invoke it without pasting:
+`Read and follow portfolio-prompts\resume-session.prompt.md using PROJECT=<folder>`.
+It picks up the project's most recent
 handover, cross-checks it against the source of truth and the live repo, and proposes where to start.
 
 ---
