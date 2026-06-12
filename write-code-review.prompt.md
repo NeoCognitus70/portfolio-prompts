@@ -85,8 +85,10 @@ Before writing findings:
    assume they are true without evidence.
 4. Inspect the implementation and docs listed in the required scope.
 5. Run lightweight validation if dependencies are available, resolving the project's gates per the
-   layout contract: a `Gates` section in `docs/project-contract.md` if present, else
-   `npm run verify`, else the stack defaults (`npx tsc --noEmit`; plus
+   layout contract: a `Gates` section in `docs/project-contract.md` if present, else gates
+   recorded in the project's registry row (e.g. per-`ci.yml` jobs for the stack(s) touched), else
+   `npm run verify`, else the stack defaults run inside the relevant stack directory
+   (`npx tsc --noEmit`; plus
    `npx cucumber-js --profile default --dry-run` where the project uses the cucumber-js runner -
    a `cucumber.js` config exists; a `features/` folder alone does not imply it, and playwright-bdd
    projects validate step binding via their `bddgen` script instead).
@@ -101,8 +103,11 @@ Write the completed review inside the repository under:
 .review/CODE_REVIEW_{AGENT}_v{N}_{UTC_TIMESTAMP}/
 ```
 
+(or under the review location the project's registry row records as a deviation, e.g.
+`DOCS/.review/` — match where the project's existing reviews live).
+
 Follow the template's folder structure and filenames exactly. Determine `{N}` by inspecting existing
-`.review/CODE_REVIEW_*_v*_*` directories and incrementing the highest version for the current agent. If no
+`CODE_REVIEW_*_v*_*` directories **in that same location** and incrementing the highest version for the current agent. If no
 review exists for the current agent, use `v1`. Use a UTC timestamp in `YYYYMMDDTHHMMZ` format with no seconds.
 
 Use the current assistant identity for `{AGENT}` and reviewer attribution:
