@@ -17,6 +17,10 @@ root>` (e.g. `PROJECT=magento-checkout-automation`). The README's **project regi
 valid values. If an invocation does not name a `PROJECT`, the agent must **ask — never guess**,
 and never infer it from which files happen to be open.
 
+**Exception — portfolio-scoped orchestration prompts** (`derive-all-worklists.prompt.md`): these
+take the whole registry as their target and need no `PROJECT=`; each sub-agent they launch
+receives a single `PROJECT=` and is bound by this contract as normal.
+
 ## Required in-repo structure
 
 A participating project (`test-automation-portfolio/{PROJECT}/`) must have:
