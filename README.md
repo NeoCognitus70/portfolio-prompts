@@ -31,6 +31,7 @@ prompts rely on are defined once in [project-layout.md](project-layout.md).
 | [write-implementation-log.prompt.md](write-implementation-log.prompt.md) | After a dev task | Writes a new immutable implementation log into `{PROJECT}/docs/implementation-logs/` from the project's template. |
 | [write-code-review.prompt.md](write-code-review.prompt.md) | Code review | Uses `templates/code-review.template.md` and the project's `docs/backlog.md` to write a comprehensive review into the repo's `.review/` folder. |
 | [derive-worklist.prompt.md](derive-worklist.prompt.md) | Preparing work before a loop | Derivation only, **no actioning**: orients from handover + backlog, derives and cross-checks the items, writes `WORKLIST_{PROJECT}.md` (portfolio root) in exactly the format the loop consumes, and reports a detailed per-item breakdown in chat for review. |
+| [derive-all-worklists.prompt.md](derive-all-worklists.prompt.md) | Preparing work portfolio-wide | Orchestration fan-out, **no actioning**: one parallel sub-agent per registry project, each following derive-worklist for its project; collates all breakdowns, guard-stops, and user decisions into a single report. |
 | [loop-worklist.prompt.md](loop-worklist.prompt.md) | Working through an ordered list of steps | Driven via the `/loop` command (not pasted). Completes one worklist item per iteration — implement → validate → verify → commit → record — tracked in `WORKLIST_{PROJECT}.md` (portfolio root), with stop conditions and a closing report. |
 | [close-project.prompt.md](close-project.prompt.md) | Final session of a project | Verifies every public-facing claim the README makes, reconciles the backlog one last time, retires `WORKLIST_{PROJECT}.md`, and writes a terminal handover marked FINAL. |
 
@@ -69,6 +70,8 @@ Read and follow portfolio-prompts\write-implementation-log.prompt.md using PROJE
 Read and follow portfolio-prompts\write-code-review.prompt.md using PROJECT=gb.automation.smoketests.sudoku.poc
 
 Read and follow portfolio-prompts\derive-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
+
+Read and follow portfolio-prompts\derive-all-worklists.prompt.md
 
 /loop Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
