@@ -1,7 +1,9 @@
 # Prompt — Write an implementation log
 
 Paste the text below to the agent after a piece of development work is complete, prefixed with
-`PROJECT=<project folder name>` (see the README registry). It produces a new, immutable
+`PROJECT=<project folder name>` (see the README registry) — or invoke it without pasting:
+`Read and follow portfolio-prompts\write-implementation-log.prompt.md using PROJECT=<folder>`.
+It produces a new, immutable
 implementation log inside the project repo from the project template.
 
 ---

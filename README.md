@@ -44,7 +44,36 @@ prompts rely on are defined once in [project-layout.md](project-layout.md).
 - Validation gates resolve: project contract → registry-row gates → `npm run verify` → stack
   defaults (run inside the touched stack's directory in multi-stack repos) → ask.
 
-Usage: open the relevant `.prompt.md`, copy the text below its `---` divider, prepend
-`PROJECT=<folder>`, and paste it to the agent.
-**Exception:** `loop-worklist.prompt.md` is invoked via the `/loop` command (see the invocation
-examples in its header), not pasted.
+## Invocation
+
+Two equivalent forms (both require `PROJECT=` — without it the agent stops and asks):
+
+1. **Paste:** open the `.prompt.md`, copy the text below its `---` divider, prepend
+   `PROJECT=<folder>`, and paste it to the agent.
+2. **Read and follow:** point the agent at the file in a single chat message —
+   `Read and follow portfolio-prompts\<name>.prompt.md using PROJECT=<folder>`.
+   The agent reads the file and follows the body below the `---` divider; the header above the
+   divider is guidance for humans, not part of the instructions.
+
+**Exception:** `loop-worklist.prompt.md` is driven via the `/loop` command, not a plain message.
+
+One example per prompt:
+
+```text
+Read and follow portfolio-prompts\resume-session.prompt.md using PROJECT=calculator-screenplay-bdd
+
+Read and follow portfolio-prompts\write-handover.prompt.md using PROJECT=hand-baked-screenplay-pattern
+
+Read and follow portfolio-prompts\write-implementation-log.prompt.md using PROJECT=magento-checkout-automation
+
+Read and follow portfolio-prompts\write-code-review.prompt.md using PROJECT=gb.automation.smoketests.sudoku.poc
+
+Read and follow portfolio-prompts\derive-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
+
+/loop Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
+
+Read and follow portfolio-prompts\close-project.prompt.md using PROJECT=magento-checkout-automation
+```
+
+(Optional parameters ride the same line, e.g.
+`... derive-worklist.prompt.md using PROJECT=<folder> WORKLIST=<path-or-description>`.)

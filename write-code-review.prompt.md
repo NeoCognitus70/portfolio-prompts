@@ -1,7 +1,10 @@
 # Prompt - Write a comprehensive code review
 
 Paste the text below to the agent when you want a full, evidence-backed review of a portfolio
-project, prefixed with `PROJECT=<project folder name>` (see the README registry). It uses the
+project, prefixed with `PROJECT=<project folder name>` (see the README registry) — or invoke it
+without pasting:
+`Read and follow portfolio-prompts\write-code-review.prompt.md using PROJECT=<folder>`.
+It uses the
 shared code-review template and writes the finished review into the repo's `.review/` folder.
 
 ---

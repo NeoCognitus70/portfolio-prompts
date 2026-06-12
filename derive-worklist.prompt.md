@@ -1,7 +1,10 @@
 # Prompt — Derive a worklist (without actioning it)
 
 Paste the text below to the agent when you want the worklist **prepared and reviewed before any
-work starts**, prefixed with `PROJECT=<project folder name>` (see the README registry). It
+work starts**, prefixed with `PROJECT=<project folder name>` (see the README registry) — or
+invoke it without pasting:
+`Read and follow portfolio-prompts\derive-worklist.prompt.md using PROJECT=<folder>`.
+It
 performs the same orientation and derivation as `loop-worklist.prompt.md` Step 0, materialises
 `WORKLIST_{PROJECT}.md` at the portfolio root in exactly the format the loop consumes, and then
 **stops** — reporting a detailed breakdown in the chat for you to review, reorder, or trim before
