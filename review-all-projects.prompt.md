@@ -66,10 +66,12 @@ THAT LOCATION for your agent and incrementing, else v1.
 Make NO implementation changes - review artefacts only. When validation would
 build inside a sibling project's working tree (registry coupling note), review
 the static source instead of running that build gate, and say so in the review.
-When the review is written, commit it on a branch (e.g.
-review/<project>-<agent>-vN) and open a PR; NEVER merge it. If you must wait on
-anything (e.g. a validation run), wait in the FOREGROUND - do not background and
-end your run.
+When the review is written, commit it on a branch and open a PR; NEVER merge it.
+Create the branch from an up-to-date default branch (git fetch; switch main;
+pull --ff-only; then branch review/<project>-<agent>-vN) so the PR carries only
+the review, not stale history; a clean tree on the wrong branch means switch,
+not stop. If you must wait on anything (e.g. a validation run), wait in the
+FOREGROUND - do not background and end your run.
 You are running unattended: wherever the prompt says to ask the user, do NOT
 wait - record the question in the review and your report and proceed.
 Your final message must be the prompt's "Finish by reporting" block in full -
@@ -95,8 +97,9 @@ When all agents return, produce one report:
   documentation drift, missing CI gates), worth a portfolio-level fix.
 - **Highest-severity findings across all projects**, ranked, as the recommended attention order.
 - **Outliers** — anything one project does notably better or worse than its siblings.
-- A note on whether any finding contradicts a project's `docs/backlog.md` (the source of truth) —
-  surface it rather than silently trusting either side.
+- A note on whether any finding contradicts a project's backlog (`docs/backlog.md`, or the path
+  its registry row records as a deviation — e.g. sudoku's `DOCS/.planning/backlog.md`) — the
+  backlog is the source of truth; surface the contradiction rather than silently trusting either side.
 
 ## Rules
 
