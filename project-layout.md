@@ -18,9 +18,9 @@ valid values. If an invocation does not name a `PROJECT`, the agent must **ask â
 and never infer it from which files happen to be open.
 
 **Exception â€” portfolio-scoped orchestration prompts** (`derive-all-worklists.prompt.md`,
-`loop-all-worklists.prompt.md`): these take the whole registry as their target and need no
-`PROJECT=`; each sub-agent they launch receives a single `PROJECT=` and is bound by this
-contract as normal.
+`loop-all-worklists.prompt.md`, `review-all-projects.prompt.md`): these take the whole registry as
+their target and need no `PROJECT=`; each sub-agent they launch receives a single `PROJECT=` and
+is bound by this contract as normal.
 
 ## Required in-repo structure
 
