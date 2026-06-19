@@ -61,6 +61,23 @@ order — first hit wins:
    `tsconfig.json` fails spuriously.
 5. Otherwise: **ask the user** what "validated" means for this project.
 
+### Project contract (optional) — `docs/project-contract.md`
+
+A project may pin its gates and norms in `docs/project-contract.md`. When present it is the
+**first-checked gate source** (above the registry row) and the home of project-specific working
+norms a successor must respect. Minimal skeleton:
+
+```text
+# Project Contract — <project name>
+
+## Gates
+npm run verify        # one command per line; all must pass before a commit is gated green
+npx tsc --noEmit
+
+## Working norms
+- <project-specific norm or gotcha, e.g. "explicit waits on JS-framework renders">
+```
+
 ## Portfolio-level conventions (outside the repos)
 
 - **Handovers:** `session-notes/{PROJECT}_session-notes_v{N}_{YYYYMMDD}T{HHMM}Z.{md,html}` —
@@ -73,6 +90,64 @@ order — first hit wins:
 - **Shared templates:** `templates/` at the portfolio root — project-agnostic scaffolding
   (backlog, implementation log, code review, ADR, etc.).
 - **Prompts:** this folder (`portfolio-prompts/`), its own git repository.
+
+### Worklist file format (canonical)
+
+`WORKLIST_{PROJECT}.md` is the loop's memory: `derive-worklist` writes it, and `loop-worklist`
+reads it first and updates it last each iteration. It lives at the portfolio root (untracked,
+outside the repos) — one worklist per project; a `/loop` binds to exactly one. Both prompts use
+**exactly** this format — cite this section rather than restating it:
+
+- A short **header** naming the project, the derivation source(s) (review version, backlog
+  version, or a given `WORKLIST`), and the date — so a later session can judge staleness.
+- **One line per item**, in execution order (severity/priority first, then dependency ordering —
+  an item that unblocks another precedes it):
+  `- [ ] <id> — <one-line description> — <source ref>`
+- Beneath each item line: its **acceptance criteria** (what "verified" means) and whether it is
+  **docs-only** or **code**.
+- The loop checks an item off as `- [x]` with its commit hash and a one-line outcome; an item it
+  cannot complete is marked `BLOCKED (reason)`.
+
+Minimal example:
+
+```text
+# Worklist — example-project
+**Project:** example-project  **Derived:** 2026-06-17  **Source:** code review v2 (HIGH -> LOW)
+
+- [ ] EX-01 — Scope the decline-message selector to the checkout messages region — review R-05 (HIGH)
+  - Acceptance: the selector matches only within the messages region; targeted run green. **Code.**
+- [ ] EX-02 — Correct the README smoke-count claim to match the dry-run — review R-07 (LOW)
+  - Acceptance: README count equals `--profile smoke --dry-run`; no other doc states the old count. **Docs-only.**
+```
+
+### Orchestration fan-out (shared conventions)
+
+The portfolio-scoped orchestrators (`derive-all-worklists`, `loop-all-worklists`,
+`review-all-projects`) all fan out one sub-agent per target project and collate a report. These
+conventions are common to all three — each orchestrator cites this section and adds only its
+**mode-specific deltas** (no-actioning / mutating / evidence-only):
+
+- **No `PROJECT=` for the orchestrator** (it targets the registry); every sub-agent it launches
+  receives a single `PROJECT=` and is bound by this contract as normal.
+- **Self-contained sub-agent prompts.** Sub-agents start with no conversation context — each
+  launch prompt must carry everything the sub-agent needs (working directory, the `Read and
+  follow ... using PROJECT=<folder>` line, and the mode-specific rules), not rely on context.
+- **One sub-agent per project; never two agents on the same project or the same working tree.**
+  Coupled projects (per the registry coupling notes) share **one sequential agent** that works
+  them in dependency order (provider/library first, consumer second).
+- **Launch a wave's agents in the same turn** (parallel). After partitioning, confirm the count:
+  the number of agents launched must equal the number of targets (including any sequential
+  coupled agent) — a missing agent is a silent gap.
+- **Unattended:** wherever a sub-prompt says to ask the user, the sub-agent must **not wait** —
+  record the question and proceed or stop per its own mode, carrying the question into its report.
+- **The sub-agent's final message is the only thing returned to the orchestrator** — it must be
+  the sub-prompt's reporting block (or stop report) in full.
+- **Sequential fallback:** if the environment cannot launch sub-agents, run the sub-prompt for each
+  project **sequentially yourself**, in registry/dependency order — the per-project writes then
+  become yours. Do not silently skip projects.
+- **Re-run a failed agent at most once**, and never re-launch one that may have left a dirty tree
+  without reporting the state first. **Relay findings faithfully** — never round up a reported
+  problem, skipped validation, or failure to "all fine".
 
 ## Working norms (universal)
 

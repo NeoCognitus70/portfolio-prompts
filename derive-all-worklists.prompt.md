@@ -38,6 +38,10 @@ Launch **one sub-agent per project**, all in a single turn so they run in parall
 by design: each agent writes at most one file (`WORKLIST_{PROJECT}.md`, names disjoint per
 project) and is otherwise read-only.
 
+**Launch-count check:** the number of agents you launch this turn must equal the number of projects
+in scope from Step 1 — count them off explicitly before moving on; a forgotten agent is a silent
+gap.
+
 Each sub-agent's prompt must be **self-contained** (sub-agents start with no conversation
 context). Use this template, filling both placeholders:
 
@@ -84,9 +88,11 @@ Close with the cross-portfolio view:
 
 ## Rules
 
-- en-GB spelling. In fan-out mode you write **no files** and make **no project changes** — only
-  sub-agents write, and only their own `WORKLIST_{PROJECT}.md` (in the sequential fallback, you
-  write exactly those files yourself, nothing else).
-- One sub-agent per project; never two agents on the same project in one run.
-- Relay agent findings faithfully — if an agent reports a mismatch or a failure, it appears in
-  the collated report; never round up to "all fine".
+- Follow the **shared orchestration conventions** in `portfolio-prompts/project-layout.md`
+  §"Orchestration fan-out" (no `PROJECT=` for the orchestrator; one agent per project, never two on
+  the same tree; launch-count check; unattended; sequential fallback; re-run a failed agent at most
+  once; relay faithfully).
+- **Mode-specific (no-actioning):** in fan-out mode you write **no files** and make **no project
+  changes** — only sub-agents write, and only their own `WORKLIST_{PROJECT}.md` (in the sequential
+  fallback you write exactly those files yourself, nothing else).
+- en-GB spelling.

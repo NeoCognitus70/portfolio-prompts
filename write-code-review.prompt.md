@@ -7,6 +7,12 @@ without pasting:
 It uses the
 shared code-review template and writes the finished review into the repo's `.review/` folder.
 
+Use **this** prompt for an **onboarded portfolio project** reviewed against its own
+`docs/backlog.md`, with the review committed into `.review/`. For an **external or unfamiliar
+repository** you want to understand or evaluate as a standalone report (no `PROJECT=`, not
+registry-bound), use [github-repo-analysis-prompt.md](github-repo-analysis-prompt.md) instead — the
+two overlap on architecture/SOLID/test-strategy, but that one is the external/learning read.
+
 ---
 
 You are conducting a **comprehensive code review** of the **`{PROJECT}`** portfolio project. The
@@ -87,14 +93,11 @@ Before writing findings:
    published artefacts, open items). Validate those claims against the repo where possible; do not
    assume they are true without evidence.
 4. Inspect the implementation and docs listed in the required scope.
-5. Run lightweight validation if dependencies are available, resolving the project's gates per the
-   layout contract: a `Gates` section in `docs/project-contract.md` if present, else gates
-   recorded in the project's registry row (e.g. per-`ci.yml` jobs for the stack(s) touched), else
-   `npm run verify`, else the stack defaults run inside the relevant stack directory
-   (`npx tsc --noEmit`; plus
-   `npx cucumber-js --profile default --dry-run` where the project uses the cucumber-js runner -
-   a `cucumber.js` config exists; a `features/` folder alone does not imply it, and playwright-bdd
-   projects validate step binding via their `bddgen` script instead).
+5. Run lightweight validation if dependencies are available, resolving the project's gates per
+   `portfolio-prompts/project-layout.md` §"Validation gates" — the canonical first-hit-wins cascade
+   lives there in full (project-contract `Gates` -> registry-row gates -> root `npm run verify` ->
+   stack defaults run inside the relevant stack directory -> ask; with the cucumber-js vs
+   playwright-bdd nuance).
    - Do not start heavyweight infrastructure (e.g. a full Docker application stack) or a long E2E
      run unless explicitly asked. If you do not run tests, state that clearly in the review.
 
@@ -155,6 +158,11 @@ The review must include, at minimum:
 - A CI assessment covering workflow correctness, caching/image strategy, secrets, published
   artefacts, and local reproducibility.
 - Documentation alignment against `docs/backlog.md`.
+- A dependency, security, and licence pass: lockfile freshness and any outdated or abandoned
+  dependencies; an audit (`npm audit` or the stack equivalent) **if the toolchain is available** -
+  otherwise inspect versions manually and state that the audit was not run; secrets committed to
+  the tree and any unsafe-input / injection surfaces; and the declared licence (or its absence).
+  Report with file:line; never fabricate a CVE.
 - Architecture assessment against Test Pyramid, SOLID, KISS, YAGNI, REST/OpenAPI (where APIs are
   involved), ISTQB strategies, and pedagogical value.
 

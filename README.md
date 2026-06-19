@@ -9,9 +9,11 @@ polluting any project's history.
 ## The `PROJECT` parameter
 
 Every prompt is invoked against **one project**, named as `PROJECT=<folder name>` from the
-registry below (state it in the first line you paste, e.g. `PROJECT=calculator-screenplay-bdd`).
-If no `PROJECT` is given, the agent must ask, never guess. Paths, globs, and conventions the
-prompts rely on are defined once in [project-layout.md](project-layout.md).
+[registry below](#project-registry) (state it in the first line you paste, e.g.
+`PROJECT=calculator-screenplay-bdd`). The full rule — including the portfolio-scoped
+orchestration exception that needs no `PROJECT=` — and all paths, globs, and conventions the
+prompts rely on are defined once in [project-layout.md](project-layout.md). If no `PROJECT` is
+given where one is required, the agent must ask, never guess.
 
 ## Project registry
 
@@ -21,8 +23,17 @@ prompts rely on are defined once in [project-layout.md](project-layout.md).
 | `hand-baked-screenplay-pattern` | NeoCognitus70/hand-baked-screenplay-pattern | Active | Gates: `npm run verify`; open work in `planning/` |
 | `calculator-screenplay-bdd` | NeoCognitus70/calculator-screenplay-bdd | Active | Gates: `npm run verify`; **depends on the sibling `hand-baked-screenplay-pattern` checkout** (`prepare:screenplay`) |
 | `gb.automation.smoketests.sudoku.poc` | GBrooks1970/gb.automation.smoketests.sudoku.poc | Active | Multi-stack POC with its own doc system. **Deviations:** backlog = `DOCS/.planning/backlog.md`; implementation logs = `DOCS/.implementation-logs/`; reviews = `DOCS/.review/`; in-repo templates = `DOCS/.templates/` (use these, not the portfolio `templates/`). Gates: no root `package.json` — per `ci.yml`, **three stack jobs** (demoapp001 TypeScript Cypress, demoapp002 Python Pytest, demoapp003 C# SpecFlow) plus the `.batch/*.ps1` parity scripts; run the job(s) for the stack(s) touched |
+| `portfolio-prompts` | NeoCognitus70/portfolio-prompts | Meta (self-onboarded) | The prompt library itself. **Backlog:** `portfolio-prompts/docs/backlog.md`; gates: docs-only (link/grep checks — no build). Single-project prompts (`resume-session`, `derive-worklist`, `loop-worklist`, `write-implementation-log`, `write-code-review`) may target `PROJECT=portfolio-prompts`. **Not a target of the orchestration fan-outs** (`derive-all-worklists`, `loop-all-worklists`, `review-all-projects`) — those operate on the test-automation projects, not the library. |
 
 ## Prompts
+
+**Typical lifecycle** (single project):
+`resume-session` -> `derive-worklist` -> `loop-worklist` -> `write-implementation-log` ->
+`write-code-review` -> `write-handover` -> `close-project`.
+The three `*-all-*` orchestrators (`derive-all-worklists`, `loop-all-worklists`,
+`review-all-projects`) fan the corresponding single-project step across the whole registry in one
+pass. `github-repo-analysis-prompt.md` sits outside this lifecycle (general-purpose, not
+registry-bound — see below).
 
 | Prompt | When to use | What it does |
 |---|---|---|

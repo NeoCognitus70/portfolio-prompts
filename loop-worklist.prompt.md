@@ -57,10 +57,9 @@ small, reviewable, per-item commits are the point.
    done or closed (note each drop in this iteration's report rather than silently omitting it),
    and where the two disagree on priority, the backlog's view wins.
 4. Materialise it as a checklist file — `WORKLIST_{PROJECT}.md` at the **portfolio root**, beside
-   `session-notes/` and `portfolio-prompts/` and therefore **outside the repo's git history** —
-   with one line per item: `- [ ] <id> — <one-line description> — <source ref>` plus, per item,
-   its **acceptance criteria** (what "verified" means) and whether it is **docs-only** or **code**.
-   This file is the loop's memory: every iteration reads it first and updates it last.
+   `session-notes/` and `portfolio-prompts/` and therefore **outside the repo's git history** — in
+   the **canonical worklist format** defined in `portfolio-prompts/project-layout.md` §"Worklist
+   file format". This file is the loop's memory: every iteration reads it first and updates it last.
 5. If a `WORKLIST_{PROJECT}.md` already exists, do **not** regenerate it — pick up where it stands
    (the orientation read in item 1 still applies if this session has not yet performed it).
 
@@ -100,15 +99,11 @@ small, reviewable, per-item commits are the point.
 
 ## Step 3 — Validate (mechanical gates)
 
-Resolve the project's gates per `portfolio-prompts/project-layout.md` — first hit wins: a `Gates`
-section in `{PROJECT}/docs/project-contract.md`; else gates recorded in the project's registry row
-(e.g. per-`ci.yml` jobs for the stack(s) touched); else `npm run verify` if the project defines it
-at the root; else stack defaults run inside the touched stack's directory (`npx tsc --noEmit` for
-TypeScript, plus
-`npx cucumber-js --profile default --dry-run` where the project uses the cucumber-js runner — a
-`cucumber.js` config exists; a `features/` folder alone does not imply it, and playwright-bdd
-projects validate step binding via `bddgen` instead); else ask. Run
-every gate that applies to what you touched; all must pass before commit. In addition:
+Resolve the project's gates per `portfolio-prompts/project-layout.md` §"Validation gates" — the
+canonical first-hit-wins cascade lives there in full (project-contract `Gates` -> registry-row
+gates -> root `npm run verify` -> stack defaults run inside the touched stack's directory -> ask;
+it also carries the cucumber-js vs playwright-bdd nuance). Run every gate that applies to what you
+touched; all must pass before commit. In addition:
 
 - Suite, where feasible: run the narrowest set that exercises the change (a single feature, tag,
   or test file locally if the runtime is available; otherwise rely on CI and say so). Do not start

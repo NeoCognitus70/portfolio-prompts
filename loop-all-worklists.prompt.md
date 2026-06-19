@@ -45,8 +45,10 @@ project first, consumer second). State the partition in the report before launch
 
 ## Step 3 — Fan out
 
-Launch the agents for one wave **in the same turn** (parallel). Each sub-agent's prompt must be
-self-contained:
+Launch the agents for one wave **in the same turn** (parallel). **Launch-count check:** agents
+launched this wave must equal the wave's targets, **including the one sequential agent for any
+coupled pair** (the count that has been missed before) — confirm explicitly before proceeding.
+Each sub-agent's prompt must be self-contained:
 
 ```text
 Working directory: <absolute path of the portfolio root>
@@ -100,11 +102,12 @@ Close with the cross-portfolio view:
 
 ## Rules
 
-- en-GB spelling. In fan-out mode you write **no files** and make **no repo changes** — only
-  sub-agents write, each inside its own project repo and its own `WORKLIST_{PROJECT}.md` (in the
-  sequential fallback those writes are yours, project by project).
-- One agent per project per wave; coupled projects share one sequential agent. Never two agents
-  on the same project or the same working tree.
-- Sub-agents never merge PRs, never push to `main`, never delete branches.
-- Do not re-launch a failed agent more than once, and never re-launch one that may have left a
-  dirty tree without reporting the state first.
+- Follow the **shared orchestration conventions** in `portfolio-prompts/project-layout.md`
+  §"Orchestration fan-out" (no `PROJECT=` for the orchestrator; one agent per project, coupled
+  projects share one sequential agent, never two on the same tree; launch-count check; unattended;
+  sequential fallback; re-run a failed agent at most once; relay faithfully).
+- **Mode-specific (mutating):** in fan-out mode you write **no files** and make **no repo
+  changes** — only sub-agents write, each inside its own project repo and its own
+  `WORKLIST_{PROJECT}.md` (in the sequential fallback those writes are yours, project by project).
+  Sub-agents never merge PRs, never push to `main`, never delete branches.
+- en-GB spelling.
