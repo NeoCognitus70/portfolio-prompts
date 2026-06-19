@@ -1,6 +1,6 @@
 # portfolio-prompts — Backlog
 
-**Version:** 1 — initial backlog; onboards the prompt library to its own contract (PP-00)
+**Version:** 2 — all PP items (PP-00..PP-12) complete on branch `docs/library-improvements-pp`
 **Last Updated:** 2026-06-17
 **Based on:** Analysis of all 13 library files (chat review, 2026-06-17), focus on
 `github-repo-analysis-prompt.md`. Items carry the `PP-` prefix and mirror
@@ -115,7 +115,7 @@ the loop/resume/derive prompts have nothing to orient from.
 
 #### PP-12: Add a lifecycle diagram to README — Score: 5
 **Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-12)
 **Problem:** No "which prompt when?" ordering aid beyond the table. (The general-purpose
 analysis-prompt index entry was already added in PP-01.)
 **Success Criteria:**
@@ -138,10 +138,10 @@ but the reciprocal pointer is missing.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 5 | 4 ready, 1 complete (PP-00) |
-| LOW (0–9) | 7 | 7 ready |
-| **Total Outstanding** | **11** | (PP-02..PP-12 excl. PP-00) |
-| Resolved | 2 | PP-00, PP-01 |
+| MEDIUM (10–19) | 5 | 5 complete (PP-00, PP-03, PP-04, PP-05, PP-10) |
+| LOW (0–9) | 8 | 8 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12) |
+| **Total Outstanding** | **0** | all PP items complete 2026-06-17 |
+| Resolved | 13 | PP-00..PP-12 |
 
 ---
 

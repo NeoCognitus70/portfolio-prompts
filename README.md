@@ -27,6 +27,14 @@ given where one is required, the agent must ask, never guess.
 
 ## Prompts
 
+**Typical lifecycle** (single project):
+`resume-session` -> `derive-worklist` -> `loop-worklist` -> `write-implementation-log` ->
+`write-code-review` -> `write-handover` -> `close-project`.
+The three `*-all-*` orchestrators (`derive-all-worklists`, `loop-all-worklists`,
+`review-all-projects`) fan the corresponding single-project step across the whole registry in one
+pass. `github-repo-analysis-prompt.md` sits outside this lifecycle (general-purpose, not
+registry-bound — see below).
+
 | Prompt | When to use | What it does |
 |---|---|---|
 | [write-handover.prompt.md](write-handover.prompt.md) | End of a session | Reconciles the project's `docs/backlog.md` (source of truth), then writes the next `{PROJECT}_session-notes` handover (`.md` + generated `.html`) into `session-notes/`, superseding the previous version. |
