@@ -1,6 +1,6 @@
 # portfolio-prompts — Backlog
 
-**Version:** 2 — all PP items (PP-00..PP-12) complete on branch `docs/library-improvements-pp`
+**Version:** 2 — all PP items (PP-00..PP-12) merged to `main` via PR #12 (`85c860f`)
 **Last Updated:** 2026-06-17
 **Based on:** Analysis of all 13 library files (chat review, 2026-06-17), focus on
 `github-repo-analysis-prompt.md`. Items carry the `PP-` prefix and mirror
