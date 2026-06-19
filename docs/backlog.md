@@ -32,7 +32,7 @@ Ordered by priority score (highest first).
 
 #### PP-03: Centralise the validation-gate cascade — Score: 12
 **Score:** Security (0) + Drift (6) + Maintenance (6) = **12**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-03)
 **Problem:** The first-hit-wins gate cascade is restated near-verbatim in `loop-worklist`,
 `derive-worklist`, and `write-code-review`; `project-layout.md` already holds the canonical copy.
 A change today is a 4-file edit with drift risk.

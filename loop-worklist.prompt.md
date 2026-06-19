@@ -100,15 +100,11 @@ small, reviewable, per-item commits are the point.
 
 ## Step 3 — Validate (mechanical gates)
 
-Resolve the project's gates per `portfolio-prompts/project-layout.md` — first hit wins: a `Gates`
-section in `{PROJECT}/docs/project-contract.md`; else gates recorded in the project's registry row
-(e.g. per-`ci.yml` jobs for the stack(s) touched); else `npm run verify` if the project defines it
-at the root; else stack defaults run inside the touched stack's directory (`npx tsc --noEmit` for
-TypeScript, plus
-`npx cucumber-js --profile default --dry-run` where the project uses the cucumber-js runner — a
-`cucumber.js` config exists; a `features/` folder alone does not imply it, and playwright-bdd
-projects validate step binding via `bddgen` instead); else ask. Run
-every gate that applies to what you touched; all must pass before commit. In addition:
+Resolve the project's gates per `portfolio-prompts/project-layout.md` §"Validation gates" — the
+canonical first-hit-wins cascade lives there in full (project-contract `Gates` -> registry-row
+gates -> root `npm run verify` -> stack defaults run inside the touched stack's directory -> ask;
+it also carries the cucumber-js vs playwright-bdd nuance). Run every gate that applies to what you
+touched; all must pass before commit. In addition:
 
 - Suite, where feasible: run the narrowest set that exercises the change (a single feature, tag,
   or test file locally if the runtime is available; otherwise rely on CI and say so). Do not start
