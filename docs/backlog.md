@@ -124,7 +124,7 @@ analysis-prompt index entry was already added in PP-01.)
 
 #### PP-02: Cross-link github-repo-analysis and write-code-review — Score: 4
 **Score:** Security (0) + Drift (2) + Maintenance (2) = **4**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-02)
 **Problem:** ~70% topic overlap; the analysis prompt already points at the review prompt (PP-01),
 but the reciprocal pointer is missing.
 **Success Criteria:**

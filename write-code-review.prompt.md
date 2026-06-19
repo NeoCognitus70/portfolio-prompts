@@ -7,6 +7,12 @@ without pasting:
 It uses the
 shared code-review template and writes the finished review into the repo's `.review/` folder.
 
+Use **this** prompt for an **onboarded portfolio project** reviewed against its own
+`docs/backlog.md`, with the review committed into `.review/`. For an **external or unfamiliar
+repository** you want to understand or evaluate as a standalone report (no `PROJECT=`, not
+registry-bound), use [github-repo-analysis-prompt.md](github-repo-analysis-prompt.md) instead — the
+two overlap on architecture/SOLID/test-strategy, but that one is the external/learning read.
+
 ---
 
 You are conducting a **comprehensive code review** of the **`{PROJECT}`** portfolio project. The
