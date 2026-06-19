@@ -108,7 +108,7 @@ the loop/resume/derive prompts have nothing to orient from.
 
 #### PP-11: Add a minimal `docs/project-contract.md` example to project-layout — Score: 6
 **Score:** Security (0) + Drift (2) + Maintenance (4) = **6**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-11)
 **Success Criteria:**
 - [ ] `project-layout.md` includes a copy-pasteable `project-contract.md` skeleton with a `Gates`
       section.

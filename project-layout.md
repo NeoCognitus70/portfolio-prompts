@@ -61,6 +61,23 @@ order — first hit wins:
    `tsconfig.json` fails spuriously.
 5. Otherwise: **ask the user** what "validated" means for this project.
 
+### Project contract (optional) — `docs/project-contract.md`
+
+A project may pin its gates and norms in `docs/project-contract.md`. When present it is the
+**first-checked gate source** (above the registry row) and the home of project-specific working
+norms a successor must respect. Minimal skeleton:
+
+```text
+# Project Contract — <project name>
+
+## Gates
+npm run verify        # one command per line; all must pass before a commit is gated green
+npx tsc --noEmit
+
+## Working norms
+- <project-specific norm or gotcha, e.g. "explicit waits on JS-framework renders">
+```
+
 ## Portfolio-level conventions (outside the repos)
 
 - **Handovers:** `session-notes/{PROJECT}_session-notes_v{N}_{YYYYMMDD}T{HHMM}Z.{md,html}` —
