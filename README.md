@@ -19,7 +19,7 @@ given where one is required, the agent must ask, never guess.
 
 | `PROJECT` | GitHub | Status | Notes |
 |---|---|---|---|
-| `magento-checkout-automation` | GBrooks1970/magento-checkout-automation | Complete (2026-06-11) | Reference project; handovers at v13 |
+| `magento-checkout-automation` | GBrooks1970/magento-checkout-automation | **Closed (2026-06-19)** | Reference project; formally closed out. Terminal handover **v16 (FINAL)** in `session-notes/`. Both review cycles done; worklist archived (`WORKLIST_*.completed-*.md`). No successor session expected. |
 | `hand-baked-screenplay-pattern` | NeoCognitus70/hand-baked-screenplay-pattern | Active | Gates: `npm run verify`; open work in `planning/` |
 | `calculator-screenplay-bdd` | NeoCognitus70/calculator-screenplay-bdd | Active | Gates: `npm run verify`; **depends on the sibling `hand-baked-screenplay-pattern` checkout** (`prepare:screenplay`) |
 | `gb.automation.smoketests.sudoku.poc` | GBrooks1970/gb.automation.smoketests.sudoku.poc | Active | Multi-stack POC with its own doc system. **Deviations:** backlog = `DOCS/.planning/backlog.md`; implementation logs = `DOCS/.implementation-logs/`; reviews = `DOCS/.review/`; in-repo templates = `DOCS/.templates/` (use these, not the portfolio `templates/`). Gates: no root `package.json` — per `ci.yml`, **three stack jobs** (demoapp001 TypeScript Cypress, demoapp002 Python Pytest, demoapp003 C# SpecFlow) plus the `.batch/*.ps1` parity scripts; run the job(s) for the stack(s) touched |
