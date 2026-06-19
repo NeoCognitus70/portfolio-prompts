@@ -94,14 +94,14 @@ the loop/resume/derive prompts have nothing to orient from.
 
 #### PP-09: Add "omit section as N/A — reason" + minimal-session flex to write-handover — Score: 6
 **Score:** Security (0) + Drift (2) + Maintenance (4) = **6**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-09)
 **Success Criteria:**
 - [ ] The handover prompt permits `N/A — <reason>` for inapplicable sections without breaking the
       fixed shape.
 
 #### PP-08: Pin one HTML-generation method in write-handover — Score: 6
 **Score:** Security (0) + Drift (4) + Maintenance (2) = **6**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-08)
 **Success Criteria:**
 - [ ] The prompt names one default `.html` generation path; alternatives labelled fallbacks; the
       styling-template reuse is unambiguous.

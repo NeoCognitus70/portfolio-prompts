@@ -74,13 +74,15 @@ language: en-GB
 HTML — the same fields inside a leading `<!-- ... -->` comment block, then a styled standalone page.
 
 **Author the `.md` first; it is the single source.** Then *generate* the `.html` from it
-mechanically — use a markdown converter if one is available (`pandoc`, `npx marked`, or similar),
-or convert programmatically — rather than hand-authoring the body a second time. Reuse the prior
-version's `.html` as the styling template (same `<head>`/`<style>`); for a project's first
-handover, reuse the most recent handover `.html` of any project in the folder, or a clean minimal
-style if none exists. Only the body content and frontmatter comment change. The two files must
-carry the **same information** — if you spot an error after generating, fix the `.md` and
-regenerate; never patch the `.html` independently.
+mechanically rather than hand-authoring the body a second time. **Default method:** `npx marked`
+(render the `.md` body to HTML) dropped into the **prior version's `.html` as the styling
+template** — reuse its `<head>`/`<style>` verbatim; for a project's first handover reuse the most
+recent handover `.html` of any project in the folder, or a clean minimal style if none exists.
+Only the body content and the frontmatter comment change. **Fallbacks** if `marked` is
+unavailable: `pandoc --from gfm --to html`, or a programmatic converter — but always reuse the
+**same** styling template so the output does not drift between sessions. The two files must carry
+the **same information** — if you spot an error after generating, fix the `.md` and regenerate;
+never patch the `.html` independently.
 
 ### Structure (follow the established shape)
 1. Title: `# Session Notes — {Project Display Name} (Handover v{N+1})` — the display name as used
@@ -105,6 +107,10 @@ regenerate; never patch the `.html` independently.
   is unverified or left dirty, say so plainly; never round up.
 - Convert relative dates to absolute (today is the session date in UTC).
 - Don't duplicate settled architecture already captured in earlier handovers or ADRs — link/refer to it.
+- **Adapt the structure to the session; don't pad it.** The numbered sections above are the
+  established shape — keep their headings, but where a section genuinely does not apply this
+  session, write `N/A — <one-line reason>` rather than inventing filler. A short, honest handover
+  beats a long one.
 - Keep `.md` and `.html` in lockstep — same facts, same section numbers. The `.html` is derived
   from the `.md`; never edit it independently.
 
