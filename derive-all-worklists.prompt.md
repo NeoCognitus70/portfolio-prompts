@@ -38,6 +38,10 @@ Launch **one sub-agent per project**, all in a single turn so they run in parall
 by design: each agent writes at most one file (`WORKLIST_{PROJECT}.md`, names disjoint per
 project) and is otherwise read-only.
 
+**Launch-count check:** the number of agents you launch this turn must equal the number of projects
+in scope from Step 1 — count them off explicitly before moving on; a forgotten agent is a silent
+gap.
+
 Each sub-agent's prompt must be **self-contained** (sub-agents start with no conversation
 context). Use this template, filling both placeholders:
 

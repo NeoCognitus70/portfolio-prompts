@@ -69,7 +69,7 @@ the loop/resume/derive prompts have nothing to orient from.
 
 #### PP-10: Add a launch-count self-check guard to the three orchestrators — Score: 10
 **Score:** Security (0) + Drift (7, a real miss occurred) + Maintenance (3) = **10**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-10)
 **Problem:** The "launch all agents in one turn" rule is fragile — a real run forgot the 3rd
 (sequential) agent and had to relaunch it.
 **Success Criteria:**

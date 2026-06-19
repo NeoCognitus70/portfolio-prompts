@@ -50,7 +50,9 @@ in the report.
 
 ## Step 3 — Fan out (one sub-agent per project, all in the same turn)
 
-Launch **one sub-agent per project**, all in a single turn so they run in parallel. Each
+Launch **one sub-agent per project**, all in a single turn so they run in parallel. **Launch-count
+check:** agents launched must equal the projects in scope from Step 1 (including any sequential
+coupled agent) — confirm explicitly before proceeding; a forgotten agent is a silent gap. Each
 sub-agent's prompt must be **self-contained** (sub-agents start with no conversation context). Use
 this template, filling both placeholders:
 

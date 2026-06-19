@@ -45,8 +45,10 @@ project first, consumer second). State the partition in the report before launch
 
 ## Step 3 — Fan out
 
-Launch the agents for one wave **in the same turn** (parallel). Each sub-agent's prompt must be
-self-contained:
+Launch the agents for one wave **in the same turn** (parallel). **Launch-count check:** agents
+launched this wave must equal the wave's targets, **including the one sequential agent for any
+coupled pair** (the count that has been missed before) — confirm explicitly before proceeding.
+Each sub-agent's prompt must be self-contained:
 
 ```text
 Working directory: <absolute path of the portfolio root>
