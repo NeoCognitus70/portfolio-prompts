@@ -74,6 +74,35 @@ order — first hit wins:
   (backlog, implementation log, code review, ADR, etc.).
 - **Prompts:** this folder (`portfolio-prompts/`), its own git repository.
 
+### Worklist file format (canonical)
+
+`WORKLIST_{PROJECT}.md` is the loop's memory: `derive-worklist` writes it, and `loop-worklist`
+reads it first and updates it last each iteration. It lives at the portfolio root (untracked,
+outside the repos) — one worklist per project; a `/loop` binds to exactly one. Both prompts use
+**exactly** this format — cite this section rather than restating it:
+
+- A short **header** naming the project, the derivation source(s) (review version, backlog
+  version, or a given `WORKLIST`), and the date — so a later session can judge staleness.
+- **One line per item**, in execution order (severity/priority first, then dependency ordering —
+  an item that unblocks another precedes it):
+  `- [ ] <id> — <one-line description> — <source ref>`
+- Beneath each item line: its **acceptance criteria** (what "verified" means) and whether it is
+  **docs-only** or **code**.
+- The loop checks an item off as `- [x]` with its commit hash and a one-line outcome; an item it
+  cannot complete is marked `BLOCKED (reason)`.
+
+Minimal example:
+
+```text
+# Worklist — example-project
+**Project:** example-project  **Derived:** 2026-06-17  **Source:** code review v2 (HIGH -> LOW)
+
+- [ ] EX-01 — Scope the decline-message selector to the checkout messages region — review R-05 (HIGH)
+  - Acceptance: the selector matches only within the messages region; targeted run green. **Code.**
+- [ ] EX-02 — Correct the README smoke-count claim to match the dry-run — review R-07 (LOW)
+  - Acceptance: README count equals `--profile smoke --dry-run`; no other doc states the old count. **Docs-only.**
+```
+
 ## Working norms (universal)
 
 - **All changes to a project's `main` go via branch + PR** — the harness blocks direct pushes,

@@ -57,10 +57,9 @@ small, reviewable, per-item commits are the point.
    done or closed (note each drop in this iteration's report rather than silently omitting it),
    and where the two disagree on priority, the backlog's view wins.
 4. Materialise it as a checklist file — `WORKLIST_{PROJECT}.md` at the **portfolio root**, beside
-   `session-notes/` and `portfolio-prompts/` and therefore **outside the repo's git history** —
-   with one line per item: `- [ ] <id> — <one-line description> — <source ref>` plus, per item,
-   its **acceptance criteria** (what "verified" means) and whether it is **docs-only** or **code**.
-   This file is the loop's memory: every iteration reads it first and updates it last.
+   `session-notes/` and `portfolio-prompts/` and therefore **outside the repo's git history** — in
+   the **canonical worklist format** defined in `portfolio-prompts/project-layout.md` §"Worklist
+   file format". This file is the loop's memory: every iteration reads it first and updates it last.
 5. If a `WORKLIST_{PROJECT}.md` already exists, do **not** regenerate it — pick up where it stands
    (the orientation read in item 1 still applies if this session has not yet performed it).
 

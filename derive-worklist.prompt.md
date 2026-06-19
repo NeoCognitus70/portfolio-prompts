@@ -77,16 +77,10 @@ make sense together.
 ## Step 3 — Materialise `WORKLIST_{PROJECT}.md`
 
 Write the file at the **portfolio root** (beside `session-notes/` and `portfolio-prompts/`,
-therefore outside the repo's git history), in **exactly the format `loop-worklist.prompt.md`
-Step 0.4 expects** — the loop must be able to pick it up unchanged:
-
-- One line per item: `- [ ] <id> — <one-line description> — <source ref>`
-- Per item, beneath its line: its **acceptance criteria** (what "verified" means) and whether it
-  is **docs-only** or **code**.
-- Items in execution order (severity/priority first, then any dependency ordering — an item that
-  unblocks another precedes it).
-- A short header naming the project, the derivation source(s) (review version, backlog version,
-  or the given `WORKLIST`), and the date — so a later session can judge staleness.
+therefore outside the repo's git history), in the **canonical worklist format** defined in
+`portfolio-prompts/project-layout.md` §"Worklist file format" (header naming project / source(s) /
+date; one `- [ ] <id> — <description> — <source ref>` line per item, in execution order; acceptance
+criteria + docs-only/code beneath each) — the loop must be able to pick it up unchanged.
 
 Do not commit this file anywhere; it is untracked loop memory.
 

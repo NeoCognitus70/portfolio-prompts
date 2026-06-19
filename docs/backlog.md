@@ -42,7 +42,7 @@ A change today is a 4-file edit with drift risk.
 
 #### PP-04: Centralise the WORKLIST file-format spec + worked example — Score: 12
 **Score:** Security (0) + Drift (6) + Maintenance (6) = **12**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-04)
 **Problem:** The `- [ ]` item-line format + acceptance-criteria convention is restated in
 `derive-worklist`, `loop-worklist`, and both `*-all-worklists` orchestrators, with no canonical
 example to lock the shape.
