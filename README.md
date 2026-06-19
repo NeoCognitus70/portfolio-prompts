@@ -9,9 +9,11 @@ polluting any project's history.
 ## The `PROJECT` parameter
 
 Every prompt is invoked against **one project**, named as `PROJECT=<folder name>` from the
-registry below (state it in the first line you paste, e.g. `PROJECT=calculator-screenplay-bdd`).
-If no `PROJECT` is given, the agent must ask, never guess. Paths, globs, and conventions the
-prompts rely on are defined once in [project-layout.md](project-layout.md).
+[registry below](#project-registry) (state it in the first line you paste, e.g.
+`PROJECT=calculator-screenplay-bdd`). The full rule — including the portfolio-scoped
+orchestration exception that needs no `PROJECT=` — and all paths, globs, and conventions the
+prompts rely on are defined once in [project-layout.md](project-layout.md). If no `PROJECT` is
+given where one is required, the agent must ask, never guess.
 
 ## Project registry
 

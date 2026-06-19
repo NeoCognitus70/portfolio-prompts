@@ -80,7 +80,7 @@ the loop/resume/derive prompts have nothing to orient from.
 
 #### PP-06: De-duplicate the `PROJECT=` rules between README and project-layout — Score: 9
 **Score:** Security (0) + Drift (5) + Maintenance (4) = **9**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-06)
 **Success Criteria:**
 - [ ] The `PROJECT=` rule text exists in full in one file; the other links to it; the README
       registry table is unchanged.
