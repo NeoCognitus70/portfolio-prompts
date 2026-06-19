@@ -87,7 +87,7 @@ the loop/resume/derive prompts have nothing to orient from.
 
 #### PP-07: Add a dependency/security/licence deliverable to write-code-review — Score: 7
 **Score:** Security (0) + Drift (3) + Maintenance (4) = **7**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-07)
 **Success Criteria:**
 - [ ] The review prompt names a dependency/security/licence deliverable with the
       "audit-if-available, never fabricate a CVE" caveat.

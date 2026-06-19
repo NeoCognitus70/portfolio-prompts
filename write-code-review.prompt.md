@@ -158,6 +158,11 @@ The review must include, at minimum:
 - A CI assessment covering workflow correctness, caching/image strategy, secrets, published
   artefacts, and local reproducibility.
 - Documentation alignment against `docs/backlog.md`.
+- A dependency, security, and licence pass: lockfile freshness and any outdated or abandoned
+  dependencies; an audit (`npm audit` or the stack equivalent) **if the toolchain is available** -
+  otherwise inspect versions manually and state that the audit was not run; secrets committed to
+  the tree and any unsafe-input / injection surfaces; and the declared licence (or its absence).
+  Report with file:line; never fabricate a CVE.
 - Architecture assessment against Test Pyramid, SOLID, KISS, YAGNI, REST/OpenAPI (where APIs are
   involved), ISTQB strategies, and pedagogical value.
 
