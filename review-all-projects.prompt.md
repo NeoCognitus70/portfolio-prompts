@@ -103,10 +103,12 @@ When all agents return, produce one report:
 
 ## Rules
 
-- en-GB spelling. You write **no files** and make **no repo changes** — only sub-agents write, each
-  into its own project's review folder, committed on its own branch (in the sequential fallback,
-  those reviews and commits are yours, project by project).
-- One sub-agent per project; never two agents on the same project or the same working tree.
-- Sub-agents make no implementation changes, never merge PRs, never push to `main`.
-- Relay findings faithfully — a review that reports problems appears in the summary unsoftened; a
-  failed or skipped validation is stated, not rounded up.
+- Follow the **shared orchestration conventions** in `portfolio-prompts/project-layout.md`
+  §"Orchestration fan-out" (no `PROJECT=` for the orchestrator; one agent per project, never two on
+  the same tree; launch-count check; unattended; sequential fallback; re-run a failed agent at most
+  once; relay faithfully).
+- **Mode-specific (evidence-only):** you write **no files** and make **no repo changes** — only
+  sub-agents write, each into its own project's review folder, committed on its own branch (in the
+  sequential fallback those reviews and commits are yours, project by project). Sub-agents make no
+  implementation changes, never merge PRs, never push to `main`.
+- en-GB spelling.

@@ -84,9 +84,11 @@ Close with the cross-portfolio view:
 
 ## Rules
 
-- en-GB spelling. In fan-out mode you write **no files** and make **no project changes** — only
-  sub-agents write, and only their own `WORKLIST_{PROJECT}.md` (in the sequential fallback, you
-  write exactly those files yourself, nothing else).
-- One sub-agent per project; never two agents on the same project in one run.
-- Relay agent findings faithfully — if an agent reports a mismatch or a failure, it appears in
-  the collated report; never round up to "all fine".
+- Follow the **shared orchestration conventions** in `portfolio-prompts/project-layout.md`
+  §"Orchestration fan-out" (no `PROJECT=` for the orchestrator; one agent per project, never two on
+  the same tree; launch-count check; unattended; sequential fallback; re-run a failed agent at most
+  once; relay faithfully).
+- **Mode-specific (no-actioning):** in fan-out mode you write **no files** and make **no project
+  changes** — only sub-agents write, and only their own `WORKLIST_{PROJECT}.md` (in the sequential
+  fallback you write exactly those files yourself, nothing else).
+- en-GB spelling.

@@ -52,7 +52,7 @@ example to lock the shape.
 
 #### PP-05: Extract the shared orchestrator sub-agent scaffold — Score: 12
 **Score:** Security (0) + Drift (6) + Maintenance (6) = **12**
-**Status:** READY TO START
+**Status:** COMPLETE (PP-05)
 **Problem:** `derive-all-worklists`, `loop-all-worklists`, and `review-all-projects` each carry a
 long, near-identical self-contained sub-agent template + unattended-mode rules.
 **Success Criteria:**

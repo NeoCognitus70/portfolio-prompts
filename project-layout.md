@@ -103,6 +103,35 @@ Minimal example:
   - Acceptance: README count equals `--profile smoke --dry-run`; no other doc states the old count. **Docs-only.**
 ```
 
+### Orchestration fan-out (shared conventions)
+
+The portfolio-scoped orchestrators (`derive-all-worklists`, `loop-all-worklists`,
+`review-all-projects`) all fan out one sub-agent per target project and collate a report. These
+conventions are common to all three — each orchestrator cites this section and adds only its
+**mode-specific deltas** (no-actioning / mutating / evidence-only):
+
+- **No `PROJECT=` for the orchestrator** (it targets the registry); every sub-agent it launches
+  receives a single `PROJECT=` and is bound by this contract as normal.
+- **Self-contained sub-agent prompts.** Sub-agents start with no conversation context — each
+  launch prompt must carry everything the sub-agent needs (working directory, the `Read and
+  follow ... using PROJECT=<folder>` line, and the mode-specific rules), not rely on context.
+- **One sub-agent per project; never two agents on the same project or the same working tree.**
+  Coupled projects (per the registry coupling notes) share **one sequential agent** that works
+  them in dependency order (provider/library first, consumer second).
+- **Launch a wave's agents in the same turn** (parallel). After partitioning, confirm the count:
+  the number of agents launched must equal the number of targets (including any sequential
+  coupled agent) — a missing agent is a silent gap.
+- **Unattended:** wherever a sub-prompt says to ask the user, the sub-agent must **not wait** —
+  record the question and proceed or stop per its own mode, carrying the question into its report.
+- **The sub-agent's final message is the only thing returned to the orchestrator** — it must be
+  the sub-prompt's reporting block (or stop report) in full.
+- **Sequential fallback:** if the environment cannot launch sub-agents, run the sub-prompt for each
+  project **sequentially yourself**, in registry/dependency order — the per-project writes then
+  become yours. Do not silently skip projects.
+- **Re-run a failed agent at most once**, and never re-launch one that may have left a dirty tree
+  without reporting the state first. **Relay findings faithfully** — never round up a reported
+  problem, skipped validation, or failure to "all fine".
+
 ## Working norms (universal)
 
 - **All changes to a project's `main` go via branch + PR** — the harness blocks direct pushes,
