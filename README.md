@@ -37,6 +37,12 @@ prompts rely on are defined once in [project-layout.md](project-layout.md).
 | [loop-all-worklists.prompt.md](loop-all-worklists.prompt.md) | Actioning all prepared worklists at once | Orchestration fan-out that **mutates**: one sub-agent per project with unchecked worklist items, each executing loop-worklist iterations consecutively (commit + PR per its rules, never merging); coupled projects (e.g. calculator → hand-baked sibling build) share one sequential agent; collated report of commits, PRs, and blocked questions. |
 | [close-project.prompt.md](close-project.prompt.md) | Final session of a project | Verifies every public-facing claim the README makes, reconciles the backlog one last time, retires `WORKLIST_{PROJECT}.md`, and writes a terminal handover marked FINAL. |
 
+### General-purpose (not registry-bound)
+
+| Prompt | When to use | What it does |
+|---|---|---|
+| [github-repo-analysis-prompt.md](github-repo-analysis-prompt.md) | Understanding or evaluating **any** repository (typically one outside this portfolio) | Standalone, evidence-based, pedagogical technical report on a repo by URL or path: purpose, architecture, data flow, SOLID, an ISTQB-aligned test-strategy review, a dependency/security/licence pass, risks, and an improvement roadmap. Takes **no `PROJECT=`** and is not bound to the registry. Depth-controlled (`summary`/`standard`/`deep-dive`). For an *onboarded* portfolio project reviewed against its own backlog into `.review/`, use `write-code-review.prompt.md` instead. |
+
 **Conventions the prompts rely on** (full detail in [project-layout.md](project-layout.md)):
 - Source of truth: `{PROJECT}/docs/backlog.md`.
 - Handovers live in `../session-notes/` (outside the repos, untracked), named
@@ -58,7 +64,11 @@ Two equivalent forms (both require `PROJECT=` — without it the agent stops and
    The agent reads the file and follows the body below the `---` divider; the header above the
    divider is guidance for humans, not part of the instructions.
 
-**Exception:** `loop-worklist.prompt.md` is driven via the `/loop` command, not a plain message.
+**Exceptions:** `loop-worklist.prompt.md` is driven via the `/loop` command, not a plain message.
+The portfolio-scoped orchestrators (`derive-all-worklists`, `loop-all-worklists`,
+`review-all-projects`) and the general-purpose `github-repo-analysis-prompt.md` take **no
+`PROJECT=`** — the orchestrators target the whole registry, and the analysis prompt targets an
+arbitrary repo supplied by URL or path.
 
 One example per prompt:
 
@@ -82,6 +92,8 @@ Read and follow portfolio-prompts\review-all-projects.prompt.md
 /loop Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
 Read and follow portfolio-prompts\close-project.prompt.md using PROJECT=magento-checkout-automation
+
+Read and follow portfolio-prompts\github-repo-analysis-prompt.md
 ```
 
 (Optional parameters ride the same line, e.g.
