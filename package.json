@@ -1,0 +1,12 @@
+{
+  "name": "portfolio-prompts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reusable session-prompt library for the test-automation-portfolio.",
+  "scripts": {
+    "handover:html": "marked"
+  },
+  "devDependencies": {
+    "marked": "^15.0.0"
+  }
+}
