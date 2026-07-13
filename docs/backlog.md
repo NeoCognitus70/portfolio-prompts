@@ -237,11 +237,13 @@ PRs, CI colour, backlog counts) without mutating anything.
 
 #### PP-18: Make invocation paths OS-neutral — Score: 6
 **Score:** Security (0) + Drift (3) + Maintenance (3) = **6**
-**Status:** OPEN
+**Status:** RESOLVED 2026-07-13 — all active README, prompt-header, and orchestrator launch examples
+now use forward slashes. `check-library.py` prevents Windows-only invocation paths returning to
+operational documentation while historical review/backlog evidence remains intact.
 **Problem (review weakness #3):** Every invocation example uses Windows backslashes
 (`portfolio-prompts\name.prompt.md`), a friction for cross-platform reuse and skill packaging.
 **Success Criteria:**
-- [ ] Examples use forward slashes (valid on Windows too), or note both; no behaviour change.
+- [x] Examples use forward slashes (valid on Windows too), or note both; no behaviour change.
 
 #### PP-19: Add a human "reader's map" to the README — Score: 5
 **Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
@@ -322,9 +324,9 @@ but the reciprocal pointer is missing.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 9 | **9 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16) — 0 open |
-| LOW (0–9) | 16 | 11 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17, PP-23, PP-24) + **5 open** (PP-18..PP-22) |
-| **Total Outstanding** | **5** | PP-18..PP-22 — all LOW polish |
-| Resolved | 20 | PP-00..PP-17, PP-23, PP-24 |
+| LOW (0–9) | 16 | 12 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17, PP-18, PP-23, PP-24) + **4 open** (PP-19..PP-22) |
+| **Total Outstanding** | **4** | PP-19..PP-22 — all LOW polish |
+| Resolved | 21 | PP-00..PP-18, PP-23, PP-24 |
 
 **Outstanding, by suggested order:** PP-13 (keystone — structured registry) -> PP-14, PP-15, PP-16
 (cheap high-value follow-ons) -> PP-23, PP-24 (registry-dependent) -> PP-17..PP-22 (new prompts /

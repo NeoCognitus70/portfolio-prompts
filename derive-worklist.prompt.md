@@ -3,7 +3,7 @@
 Paste the text below to the agent when you want the worklist **prepared and reviewed before any
 work starts**, prefixed with `PROJECT=<project folder name>` (see the README registry) — or
 invoke it without pasting:
-`Read and follow portfolio-prompts\derive-worklist.prompt.md using PROJECT=<folder>`.
+`Read and follow portfolio-prompts/derive-worklist.prompt.md using PROJECT=<folder>`.
 It
 performs the same orientation and derivation as `loop-worklist.prompt.md` Step 0, materialises
 `WORKLIST_{PROJECT}.md` at the portfolio root in exactly the format the loop consumes, and then
@@ -18,7 +18,7 @@ Typical flow:
 ```text
 1. Paste this prompt            → WORKLIST_{PROJECT}.md written + detailed breakdown in chat
 2. Review/adjust the items      → edit the file or tell the agent what to change
-3. /loop Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=<folder>
+3. /loop Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<folder>
                                 → the loop picks the file up and works through it
 ```
 

@@ -7,8 +7,8 @@ descriptive message.
 Invocation examples:
 
 ```text
-/loop Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=<folder>
-/loop 10m Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=<folder> WORKLIST=<path-or-description>
+/loop Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<folder>
+/loop 10m Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<folder> WORKLIST=<path-or-description>
 ```
 
 `PROJECT` is the project folder name at the portfolio root (see the README registry) — if the

@@ -13,7 +13,8 @@ Checks:
   3. Internal links     — every relative Markdown link in the library's own docs resolves.
   4. Working norms      — the universal branch/PR policy is defined once in project-layout.md and
                           is not restated in operational prompts or skill bodies.
-  5. Worklist example   — the canonical example in project-layout.md parses as the documented format.
+  5. Invocation paths   — active invocation examples use OS-neutral forward slashes.
+  6. Worklist example   — the canonical example in project-layout.md parses as the documented format.
 
 Usage (from the portfolio-prompts/ directory):
     python tools/check-library.py            # exit 0 if all checks pass, 1 otherwise
@@ -160,6 +161,20 @@ def check_working_norms(fails: list[str]) -> None:
             )
 
 
+def check_invocation_paths(fails: list[str]) -> None:
+    operational = [HERE / "README.md", HERE / "skills" / "README.md"]
+    operational += sorted(HERE.glob("*.prompt.md"))
+    operational += sorted((HERE / "skills").glob("*/SKILL.md"))
+    for doc in operational:
+        if not doc.exists():
+            continue
+        if "portfolio-prompts\\" in doc.read_text(encoding="utf-8"):
+            fails.append(
+                f"[invocation-paths] {doc.relative_to(HERE)} uses a Windows-only "
+                "'portfolio-prompts\\\\' invocation; use forward slashes"
+            )
+
+
 def check_worklist_example(fails: list[str]) -> None:
     text = (HERE / "project-layout.md").read_text(encoding="utf-8")
     blocks = re.findall(r"```text\n(.*?)```", text, re.DOTALL)
@@ -180,6 +195,7 @@ def main() -> int:
         check_internal_links,
         check_skills,
         check_working_norms,
+        check_invocation_paths,
         check_worklist_example,
     ):
         check(fails)
@@ -189,7 +205,7 @@ def main() -> int:
             print("  - " + f)
         return 1
     print("check-library: PASS (registry folders, README generated, internal links, skills, "
-          "working norms, worklist example)")
+          "working norms, invocation paths, worklist example)")
     return 0
 
 

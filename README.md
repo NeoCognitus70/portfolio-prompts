@@ -82,7 +82,7 @@ Two equivalent forms (both require `PROJECT=` — without it the agent stops and
 1. **Paste:** open the `.prompt.md`, copy the text below its `---` divider, prepend
    `PROJECT=<folder>`, and paste it to the agent.
 2. **Read and follow:** point the agent at the file in a single chat message —
-   `Read and follow portfolio-prompts\<name>.prompt.md using PROJECT=<folder>`.
+   `Read and follow portfolio-prompts/<name>.prompt.md using PROJECT=<folder>`.
    The agent reads the file and follows the body below the `---` divider; the header above the
    divider is guidance for humans, not part of the instructions.
 
@@ -95,27 +95,27 @@ arbitrary repo supplied by URL or path.
 One example per prompt:
 
 ```text
-Read and follow portfolio-prompts\resume-session.prompt.md using PROJECT=calculator-screenplay-bdd
+Read and follow portfolio-prompts/resume-session.prompt.md using PROJECT=calculator-screenplay-bdd
 
-Read and follow portfolio-prompts\write-handover.prompt.md using PROJECT=hand-baked-screenplay-pattern
+Read and follow portfolio-prompts/write-handover.prompt.md using PROJECT=hand-baked-screenplay-pattern
 
-Read and follow portfolio-prompts\write-implementation-log.prompt.md using PROJECT=magento-checkout-automation
+Read and follow portfolio-prompts/write-implementation-log.prompt.md using PROJECT=magento-checkout-automation
 
-Read and follow portfolio-prompts\write-code-review.prompt.md using PROJECT=gb.automation.smoketests.sudoku.poc
+Read and follow portfolio-prompts/write-code-review.prompt.md using PROJECT=gb.automation.smoketests.sudoku.poc
 
-Read and follow portfolio-prompts\derive-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
+Read and follow portfolio-prompts/derive-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
-Read and follow portfolio-prompts\derive-all-worklists.prompt.md
+Read and follow portfolio-prompts/derive-all-worklists.prompt.md
 
-Read and follow portfolio-prompts\loop-all-worklists.prompt.md
+Read and follow portfolio-prompts/loop-all-worklists.prompt.md
 
-Read and follow portfolio-prompts\review-all-projects.prompt.md
+Read and follow portfolio-prompts/review-all-projects.prompt.md
 
-/loop Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
+/loop Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
-Read and follow portfolio-prompts\close-project.prompt.md using PROJECT=magento-checkout-automation
+Read and follow portfolio-prompts/close-project.prompt.md using PROJECT=magento-checkout-automation
 
-Read and follow portfolio-prompts\github-repo-analysis-prompt.md
+Read and follow portfolio-prompts/github-repo-analysis-prompt.md
 ```
 
 (Optional parameters ride the same line, e.g.

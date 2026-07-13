@@ -2,7 +2,7 @@
 
 Paste the text below to the agent when you want **worklists prepared across the portfolio in one
 pass** — or invoke it without pasting:
-`Read and follow portfolio-prompts\derive-all-worklists.prompt.md`.
+`Read and follow portfolio-prompts/derive-all-worklists.prompt.md`.
 It launches one sub-agent per project, each following `derive-worklist.prompt.md` for its project
 in parallel, then collates every detailed breakdown into a single report. **Nothing is actioned**
 — the same no-actioning rule applies as in the single-project prompt.
@@ -47,7 +47,7 @@ context). Use this template, filling both placeholders:
 
 ```text
 Working directory: <absolute path of the portfolio root>
-Read and follow portfolio-prompts\derive-worklist.prompt.md using PROJECT=<project folder name>
+Read and follow portfolio-prompts/derive-worklist.prompt.md using PROJECT=<project folder name>
 Follow it exactly, including the Step 0 guard (never overwrite an existing
 WORKLIST_{PROJECT}.md) and the no-actioning rule (read-only in the project
 repo; the only file you may write is WORKLIST_{PROJECT}.md at the portfolio
