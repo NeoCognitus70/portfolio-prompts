@@ -14,6 +14,7 @@ so the prompt is the single source of truth and the skill just adds triggering +
 | `loop-worklist` | `loop-worklist.prompt.md` | `<project>` | Execute a worklist (mutating; `/loop`) |
 | `write-implementation-log` | `write-implementation-log.prompt.md` | `<project>` | After a dev task |
 | `write-code-review` | `write-code-review.prompt.md` | `<project>` | Review an onboarded project |
+| `triage-review-findings` | `triage-review-findings.prompt.md` | `<project> REVIEW=<path>` | Review findings → approved worklist; no actioning |
 | `write-handover` | `write-handover.prompt.md` | `<project>` | End of a session |
 | `close-project` | `close-project.prompt.md` | `<project>` | Final session |
 | `derive-all-worklists` | `derive-all-worklists.prompt.md` | — | Fan-out, no actioning |

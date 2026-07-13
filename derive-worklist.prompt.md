@@ -13,6 +13,10 @@ starting the loop.
 Optionally append `WORKLIST=<path-or-description>` to name the source (a file, a review section,
 or a described set of steps) instead of letting the agent derive one.
 
+For a **named code review** whose findings need explicit deduplication, backlog cross-checking, and
+user approval before a worklist is written, use
+[`triage-review-findings.prompt.md`](triage-review-findings.prompt.md) instead.
+
 Typical flow:
 
 ```text

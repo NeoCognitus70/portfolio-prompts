@@ -261,11 +261,14 @@ separate from the machine conventions.
 
 #### PP-22: Add a `triage-review-findings` prompt — Score: 5
 **Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
-**Status:** OPEN
+**Status:** RESOLVED 2026-07-13 — added a named-review, two-phase prompt and thin plugin skill. It
+normalises, deduplicates, backlog-checks, and prioritises findings in chat, then stops for explicit
+user approval before writing the canonical portfolio-root worklist; it never actions or changes the
+project repository. `derive-worklist` links to this explicit review-triage route.
 **Problem:** The bridge from a `write-code-review` output to a derived worklist is folded into
 `derive-worklist` today; an explicit triage step would make the review -> worklist hand-off legible.
 **Success Criteria:**
-- [ ] A prompt (or a documented `derive-worklist` mode) that reads a named review and emits a
+- [x] A prompt (or a documented `derive-worklist` mode) that reads a named review and emits a
       prioritised, deduplicated candidate worklist for the user to approve.
 
 #### PP-06: De-duplicate the `PROJECT=` rules between README and project-layout — Score: 9
@@ -329,13 +332,11 @@ but the reciprocal pointer is missing.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 9 | **9 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16) — 0 open |
-| LOW (0–9) | 16 | 14 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-19, PP-21, PP-23, PP-24) + **2 open** (PP-20, PP-22) |
-| **Total Outstanding** | **2** | PP-20 and PP-22 — both LOW additions |
-| Resolved | 23 | PP-00..PP-19, PP-21, PP-23, PP-24 |
+| LOW (0–9) | 16 | 15 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-19, PP-21..PP-24) + **1 open** (PP-20) |
+| **Total Outstanding** | **1** | PP-20 — LOW addition |
+| Resolved | 24 | PP-00..PP-19, PP-21..PP-24 |
 
-**Outstanding, by suggested order:** PP-20 (`onboard-project`) -> PP-22
-(`triage-review-findings`). Both are independent LOW additions; PP-20 has the highest maintenance
-value because it replaces today's ad-hoc onboarding process.
+**Outstanding, by suggested order:** PP-20 (`onboard-project`).
 
 ---
 
