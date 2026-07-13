@@ -6,6 +6,15 @@ This folder lives at the portfolio root, **outside** the individual project repo
 as its **own git repository** (`portfolio-prompts`) — the prompt library has history without
 polluting any project's history.
 
+## Start here
+
+As a human reader, start with the [prompt lifecycle and table](#prompts), choose the workflow that
+matches your job, then use its example under [Invocation](#invocation); if you installed the plugin,
+use the [skills entry points](#use-as-a-claude-code-plugin-skills) instead. The machine and maintainer
+contract is separate: [project-layout.md](project-layout.md) defines paths, gates, worklists, and
+working norms, while [`registry.yml`](registry.yml) is the source tooling loads — you do not need to
+absorb either before choosing and running a prompt.
+
 ## The `PROJECT` parameter
 
 Every prompt is invoked against **one project**, named as `PROJECT=<folder name>` from the

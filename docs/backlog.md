@@ -1,6 +1,6 @@
 # portfolio-prompts — Backlog
 
-**Version:** 3 — PP-13..PP-24 added from the 2026-07-13 library review (PP-00..PP-12 remain merged via PR #12, `85c860f`)
+**Version:** 4 — PP-17..PP-19 documentation-polish tranche resolved; PP-20..PP-22 remain open
 **Last Updated:** 2026-07-13
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
@@ -247,11 +247,13 @@ operational documentation while historical review/backlog evidence remains intac
 
 #### PP-19: Add a human "reader's map" to the README — Score: 5
 **Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
-**Status:** OPEN
+**Status:** RESOLVED 2026-07-13 — README now gives first-time human readers a short route through
+the lifecycle/table and invocation examples, points plugin users to skills, and separates that
+reading path from the `project-layout.md`/`registry.yml` machine contract.
 **Problem (review weakness #5):** The prompts are dense; a newcomer has no short orientation
 separate from the machine conventions.
 **Success Criteria:**
-- [ ] A one-paragraph "start here" map in the README distinguishing the human reading path from the
+- [x] A one-paragraph "start here" map in the README distinguishing the human reading path from the
       machine conventions in `project-layout.md`.
 
 #### PP-22: Add a `triage-review-findings` prompt — Score: 5
@@ -324,13 +326,13 @@ but the reciprocal pointer is missing.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 9 | **9 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16) — 0 open |
-| LOW (0–9) | 16 | 12 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17, PP-18, PP-23, PP-24) + **4 open** (PP-19..PP-22) |
-| **Total Outstanding** | **4** | PP-19..PP-22 — all LOW polish |
-| Resolved | 21 | PP-00..PP-18, PP-23, PP-24 |
+| LOW (0–9) | 16 | 13 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-19, PP-23, PP-24) + **3 open** (PP-20..PP-22) |
+| **Total Outstanding** | **3** | PP-20..PP-22 — all LOW additions |
+| Resolved | 22 | PP-00..PP-19, PP-23, PP-24 |
 
-**Outstanding, by suggested order:** PP-13 (keystone — structured registry) -> PP-14, PP-15, PP-16
-(cheap high-value follow-ons) -> PP-23, PP-24 (registry-dependent) -> PP-17..PP-22 (new prompts /
-polish). PP-16 needs a user decision on project membership; PP-23/PP-24 depend on PP-13.
+**Outstanding, by suggested order:** PP-20 (`onboard-project`) -> PP-21 (`portfolio-status`) ->
+PP-22 (`triage-review-findings`). All three are independent LOW additions; PP-20 has the highest
+maintenance value because it replaces today's ad-hoc onboarding process.
 
 ---
 
