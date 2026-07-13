@@ -37,19 +37,25 @@ numbers are cited per item. A `WORKLIST_portfolio-prompts.md` can be derived fro
 
 #### PP-13: Extract the project registry into a structured `registry.yml` — Score: 14
 **Score:** Security (0) + Drift (8) + Maintenance (6) = **14**
-**Status:** OPEN — prototype exists at `proposals/registry.yml` (not yet wired in).
+**Status:** RESOLVED 2026-07-13 — `registry.yml` promoted to the library root and cited by the contract.
 **Problem (review weaknesses #1, #7, #8):** Every prompt resolves a project's backlog path, review
 folder, gates, and couplings by *parsing English* out of the README table and its prose deviation
 notes. This is the library's chief drift risk and the main blocker to turning the prompts into
 portable skills.
 **Success Criteria:**
-- [ ] A machine-readable `registry.yml` (or equivalent) holds one `defaults:` block plus one row
+- [x] A machine-readable `registry.yml` (or equivalent) holds one `defaults:` block plus one row
       per project: `github`, `status`, `gates`, `deviations` (backlog/review/log/template paths),
-      `couples_with`, `orchestration_target`, and any live-API/SDD/multi-stack flags.
-- [ ] The prompts/contract cite it as the source a skill loads; the README table becomes a
-      *generated* view (see PP-23) rather than a hand-maintained one.
-- [ ] The prototype in `proposals/registry.yml` is reviewed, corrected, and promoted (or replaced).
-**Depends on:** nothing. **Unblocks:** PP-16, PP-23, PP-24.
+      `couples_with`, `orchestration_target`, and any live-API/SDD/multi-stack flags. — **Done:**
+      `portfolio-prompts/registry.yml` (8 projects incl. the meta row; parses; every non-meta
+      `project` maps to a real folder).
+- [~] The prompts/contract cite it as the source a skill loads; the README table becomes a
+      *generated* view (see PP-23) rather than a hand-maintained one. — **Contract cites it**
+      (`project-layout.md` §"Machine-readable registry"); README notes the mirror. **Automated
+      generation is deferred to PP-23** — until then both are edited together (documented interim).
+- [x] The prototype in `proposals/registry.yml` is reviewed, corrected, and promoted (or replaced).
+      — **Done:** promoted to `../registry.yml`, corrected (both onboarded projects are now full
+      rows, `unregistered_candidates` emptied); `proposals/README.md` updated to point at it.
+**Depends on:** nothing. **Unblocks:** PP-23, PP-24. **Residual:** README auto-generation = PP-23.
 
 #### PP-14: Add a handover manifest/index to kill the version-parsing hazard — Score: 10
 **Score:** Security (0) + Drift (6) + Maintenance (4) = **10**
@@ -90,9 +96,9 @@ silently skip them. `proposals/registry.yml` lists them under `unregistered_cand
       (`markdown-renderer` = `npm run verify`; `orangehrm-pim-automation` = per `ci.yml`, docker + `npm test`).
 - [x] If added, `orchestration_target` is set correctly so the fan-outs see them. — **Done:** both
       are plain `Active` rows, so the `*-all-*` fan-outs now target them.
-**Residual (tracked under PP-13, not here):** `proposals/registry.yml` still lists both under
-`unregistered_candidates:`. That prototype is reconciled when PP-13 promotes it from proposal to the
-live source of truth — the README registry (the current source of truth) is already correct.
+**Residual — now cleared (PP-13, 2026-07-13):** the structured registry was promoted to
+`registry.yml` at the library root with both projects as full rows (`unregistered_candidates`
+emptied); the prototype `proposals/registry.yml` was removed. Nothing outstanding for PP-16.
 
 #### PP-03: Centralise the validation-gate cascade — Score: 12
 **Score:** Security (0) + Drift (6) + Maintenance (6) = **12**
@@ -278,10 +284,10 @@ but the reciprocal pointer is missing.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 9 | 6 complete (PP-00, PP-03, PP-04, PP-05, PP-10, PP-16) + **3 open** (PP-13, PP-14, PP-15) |
+| MEDIUM (10–19) | 9 | 7 complete (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-16) + **2 open** (PP-14, PP-15) |
 | LOW (0–9) | 16 | 8 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12) + **8 open** (PP-17..PP-24) |
-| **Total Outstanding** | **11** | PP-13, PP-14, PP-15 + PP-17..PP-24 (PP-16 resolved by PR #18) |
-| Resolved | 14 | PP-00..PP-12, PP-16 |
+| **Total Outstanding** | **10** | PP-14, PP-15 + PP-17..PP-24 (PP-13 resolved 2026-07-13; PP-16 by PR #18) |
+| Resolved | 15 | PP-00..PP-13, PP-16 |
 
 **Outstanding, by suggested order:** PP-13 (keystone — structured registry) -> PP-14, PP-15, PP-16
 (cheap high-value follow-ons) -> PP-23, PP-24 (registry-dependent) -> PP-17..PP-22 (new prompts /

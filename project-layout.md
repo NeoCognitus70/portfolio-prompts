@@ -22,6 +22,26 @@ and never infer it from which files happen to be open.
 their target and need no `PROJECT=`; each sub-agent they launch receives a single `PROJECT=` and
 is bound by this contract as normal.
 
+## Machine-readable registry — `registry.yml`
+
+The README's project-registry table has a structured twin: **`portfolio-prompts/registry.yml`**.
+It is the **machine-readable form** that tooling and skills load instead of parsing the README's
+prose cells — one `defaults:` block plus one row per project (`github`, `status`, `gates`,
+`deviations`, `couples_with`, `orchestration_target`, and `multi_stack`/`sdd`/`live_api`/`product`
+flags). The README table is the human-readable view of the same data.
+
+- **Resolution order is unchanged.** A project's `deviations:` override the `defaults:`, exactly as
+  the prose rules in this contract describe; `orchestration_target: false` marks a row (currently
+  only the meta `portfolio-prompts`) out of the `*-all-*` fan-outs.
+- **Two views, kept in lockstep.** Until PP-23 automates generating the README table from
+  `registry.yml`, **edit both together** whenever a project's row changes — the same discipline the
+  handovers' `.md`/`.html` pair uses. `registry.yml` is the source tooling trusts; the README table
+  is the source humans read.
+- A skill resolves a project by loading its row:
+  `backlog = row.deviations.backlog ?? defaults.backlog`,
+  `gates = first-hit(defaults.gate_cascade, row.gates)`,
+  `targets = projects where orchestration_target`.
+
 ## Required in-repo structure
 
 A participating project (`test-automation-portfolio/{PROJECT}/`) must have:
