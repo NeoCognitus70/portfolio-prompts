@@ -17,10 +17,13 @@ and confirmed the plan.
 
 ## Step 1 — Load the latest handover
 In the **`session-notes/`** folder at the portfolio root (`test-automation-portfolio/session-notes/`),
-find the **highest-numbered** `{PROJECT}_session-notes_v{N}_*.md` and read it in full. That is your
-primary briefing. Handovers for several projects share this folder — compare versions **only among
-files carrying the `{PROJECT}_` prefix**, never across projects, and compare `{N}` **numerically**:
-a plain filename sort orders `v9` after `v13`, so parse the number rather than trusting sort order. If its "Read first" section names
+find the latest `{PROJECT}` handover and read it in full — that is your primary briefing.
+**Prefer the manifest (PP-14):** if `session-notes/manifest.json` exists, its `latest["{PROJECT}"]`
+entry names the newest handover file directly — use it. **Fallback (no manifest, or no entry for
+`{PROJECT}`):** find the **highest-numbered** `{PROJECT}_session-notes_v{N}_*.md` by hand — handovers
+for several projects share this folder, so compare versions **only among files carrying the
+`{PROJECT}_` prefix**, never across projects, and compare `{N}` **numerically**: a plain filename
+sort orders `v9` after `v13`, so parse the number rather than trusting sort order. If its "Read first" section names
 one or two earlier handovers as still-relevant, read those too — but treat the highest version as
 authoritative where they disagree.
 

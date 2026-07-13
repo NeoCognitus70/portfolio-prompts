@@ -29,10 +29,12 @@ small, reviewable, per-item commits are the point.
 
 ## Step 0 — Orient and establish the worklist (first iteration only, then reuse)
 
-1. **Orient from the handover trail first** (fresh sessions have no prior context): read the
-   **highest-numbered** `session-notes/{PROJECT}_session-notes_v{N}_*.md` at the portfolio root —
-   compare versions **only among files carrying the `{PROJECT}_` prefix** (several projects share
-   the folder) and compare `{N}` **numerically**, not by filename sort — and the project's
+1. **Orient from the handover trail first** (fresh sessions have no prior context): read the latest
+   `{PROJECT}` handover in `session-notes/` at the portfolio root — **prefer the manifest (PP-14):**
+   if `session-notes/manifest.json` exists, use its `latest["{PROJECT}"]` entry; **else** take the
+   **highest-numbered** `{PROJECT}_session-notes_v{N}_*.md` by hand, comparing versions **only among
+   files carrying the `{PROJECT}_` prefix** (several projects share the folder) and comparing `{N}`
+   **numerically**, not by filename sort — and the project's
    `{PROJECT}/docs/backlog.md` (or the backlog path its registry row in
    `portfolio-prompts/README.md` records as a deviation). If the project has **no handovers
    yet**, orient from the backlog and repo alone and say so. The **backlog is authoritative**

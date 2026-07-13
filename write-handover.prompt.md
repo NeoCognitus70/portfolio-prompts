@@ -23,12 +23,14 @@ project**; never guess. Conventions are defined in `portfolio-prompts/project-la
 ## Ground truth — read these before writing anything
 1. **Source of truth:** `{PROJECT}/docs/backlog.md` (or the backlog path the project's registry
    row in `portfolio-prompts/README.md` records as a deviation). Item statuses here are authoritative.
-2. **The latest existing handover:** the highest-numbered
-   `{PROJECT}_session-notes_v{N}_*.md` in the **`session-notes/`** folder at the
-   portfolio root (`test-automation-portfolio/session-notes/`). Compare versions **only among
-   files carrying the `{PROJECT}_` prefix** — handovers for several projects share the folder —
-   and compare `{N}` **numerically** (a plain filename sort orders `v9` after `v13`; a wrong
-   "latest" here causes a version collision in the file you are about to write).
+2. **The latest existing handover.** **Prefer the manifest (PP-14):** if
+   `session-notes/manifest.json` exists, its `latest["{PROJECT}"]` entry names the current highest
+   version — the file you are about to supersede, and `version + 1` is the number you write.
+   **Fallback (no manifest):** find the highest-numbered `{PROJECT}_session-notes_v{N}_*.md` in the
+   **`session-notes/`** folder at the portfolio root by hand — compare versions **only among files
+   carrying the `{PROJECT}_` prefix** (handovers for several projects share the folder) and compare
+   `{N}` **numerically** (a plain filename sort orders `v9` after `v13`; a wrong "latest" here causes
+   a version collision in the file you are about to write).
    Read it in full — your new doc *supersedes* it and should only restate settled context by
    reference, not re-explain it. **First handover:** if no `{PROJECT}_` handover exists, this new
    doc is **v1** — there is nothing to supersede; orient from the backlog and repo alone.
@@ -100,6 +102,15 @@ never patch the `.html` independently.
    - `## 6.` **Environment** — CI + local bring-up facts.
    - `## 7.` **Backlog snapshot** — table mirroring `backlog.md`'s current state.
    - `## 8.` **Suggested next actions** — concrete, ordered, with the working norms a successor must respect.
+
+## Update the handover manifest (PP-14)
+After both files exist, regenerate the index so the next session finds this handover without
+re-deriving "latest": run `python portfolio-prompts/tools/build-handover-manifest.py` (it rewrites
+`session-notes/manifest.json` by scanning the folder). Confirm your new version appears as
+`latest["{PROJECT}"]`. If Python is unavailable, add an entry for the new file to `manifest.json` by
+hand matching the existing shape, or state in your report that the manifest was not updated (the
+readers' numeric-glob fallback still works). The manifest is untracked (session-notes/ is outside
+the repos) — do not commit it.
 
 ## Rules
 - **en-GB** spelling throughout (behaviour, prioritise, recognise…).

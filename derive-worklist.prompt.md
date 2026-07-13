@@ -42,10 +42,12 @@ only on the user's answer.
 
 ## Step 1 — Orient (same sources as the loop)
 
-1. Read the **highest-numbered** `session-notes/{PROJECT}_session-notes_v{N}_*.md` at the
-   portfolio root — compare versions **only among files carrying the `{PROJECT}_` prefix** and
-   compare `{N}` **numerically**, not by filename sort. If the project has no handovers yet,
-   orient from the backlog and repo alone and say so.
+1. Read the latest `{PROJECT}` handover in `session-notes/` at the portfolio root. **Prefer the
+   manifest (PP-14):** if `session-notes/manifest.json` exists, use its `latest["{PROJECT}"]` entry;
+   **else** find the **highest-numbered** `{PROJECT}_session-notes_v{N}_*.md` by hand — compare
+   versions **only among files carrying the `{PROJECT}_` prefix** and compare `{N}` **numerically**,
+   not by filename sort. If the project has no handovers yet, orient from the backlog and repo alone
+   and say so.
 2. Read the project's backlog: `{PROJECT}/docs/backlog.md`, or the backlog path its registry row
    in `portfolio-prompts/README.md` records as a deviation. The **backlog is authoritative**
    where sources disagree — flag any handover/backlog/repo mismatch in your report rather than
