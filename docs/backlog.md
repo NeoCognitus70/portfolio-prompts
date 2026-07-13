@@ -71,16 +71,22 @@ causes a recurring class of bug (a v11 was once written to the root and missed).
 
 #### PP-15: Add real self-gates for the library (path/registry/format checks) — Score: 10
 **Score:** Security (0) + Drift (5) + Maintenance (5) = **10**
-**Status:** OPEN
+**Status:** RESOLVED 2026-07-13 — `tools/check-library.py` is the library's verify gate.
 **Problem (review weakness #4):** The library's gates are "docs-only (link/grep)". Nothing checks
 that a path a prompt cites still exists, that every registry project name maps to a real folder, or
 that the canonical worklist example parses as the format `loop-worklist` Step 0 expects. The library
 asks every project for gates but under-gates itself.
 **Success Criteria:**
-- [ ] A check script (invoked as the library's `verify` gate) asserts: every registry `project`
+- [x] A check script (invoked as the library's `verify` gate) asserts: every registry `project`
       resolves to a folder; every path cited in `project-layout.md`/prompts exists; the worklist
-      example parses; internal doc links resolve.
-- [ ] `registry.yml` (PP-13), if present, is the input for the folder/name check.
+      example parses; internal doc links resolve. — **Done:** `tools/check-library.py` checks
+      registry-folder mapping (+ drift: no unclassified workspace repo), README-generated (delegates
+      to `render-registry.py --check`), internal Markdown links, and the worklist example. Wired as
+      the `PROJECT=portfolio-prompts` gate in `registry.yml`. Standalone-clone safe.
+- [x] `registry.yml` (PP-13), if present, is the input for the folder/name check. — **Done.**
+**Caught on first run (now recorded):** two workspace repos, `portfolio-landing` and
+`mobile-forex-automation`, were unclassified — added to `unregistered_candidates` pending a
+membership decision (see below).
 
 #### PP-16: Reconcile the registry with the two unregistered projects — Score: 10
 **Score:** Security (0) + Drift (8) + Maintenance (2) = **10**
@@ -288,10 +294,10 @@ but the reciprocal pointer is missing.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 9 | 7 complete (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-16) + **2 open** (PP-14, PP-15) |
+| MEDIUM (10–19) | 9 | 8 complete (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-15, PP-16) + **1 open** (PP-14) |
 | LOW (0–9) | 16 | 9 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-23) + **7 open** (PP-17..PP-22, PP-24) |
-| **Total Outstanding** | **9** | PP-14, PP-15 + PP-17..PP-22, PP-24 (PP-13/PP-23 resolved 2026-07-13; PP-16 by PR #18) |
-| Resolved | 16 | PP-00..PP-13, PP-16, PP-23 |
+| **Total Outstanding** | **8** | PP-14 + PP-17..PP-22, PP-24 (PP-13/PP-15/PP-23 resolved 2026-07-13; PP-16 by PR #18) |
+| Resolved | 17 | PP-00..PP-13, PP-15, PP-16, PP-23 |
 
 **Outstanding, by suggested order:** PP-13 (keystone — structured registry) -> PP-14, PP-15, PP-16
 (cheap high-value follow-ons) -> PP-23, PP-24 (registry-dependent) -> PP-17..PP-22 (new prompts /

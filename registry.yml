@@ -148,16 +148,20 @@ projects:
     single_project_prompts_ok: true
     deviations:
       backlog: portfolio-prompts/docs/backlog.md
-    gates:
-      type: docs_only
+    gates: ["python tools/check-library.py"]   # PP-15 self-gate (docs-only; no build)
     notes: >-
       The prompt library itself. Single-project prompts (`resume-session`, `derive-worklist`,
       `loop-worklist`, `write-implementation-log`, `write-code-review`) may target
       `PROJECT=portfolio-prompts`. Not a target of the orchestration fan-outs.
 
 # ---------------------------------------------------------------------------
-# Drift watch — workspace folders that are NOT registry members above. Empty now
-# (markdown-renderer + orangehrm-pim-automation onboarded in PR #18, PP-16). A PP-15 self-check
-# would repopulate this if a new project folder appears without a row.
+# Drift watch — workspace repos (folders with a .git) that are NOT registry members above.
+# `tools/check-library.py` fails if a sibling repo is neither a registry row nor listed here, so
+# every workspace repo is deliberately classified. These two are acknowledged non-members pending a
+# membership decision (the same situation PP-16 resolved for markdown-renderer/orangehrm):
+#   - portfolio-landing        — the portfolio landing page, not a test-automation project
+#   - mobile-forex-automation  — present in the workspace; onboard-or-exclude decision outstanding
 # ---------------------------------------------------------------------------
-unregistered_candidates: []
+unregistered_candidates:
+  - portfolio-landing
+  - mobile-forex-automation

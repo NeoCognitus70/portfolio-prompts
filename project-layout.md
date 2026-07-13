@@ -82,6 +82,11 @@ order — first hit wins:
    `tsconfig.json` fails spuriously.
 5. Otherwise: **ask the user** what "validated" means for this project.
 
+The **library gates itself** too: `PROJECT=portfolio-prompts` resolves (via its `registry.yml` row)
+to `python tools/check-library.py` (PP-15) — it asserts the registry maps to real folders, no
+workspace repo is left unclassified, the README table is generated from `registry.yml`, internal
+doc links resolve, and the worklist example parses. See [tools/README.md](tools/README.md).
+
 ### Project contract (optional) — `docs/project-contract.md`
 
 A project may pin its gates and norms in `docs/project-contract.md`. When present it is the
