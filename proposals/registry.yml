@@ -1,0 +1,129 @@
+# registry.yml — structured project registry for the portfolio-prompts library
+#
+# PROPOSAL / PROTOTYPE. Replaces the prose table in README.md as the machine-readable
+# source of truth. The README table would be *regenerated* from this file (see the
+# `refresh-registry` proposal in proposals/README.md), so the human view and the machine
+# view can never drift apart.
+#
+# Why this exists: today every prompt must parse English cells in the README to resolve a
+# project's backlog path, review folder, gates, and couplings. That is the collection's
+# chief drift risk (review weakness #1) and the main blocker to turning the prompts into
+# portable skills. A skill LOADS this file; it does not re-read prose each invocation.
+#
+# House style: en-GB, ASCII, two-space indent. `{project}` interpolates the row's `project`.
+
+version: 1
+portfolio_root: test-automation-portfolio   # folder that holds the individual project checkouts
+
+# ---------------------------------------------------------------------------
+# Defaults — applied to every project unless a row's `deviations:` overrides one.
+# Mirrors project-layout.md so the paths live in exactly one place.
+# ---------------------------------------------------------------------------
+defaults:
+  # In-repo, relative to the project folder.
+  backlog: docs/backlog.md
+  implementation_logs: docs/implementation-logs/
+  reviews: .review/
+  adr: docs/adr/
+  project_contract: docs/project-contract.md   # optional per project; first gate source if present
+
+  # Portfolio-root, outside the repos (untracked).
+  handovers: session-notes/                     # {project}_session-notes_v{N}_{YYYYMMDD}T{HHMM}Z.{md,html}
+  worklist: WORKLIST_{project}.md
+  shared_templates: templates/
+
+  # First-hit-wins gate cascade — mirrors project-layout.md §"Validation gates".
+  # A skill walks this list; the first source that resolves for a project wins.
+  gate_cascade:
+    - project_contract     # docs/project-contract.md "Gates" section
+    - registry_gates       # the `gates:` field on the project's row below
+    - npm_run_verify       # root package.json `verify` script
+    - stack_defaults       # tsc --noEmit / bddgen / cucumber-js --dry-run, in the touched stack dir
+    - ask                  # otherwise, ask the user what "validated" means
+
+# ---------------------------------------------------------------------------
+# Projects — one row per registry member. `project` is the PROJECT= value.
+# ---------------------------------------------------------------------------
+projects:
+  - project: magento-checkout-automation
+    github: GBrooks1970/magento-checkout-automation
+    status: active            # active | complete | meta
+    reference: true           # the reference implementation for the portfolio
+    gates: ["npm run verify"]
+    orchestration_target: true
+    notes: >-
+      Reference project. Reopened 2026-06-19 to deliver backlog item #12 (screenshots in
+      reports, ADR-0007). Future-work proposals in docs/planning/.
+
+  - project: hand-baked-screenplay-pattern
+    github: NeoCognitus70/hand-baked-screenplay-pattern
+    status: active
+    gates: ["npm run verify"]
+    orchestration_target: true
+
+  - project: calculator-screenplay-bdd
+    github: NeoCognitus70/calculator-screenplay-bdd
+    status: active
+    gates: ["npm run verify"]
+    orchestration_target: true
+    couples_with:
+      project: hand-baked-screenplay-pattern
+      reason: >-
+        prepare:screenplay installs and builds INSIDE the sibling checkout, so a concurrent
+        hand-baked agent would race a build in its own tree.
+      order: provider-first   # build/finish hand-baked before calculator; one sequential agent
+
+  - project: gb.automation.smoketests.sudoku.poc
+    github: GBrooks1970/gb.automation.smoketests.sudoku.poc
+    status: active
+    multi_stack: true
+    orchestration_target: true
+    deviations:               # override the defaults above; presence here = still fully onboarded
+      backlog: DOCS/.planning/backlog.md
+      implementation_logs: DOCS/.implementation-logs/
+      reviews: DOCS/.review/
+      shared_templates: DOCS/.templates/     # use these in-repo templates, not the portfolio ones
+    gates:                    # no root package.json — per ci.yml, run the job(s) for the stack(s) touched
+      type: ci_jobs
+      stacks:
+        - { name: demoapp001, tool: cypress, language: typescript }
+        - { name: demoapp002, tool: pytest,  language: python }
+        - { name: demoapp003, tool: specflow, language: csharp }
+      parity_scripts: .batch/*.ps1
+    notes: >-
+      Multi-stack POC with its own doc system. Run stack defaults INSIDE the touched stack's
+      directory, never at the repo root.
+
+  - project: bfx-ws-screenplay
+    github: GBrooks1970/bfx-ws-screenplay
+    status: active
+    sdd: true                 # spec-driven: in-repo SPECIFICATION.md is normative
+    orchestration_target: true
+    gates: ["npm run typecheck", "npm run lint", "npm run test:smoke"]
+    live_api:                 # test:smoke hits a live public API — encode the etiquette
+      endpoint: Bitfinex public WebSocket API v2
+      blocked_outcome_is_failure: false   # EnvironmentBlockedError == platform maintenance, not a test fail
+      extended_tag_schedule: nightly      # @extended runs nightly only (live-API etiquette)
+    notes: >-
+      One SPEC unit at a time; feature file reviewed before framework code; deviations need an
+      ADR change note. Gates per docs/project-contract.md.
+
+  - project: portfolio-prompts
+    github: NeoCognitus70/portfolio-prompts
+    status: meta              # the prompt library itself, self-onboarded
+    orchestration_target: false            # EXCLUDED from *-all-* fan-outs (targets are the test projects)
+    single_project_prompts_ok: true        # resume/derive/loop/impl-log/code-review may target it
+    deviations:
+      backlog: portfolio-prompts/docs/backlog.md
+    gates:
+      type: docs_only         # link/grep checks, no build
+
+# ---------------------------------------------------------------------------
+# Drift watch — projects present in the workspace but NOT yet registry members.
+# The *-all-* fan-outs silently skip anything not listed under `projects:` above,
+# so an unregistered project is invisible to portfolio-wide work (review weakness #8).
+# A `refresh-registry`/self-check skill would diff the workspace against this list and flag it.
+# ---------------------------------------------------------------------------
+unregistered_candidates:
+  - markdown-renderer          # 5th project; published, CI + Pages live
+  - orangehrm-pim-automation   # 6th project; published, CI + Pages live
