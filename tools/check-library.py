@@ -39,7 +39,8 @@ LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 # Markdown files that are the library's own docs (exclude node_modules and vendored trees).
 def library_docs() -> list[Path]:
     docs: list[Path] = []
-    for pattern in ("*.md", "*.prompt.md", "docs/*.md", "proposals/**/*.md", "tools/*.md"):
+    for pattern in ("*.md", "*.prompt.md", "docs/*.md", "proposals/**/*.md", "tools/*.md",
+                    "skills/**/*.md"):
         docs.extend(HERE.glob(pattern))
     seen, out = set(), []
     for p in docs:
@@ -103,6 +104,37 @@ def check_internal_links(fails: list[str]) -> None:
                 fails.append(f"[internal-links] {md.relative_to(HERE)} -> missing '{t}'")
 
 
+def check_skills(fails: list[str]) -> None:
+    skills_dir = HERE / "skills"
+    if not skills_dir.is_dir():
+        return
+    for skill in sorted(skills_dir.glob("*/SKILL.md")):
+        text = skill.read_text(encoding="utf-8")
+        m = re.match(r"^---\n(.*?)\n---\n(.*)$", text, re.DOTALL)
+        if not m:
+            fails.append(f"[skills] {skill.relative_to(HERE)} has no YAML frontmatter block")
+            continue
+        front, body = m.group(1), m.group(2)
+        try:
+            front_data = yaml.safe_load(front) or {}
+        except yaml.YAMLError as e:
+            fails.append(f"[skills] {skill.relative_to(HERE)} frontmatter is not valid YAML: {e}")
+            continue
+        for key in ("name", "description"):
+            if not front_data.get(key):
+                fails.append(f"[skills] {skill.relative_to(HERE)} frontmatter missing '{key}'")
+        if front_data.get("name") and front_data["name"] != skill.parent.name:
+            fails.append(
+                f"[skills] {skill.relative_to(HERE)} name '{front_data['name']}' != folder "
+                f"'{skill.parent.name}'"
+            )
+        # A thin-wrapper skill must delegate to a prompt file that exists at the repo root.
+        for prompt in re.findall(r"([A-Za-z0-9_-]+(?:\.prompt)?\.md)", body):
+            if prompt.endswith(".prompt.md") or prompt == "github-repo-analysis-prompt.md":
+                if not (HERE / prompt).exists():
+                    fails.append(f"[skills] {skill.relative_to(HERE)} delegates to missing '{prompt}'")
+
+
 def check_worklist_example(fails: list[str]) -> None:
     text = (HERE / "project-layout.md").read_text(encoding="utf-8")
     blocks = re.findall(r"```text\n(.*?)```", text, re.DOTALL)
@@ -121,6 +153,7 @@ def main() -> int:
         check_registry_folders,
         check_readme_generated,
         check_internal_links,
+        check_skills,
         check_worklist_example,
     ):
         check(fails)
@@ -129,7 +162,8 @@ def main() -> int:
         for f in fails:
             print("  - " + f)
         return 1
-    print("check-library: PASS (registry folders, README generated, internal links, worklist example)")
+    print("check-library: PASS (registry folders, README generated, internal links, skills, "
+          "worklist example)")
     return 0
 
 

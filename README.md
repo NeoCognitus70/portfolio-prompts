@@ -120,3 +120,13 @@ Read and follow portfolio-prompts\github-repo-analysis-prompt.md
 
 (Optional parameters ride the same line, e.g.
 `... derive-worklist.prompt.md using PROJECT=<folder> WORKLIST=<path-or-description>`.)
+
+## Use as a Claude Code plugin (skills)
+
+This repo is also a **Claude Code plugin** (`.claude-plugin/plugin.json`): every prompt has a
+matching **skill** in [`skills/`](skills/README.md) that triggers on a description and takes the
+`project` (or, for `analyze-repo`, the `repo`) as an **argument** — e.g. `/resume-session
+calculator-screenplay-bdd`. Each skill is a thin wrapper that reads and follows its canonical
+`*.prompt.md`, so the prompts stay the single source of truth. `analyze-repo` is the zero-config
+pilot (any repo, no registry). See [`skills/README.md`](skills/README.md) for install and the current
+portability caveat.

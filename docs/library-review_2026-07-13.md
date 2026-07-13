@@ -121,7 +121,7 @@ works on any repo.
 - `portfolio-status` - read-only cross-registry dashboard. **PP-21**.
 - `triage-review-findings` - explicit bridge from a code review to a derived worklist. **PP-22**.
 - `refresh-registry` - regenerate the README table from `registry.yml`. **PP-23** *(depends on PP-13)*.
-- Package the collection as a portable **skill/plugin pack** with `project` as an argument. **PP-24** *(POC in `proposals/skills/analyze-repo/`)*.
+- Package the collection as a portable **skill/plugin pack** with `project` as an argument. **PP-24** *(shipped in `skills/` + `.claude-plugin/`)*.
 
 ---
 
@@ -138,9 +138,9 @@ registry + contract into machine-readable config the skill *loads* rather than p
 *re-reads*. That is exactly **PP-13**, which is why it is the linchpin.
 
 `github-repo-analysis` is the right pilot: it takes no `PROJECT=`, reads no registry, and needs no
-contract, so it isolates the prompt -> skill mechanics. A working prototype is at
-[`../proposals/skills/analyze-repo/SKILL.md`](../proposals/skills/analyze-repo/SKILL.md); the
-packaging sketch for the remaining skills is in [`../proposals/README.md`](../proposals/README.md).
+contract, so it isolates the prompt -> skill mechanics. It shipped as
+[`../skills/analyze-repo/SKILL.md`](../skills/analyze-repo/SKILL.md) (PP-24); the full plugin and the
+remaining skills are in [`../skills/README.md`](../skills/README.md).
 
 ---
 

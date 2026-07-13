@@ -1,136 +1,45 @@
-# Proposals — structured registry + skills packaging
+# Proposals — structured registry + skills packaging (both shipped)
 
-Artefacts from the "turn the prompts into portable skills" review.
+This folder held the prototypes from the "turn the prompts into portable skills" review. **Both have
+now shipped into the live library**, so this folder is historical — it records the design rationale;
+the real artefacts live at the repo root.
 
-- **`registry.yml` has been promoted** out of this folder to [`../registry.yml`](../registry.yml)
-  — it is now the library's machine-readable registry (**PP-13, done**). The notes below describe
-  its design; the live file lives at the library root.
-- The **`analyze-repo` skill** below is **still a draft** (**PP-24**), deliberately kept out of
-  `.claude/skills/` so it cannot auto-fire until reviewed.
-
-Deliverables:
-
-1. [`../registry.yml`](../registry.yml) — the prose README registry table, restructured as
-   machine-readable data. **Promoted (PP-13).**
-2. [`skills/analyze-repo/`](skills/analyze-repo/SKILL.md) — the proof-of-concept skill, distilled
-   from [`github-repo-analysis-prompt.md`](../github-repo-analysis-prompt.md). **Still a draft (PP-24).**
+| Proposal | Shipped as | Item |
+|---|---|---|
+| Structured registry (`registry.yml`) | [`../registry.yml`](../registry.yml) + generated README table ([`../tools/render-registry.py`](../tools/render-registry.py)) | PP-13, PP-23 |
+| Skills / plugin pack | [`../.claude-plugin/plugin.json`](../.claude-plugin/plugin.json) + [`../skills/`](../skills/README.md) (11 skills) | PP-24 |
 
 ---
 
-## 1. `registry.yml` — why and how
+## 1. `registry.yml` — why and how (design notes)
 
-**Problem it solves.** Every prompt today resolves a project's backlog path, review folder, gates,
-and couplings by *parsing English* out of the README table and its prose deviation notes. That is
-the collection's chief drift risk and the main blocker to skill portability: a skill can't parse
-prose reliably, but it can load a YAML file trivially.
+**Problem it solved.** Every prompt used to resolve a project's backlog path, review folder, gates,
+and couplings by *parsing English* out of the README table — the collection's chief drift risk and
+the main blocker to skill portability. A skill can't parse prose reliably, but it can load a YAML file.
 
 **Design.** One `defaults:` block (mirroring `project-layout.md`) plus one row per project. A row
-overrides a default only via its `deviations:` block — so the sudoku POC's `DOCS/.planning/backlog.md`
-stops being lore buried in a table cell and becomes a field. Couplings (`couples_with:`), gate
-strategy (`gates:`), orchestration membership (`orchestration_target:`), and live-API etiquette
-(`live_api:`) are all first-class.
-
-**How a prompt/skill consumes it** (pseudocode):
+overrides a default only via its `deviations:` block. Couplings (`couples_with:`), gate strategy
+(`gates:`), orchestration membership (`orchestration_target:`), and live-API etiquette (`live_api:`)
+are all first-class. A skill resolves a row with:
 
 ```
 row      = registry.projects[PROJECT]                 # stop + ask if absent
 backlog  = row.deviations.backlog ?? defaults.backlog # deviation wins
-reviews  = row.deviations.reviews ?? defaults.reviews
 gates    = resolve(defaults.gate_cascade, row.gates)  # first-hit-wins, from data not prose
 targets  = registry.projects where orchestration_target  # the *-all-* fan-out set
 ```
 
-**What it fixes from the review**, concretely:
-- Weakness #1 (prose registry) — paths become data.
-- Weakness #7 (hand-maintained couplings) — `couples_with` makes the coupling check mechanical.
-- Weakness #8 (silent drift) — `unregistered_candidates:` lists workspace folders with no registry
-  row so a self-check (PP-15) can flag them; now **empty**, since `markdown-renderer` and
-  `orangehrm-pim-automation` were onboarded (PP-16).
+The README table is now a **generated** view of this file (`tools/render-registry.py`), so the
+human-readable and machine-readable copies cannot diverge. `tools/check-library.py` gates it.
 
-**The README stays** — but as a *generated* view. A `refresh-registry` skill/script would render
-the table from `registry.yml`, so the human-readable and machine-readable copies can never diverge.
-That regenerator is the natural next build after this POC.
+## 2. Skills / plugin pack — how it landed
 
----
+Each prompt became a **thin delegating skill** (`skills/<name>/SKILL.md`) that reads and follows its
+canonical `*.prompt.md`, so the prompt stays the single source of truth and the skill only adds a
+`description` (triggering) and an `argument-hint` (the `project`/`repo` argument). `analyze-repo` was
+the zero-config pilot — no `PROJECT`, registry, or contract — so it runs against any repo unchanged.
+See [`../skills/README.md`](../skills/README.md) for the full list, install steps, and the current
+portability caveat (the lifecycle prompts still resolve portfolio-relative paths against the CWD).
 
-## 2. `analyze-repo` — the POC skill
-
-Chosen as the proof of concept because it is the **zero-config outlier**: it takes no `PROJECT=`,
-reads no registry, and needs no contract — so it isolates the "prompt → skill" mechanics without
-also depending on `registry.yml` landing first. If this converts cleanly, the registry-bound
-prompts follow the same pattern with one extra step (load the row).
-
-**What changed vs the prompt:**
-
-| `github-repo-analysis-prompt.md` | `analyze-repo/SKILL.md` |
-| --- | --- |
-| "Paste the text below the `---`, then supply inputs" | `description`-triggered + `argument-hint` — `/analyze-repo <repo> [depth]` |
-| Inputs as a fill-in block | Parsed from the invocation args |
-| ~260 lines, human-facing preamble | Tightened; section bodies compressed to their contract, acquire-first gate and evidence rules kept verbatim |
-| House rules restated | Same en-GB / ASCII / file:line / "never fabricate a CVE" rules |
-
-The **acquire-before-analysing** gate, **depth control**, **evidence rules**, and **section
-structure** are preserved — those are the load-bearing parts.
-
-### Try it
-
-A skill is discovered at `.claude/skills/<name>/SKILL.md` in a project (or `~/.claude/skills/`
-for all projects, or inside a plugin). To test this POC from the portfolio root:
-
-```bash
-# project-scoped (this workspace only)
-mkdir -p .claude/skills
-cp -r portfolio-prompts/proposals/skills/analyze-repo .claude/skills/
-
-# then, in an interactive Claude Code session:
-/analyze-repo https://github.com/<owner>/<repo> depth=standard
-```
-
-Or let it auto-trigger: "analyse the repo at <path> for me". Tune the `description:` if triggering
-is too eager or too shy — the `skill-creator` skill has eval tooling built for exactly that.
-
-> Note: skill files must live under a `.claude/skills/` (or plugin) directory to be *loaded*.
-> Keeping the POC in `proposals/` means it is a **draft on disk, not an active skill** until copied
-> — deliberate, so it can't fire before you've reviewed it.
-
----
-
-## 3. Packaging the rest (sketch, not built)
-
-Once the pattern is proven, ship the whole collection as a **Claude Code plugin**:
-
-```
-portfolio-prompts-plugin/
-  plugin.json
-  skills/
-    analyze-repo/SKILL.md          # zero-config (this POC)
-    resume-session/SKILL.md        # arg: project
-    derive-worklist/SKILL.md       # arg: project [worklist]
-    loop-worklist/SKILL.md         # /loop-driven
-    write-handover/SKILL.md        # arg: project
-    write-impl-log/SKILL.md        # arg: project
-    write-code-review/SKILL.md     # arg: project
-    close-project/SKILL.md         # arg: project
-    derive-all-worklists/SKILL.md  # no arg — reads registry
-    loop-all-worklists/SKILL.md    # no arg — explicit-invocation only (mutating; footgun if auto)
-    review-all-projects/SKILL.md   # no arg — reads registry
-    onboard-project/SKILL.md       # NEW: scaffolds a row + backlog + templates
-    refresh-registry/SKILL.md      # NEW: regenerates the README table from registry.yml
-  config/
-    registry.yml                   # this file's schema, per workspace
-    project-layout.md              # the contract, loaded not re-read
-  templates/                       # backlog / impl-log / code-review / ADR
-```
-
-`project` becomes a skill **argument** across the seven single-project skills; the three fan-outs
-take none and read `registry.yml`. To run on **any** project (not just this portfolio), a user
-drops the plugin in, runs `onboard-project` once per repo to populate `registry.yml`, and gets the
-whole lifecycle as `/`-commands.
-
-**Conversion caveats** (from the review):
-- Descriptions do the triggering — the seven single-project skills have overlapping semantics
-  ("review", "handover", "log") and need carefully disambiguated descriptions.
-- `loop-worklist` stays `/loop`-driven, not description-triggered.
-- `loop-all-worklists` (the only mutating fan-out) should be explicit-invocation only.
-- Skill bodies want to be leaner than the prompts; centralising paths into `registry.yml` /
-  `project-layout.md` does most of that slimming — resist pasting the prompt prose verbatim.
+**Not shipped here:** `onboard-project` (tracked as **PP-20**) and a separate `refresh-registry`
+skill (superseded by `tools/render-registry.py`).
