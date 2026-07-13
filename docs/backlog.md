@@ -216,12 +216,14 @@ implicit today — the inverse of `close-project` does not exist. It is done ad 
 
 #### PP-17: Centralise the branch + PR universal norm into the contract — Score: 7
 **Score:** Security (0) + Drift (4) + Maintenance (3) = **7**
-**Status:** OPEN
+**Status:** RESOLVED 2026-07-13 — the full policy remains only in `project-layout.md`; operational
+prompts and plugin wrappers cite that section while retaining only their workflow-specific branch
+mechanics. `check-library.py` now rejects policy restatements in active prompts and skill bodies.
 **Problem (review weakness #6):** "All changes to `main` via branch + PR (harness blocks direct
 pushes, 2026-06-10)" is restated in resume, loop, handover, close, and the contract — the same
 PP-03/04/05 duplication pattern, not yet centralised.
 **Success Criteria:**
-- [ ] The norm appears in full in exactly one place (`project-layout.md` §"Working norms"); the
+- [x] The norm appears in full in exactly one place (`project-layout.md` §"Working norms"); the
       prompts cite it rather than restating the 2026-06-10 detail.
 
 #### PP-21: Add a read-only `portfolio-status` prompt — Score: 6
@@ -320,9 +322,9 @@ but the reciprocal pointer is missing.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 9 | **9 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16) — 0 open |
-| LOW (0–9) | 16 | 10 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-23, PP-24) + **6 open** (PP-17..PP-22) |
-| **Total Outstanding** | **6** | PP-17..PP-22 — all LOW polish (PP-13/PP-14/PP-15/PP-23/PP-24 resolved 2026-07-13; PP-16 by PR #18) |
-| Resolved | 19 | PP-00..PP-16, PP-23, PP-24 |
+| LOW (0–9) | 16 | 11 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17, PP-23, PP-24) + **5 open** (PP-18..PP-22) |
+| **Total Outstanding** | **5** | PP-18..PP-22 — all LOW polish |
+| Resolved | 20 | PP-00..PP-17, PP-23, PP-24 |
 
 **Outstanding, by suggested order:** PP-13 (keystone — structured registry) -> PP-14, PP-15, PP-16
 (cheap high-value follow-ons) -> PP-23, PP-24 (registry-dependent) -> PP-17..PP-22 (new prompts /

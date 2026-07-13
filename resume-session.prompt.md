@@ -69,8 +69,8 @@ Produce a short orientation summary, then propose the next move:
   "Durable lessons" and working-norms sections of the latest handover you loaded in Step 1, plus
   `{PROJECT}/docs/project-contract.md` if it exists; restate them from there rather than from
   memory. In the **bootstrap case** (no handover yet) only the universal norms and the project
-  contract (if any) apply — say so rather than inventing project lore. One universal norm always applies: **all** changes to `main` go via branch + PR — as of
-  2026-06-10 the harness blocks even docs-only direct pushes.
+  contract (if any) apply — say so rather than inventing project lore. Apply the universal
+  [working norms](project-layout.md#working-norms-universal) rather than restating them here.
 - **Proposed next action:** the single most sensible thing to do next, with the concrete first steps.
 
 Then **stop and wait** for the user to confirm or redirect before making changes. Don't begin

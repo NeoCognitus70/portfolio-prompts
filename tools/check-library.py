@@ -11,7 +11,9 @@ Checks:
   2. README generated   — the README registry table is up to date w.r.t. registry.yml
                           (delegates to `render-registry.py --check`).
   3. Internal links     — every relative Markdown link in the library's own docs resolves.
-  4. Worklist example   — the canonical example in project-layout.md parses as the documented format.
+  4. Working norms      — the universal branch/PR policy is defined once in project-layout.md and
+                          is not restated in operational prompts or skill bodies.
+  5. Worklist example   — the canonical example in project-layout.md parses as the documented format.
 
 Usage (from the portfolio-prompts/ directory):
     python tools/check-library.py            # exit 0 if all checks pass, 1 otherwise
@@ -135,6 +137,29 @@ def check_skills(fails: list[str]) -> None:
                     fails.append(f"[skills] {skill.relative_to(HERE)} delegates to missing '{prompt}'")
 
 
+def check_working_norms(fails: list[str]) -> None:
+    contract = (HERE / "project-layout.md").read_text(encoding="utf-8")
+    canonical = "All changes to a project's `main` go via branch + PR"
+    if contract.count(canonical) != 1:
+        fails.append(
+            "[working-norms] project-layout.md must define the complete branch/PR norm exactly once"
+        )
+
+    operational = sorted(HERE.glob("*.prompt.md")) + sorted((HERE / "skills").glob("*/SKILL.md"))
+    forbidden = (
+        re.compile(r"all changes[^\n]*branch \+ PR", re.IGNORECASE),
+        re.compile(r"direct pushes? to `main`", re.IGNORECASE),
+        re.compile(r"harness blocks[^\n]*push", re.IGNORECASE),
+    )
+    for doc in operational:
+        text = doc.read_text(encoding="utf-8")
+        if any(pattern.search(text) for pattern in forbidden):
+            fails.append(
+                f"[working-norms] {doc.relative_to(HERE)} restates the universal policy; "
+                "cite project-layout.md instead"
+            )
+
+
 def check_worklist_example(fails: list[str]) -> None:
     text = (HERE / "project-layout.md").read_text(encoding="utf-8")
     blocks = re.findall(r"```text\n(.*?)```", text, re.DOTALL)
@@ -154,6 +179,7 @@ def main() -> int:
         check_readme_generated,
         check_internal_links,
         check_skills,
+        check_working_norms,
         check_worklist_example,
     ):
         check(fails)
@@ -163,7 +189,7 @@ def main() -> int:
             print("  - " + f)
         return 1
     print("check-library: PASS (registry folders, README generated, internal links, skills, "
-          "worklist example)")
+          "working norms, worklist example)")
     return 0
 
 

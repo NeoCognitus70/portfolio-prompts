@@ -42,8 +42,8 @@ Verify every public-facing claim the project makes and record the evidence:
   pages) — not just an HTTP 200. An empty shell has shipped before.
 - **CI:** the latest run on `main` is green — cite the run.
 - **README:** every claim (badges, links, coverage statements, setup steps) is accurate as
-  of today; fix what is not (via branch + PR — direct pushes to `main`, including docs-only,
-  are blocked).
+  of today; fix what is not while applying the universal
+  [working norms](project-layout.md#working-norms-universal).
 - **PRs and branches:** `gh pr list` shows nothing open, or anything held is named in the terminal
   handover with its disposition. List unmerged branches and their fate (keep/delete — deletion
   only with the user's say-so).

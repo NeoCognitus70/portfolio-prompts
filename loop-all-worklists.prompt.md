@@ -58,7 +58,8 @@ run: complete one item fully (implement -> validate -> verify -> commit ->
 record in WORKLIST_<project>.md), then proceed to the next unchecked item,
 until all items are done or blocked<, or you have completed <MAXITEMS> items>.
 Every per-item rule applies unreduced: gates must pass before every commit;
-never commit on red; all changes via branch + PR; create the worklist branch
+never commit on red; apply project-layout.md § "Working norms (universal)";
+create the worklist branch
 from an up-to-date default branch (git fetch; switch main; pull --ff-only);
 open the PR when the first item is ready and push subsequent items to the
 same branch; your OWN open worklist PR is not a stop condition; NEVER merge

@@ -13,4 +13,4 @@ this plugin's root), following the body below its `---` divider exactly.
 - `PROJECT` = the project folder name the user supplied — a row in `${CLAUDE_PLUGIN_ROOT}/registry.yml`.
   A loop binds to exactly one project. If none was given, **ask — never guess**.
 - Prefer driving this via `/loop` (self-pacing, one item per wake-up). Gates must pass before every
-  commit; all changes go via branch + PR. Conventions are in `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.
+  commit; apply the universal working norms in `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.
