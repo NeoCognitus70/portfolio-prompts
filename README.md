@@ -6,6 +6,15 @@ This folder lives at the portfolio root, **outside** the individual project repo
 as its **own git repository** (`portfolio-prompts`) — the prompt library has history without
 polluting any project's history.
 
+## Start here
+
+As a human reader, start with the [prompt lifecycle and table](#prompts), choose the workflow that
+matches your job, then use its example under [Invocation](#invocation); if you installed the plugin,
+use the [skills entry points](#use-as-a-claude-code-plugin-skills) instead. The machine and maintainer
+contract is separate: [project-layout.md](project-layout.md) defines paths, gates, worklists, and
+working norms, while [`registry.yml`](registry.yml) is the source tooling loads — you do not need to
+absorb either before choosing and running a prompt.
+
 ## The `PROJECT` parameter
 
 Every prompt is invoked against **one project**, named as `PROJECT=<folder name>` from the
@@ -82,7 +91,7 @@ Two equivalent forms (both require `PROJECT=` — without it the agent stops and
 1. **Paste:** open the `.prompt.md`, copy the text below its `---` divider, prepend
    `PROJECT=<folder>`, and paste it to the agent.
 2. **Read and follow:** point the agent at the file in a single chat message —
-   `Read and follow portfolio-prompts\<name>.prompt.md using PROJECT=<folder>`.
+   `Read and follow portfolio-prompts/<name>.prompt.md using PROJECT=<folder>`.
    The agent reads the file and follows the body below the `---` divider; the header above the
    divider is guidance for humans, not part of the instructions.
 
@@ -95,27 +104,27 @@ arbitrary repo supplied by URL or path.
 One example per prompt:
 
 ```text
-Read and follow portfolio-prompts\resume-session.prompt.md using PROJECT=calculator-screenplay-bdd
+Read and follow portfolio-prompts/resume-session.prompt.md using PROJECT=calculator-screenplay-bdd
 
-Read and follow portfolio-prompts\write-handover.prompt.md using PROJECT=hand-baked-screenplay-pattern
+Read and follow portfolio-prompts/write-handover.prompt.md using PROJECT=hand-baked-screenplay-pattern
 
-Read and follow portfolio-prompts\write-implementation-log.prompt.md using PROJECT=magento-checkout-automation
+Read and follow portfolio-prompts/write-implementation-log.prompt.md using PROJECT=magento-checkout-automation
 
-Read and follow portfolio-prompts\write-code-review.prompt.md using PROJECT=gb.automation.smoketests.sudoku.poc
+Read and follow portfolio-prompts/write-code-review.prompt.md using PROJECT=gb.automation.smoketests.sudoku.poc
 
-Read and follow portfolio-prompts\derive-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
+Read and follow portfolio-prompts/derive-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
-Read and follow portfolio-prompts\derive-all-worklists.prompt.md
+Read and follow portfolio-prompts/derive-all-worklists.prompt.md
 
-Read and follow portfolio-prompts\loop-all-worklists.prompt.md
+Read and follow portfolio-prompts/loop-all-worklists.prompt.md
 
-Read and follow portfolio-prompts\review-all-projects.prompt.md
+Read and follow portfolio-prompts/review-all-projects.prompt.md
 
-/loop Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
+/loop Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
-Read and follow portfolio-prompts\close-project.prompt.md using PROJECT=magento-checkout-automation
+Read and follow portfolio-prompts/close-project.prompt.md using PROJECT=magento-checkout-automation
 
-Read and follow portfolio-prompts\github-repo-analysis-prompt.md
+Read and follow portfolio-prompts/github-repo-analysis-prompt.md
 ```
 
 (Optional parameters ride the same line, e.g.

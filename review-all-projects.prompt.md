@@ -2,7 +2,7 @@
 
 Paste the text below to the agent when you want **a comprehensive code review of every portfolio
 project in one pass** — or invoke it without pasting:
-`Read and follow portfolio-prompts\review-all-projects.prompt.md`.
+`Read and follow portfolio-prompts/review-all-projects.prompt.md`.
 It launches one sub-agent per project, each following `write-code-review.prompt.md` for its
 project in parallel, then collates the top findings into a single cross-portfolio summary.
 
@@ -58,7 +58,7 @@ this template, filling both placeholders:
 
 ```text
 Working directory: <absolute path of the portfolio root>
-Read and follow portfolio-prompts\write-code-review.prompt.md using PROJECT=<project folder name>
+Read and follow portfolio-prompts/write-code-review.prompt.md using PROJECT=<project folder name>
 Follow it exactly. Use your real model identity for {AGENT}/{AGENT_NAME} in the
 review directory name and reviewer attribution - never copy an identity from a
 previous review directory. Write the review into the project's review folder

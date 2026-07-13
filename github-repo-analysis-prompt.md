@@ -3,7 +3,7 @@
 General-purpose analysis prompt — produces a deep, evidence-based, teaching-oriented report on an
 **arbitrary** repository (typically one *outside* this portfolio). Paste the text below the `---`
 divider, or invoke it without pasting:
-`Read and follow portfolio-prompts\github-repo-analysis-prompt.md`, then supply the repository
+`Read and follow portfolio-prompts/github-repo-analysis-prompt.md`, then supply the repository
 inputs.
 
 **This is the outlier in the library.** Unlike the other prompts it is **not** registry-bound and

@@ -2,7 +2,7 @@
 
 Paste the text below to the agent at the **end** of a working session, prefixed with
 `PROJECT=<project folder name>` (see the README registry) — or invoke it without pasting:
-`Read and follow portfolio-prompts\write-handover.prompt.md using PROJECT=<folder>`.
+`Read and follow portfolio-prompts/write-handover.prompt.md using PROJECT=<folder>`.
 It produces the project's next
 versioned `session-notes` handover (both `.md` and `.html`) **inside the `session-notes/` folder**
 at the portfolio root (`test-automation-portfolio/session-notes/` — NEVER directly at the root

@@ -2,7 +2,7 @@
 
 Paste the text below to the agent when you want **every prepared worklist actioned in one pass** —
 or invoke it without pasting:
-`Read and follow portfolio-prompts\loop-all-worklists.prompt.md`.
+`Read and follow portfolio-prompts/loop-all-worklists.prompt.md`.
 It launches one sub-agent per project that has a worklist with unchecked items; each sub-agent
 executes `loop-worklist.prompt.md` iterations for its project. Unlike `derive-all-worklists`,
 this fan-out **mutates**: agents implement, commit, push, and open PRs (never merge them).
@@ -52,13 +52,14 @@ Each sub-agent's prompt must be self-contained:
 
 ```text
 Working directory: <absolute path of the portfolio root>
-Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=<project folder name>
+Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<project folder name>
 You cannot schedule wake-ups, so execute iterations CONSECUTIVELY in this
 run: complete one item fully (implement -> validate -> verify -> commit ->
 record in WORKLIST_<project>.md), then proceed to the next unchecked item,
 until all items are done or blocked<, or you have completed <MAXITEMS> items>.
 Every per-item rule applies unreduced: gates must pass before every commit;
-never commit on red; all changes via branch + PR; create the worklist branch
+never commit on red; apply project-layout.md § "Working norms (universal)";
+create the worklist branch
 from an up-to-date default branch (git fetch; switch main; pull --ff-only);
 open the PR when the first item is ready and push subsequent items to the
 same branch; your OWN open worklist PR is not a stop condition; NEVER merge

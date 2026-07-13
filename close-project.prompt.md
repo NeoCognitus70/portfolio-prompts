@@ -2,7 +2,7 @@
 
 Paste the text below to the agent in the **final session** of a project, prefixed with
 `PROJECT=<project folder name>` (see the README registry) — or invoke it without pasting:
-`Read and follow portfolio-prompts\close-project.prompt.md using PROJECT=<folder>`.
+`Read and follow portfolio-prompts/close-project.prompt.md using PROJECT=<folder>`.
 Use it when the backlog is complete (or every
 remaining item has been explicitly deferred with a reason) and the project is being archived as a
 finished portfolio piece. It verifies the public-facing claims, retires the process artefacts, and
@@ -42,8 +42,8 @@ Verify every public-facing claim the project makes and record the evidence:
   pages) — not just an HTTP 200. An empty shell has shipped before.
 - **CI:** the latest run on `main` is green — cite the run.
 - **README:** every claim (badges, links, coverage statements, setup steps) is accurate as
-  of today; fix what is not (via branch + PR — direct pushes to `main`, including docs-only,
-  are blocked).
+  of today; fix what is not while applying the universal
+  [working norms](project-layout.md#working-norms-universal).
 - **PRs and branches:** `gh pr list` shows nothing open, or anything held is named in the terminal
   handover with its disposition. List unmerged branches and their fate (keep/delete — deletion
   only with the user's say-so).

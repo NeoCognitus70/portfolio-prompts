@@ -7,8 +7,8 @@ descriptive message.
 Invocation examples:
 
 ```text
-/loop Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=<folder>
-/loop 10m Read and follow portfolio-prompts\loop-worklist.prompt.md using PROJECT=<folder> WORKLIST=<path-or-description>
+/loop Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<folder>
+/loop 10m Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<folder> WORKLIST=<path-or-description>
 ```
 
 `PROJECT` is the project folder name at the portfolio root (see the README registry) — if the
@@ -80,10 +80,9 @@ small, reviewable, per-item commits are the point.
 - Re-read the item's source (review finding, backlog entry) in full before changing anything — the
   one-line summary in the worklist is a pointer, not the spec.
 - Respect the project's working norms:
-  - **All changes** (docs and code alike) go via a branch + PR — as of 2026-06-10 the harness
-    blocks direct pushes to `main`, including docs-only ones. Create or reuse a branch named for
-    the worklist (e.g. `worklist/<id>-<slug>`). **When creating it, branch from an up-to-date
-    default branch**: `git fetch`, switch to `main`, `pull --ff-only`, then branch — a stale
+  - Apply the universal [working norms](project-layout.md#working-norms-universal). Create or reuse
+    a branch named for the worklist (e.g. `worklist/<id>-<slug>`). **When creating it, branch from
+    an up-to-date default branch**: `git fetch`, switch to `main`, `pull --ff-only`, then branch — a stale
     local `main`, or a checkout left sitting on an old merged branch, would otherwise put
     unrelated history in the PR. (A clean tree on the wrong branch is not a dirty-tree stop —
     switch, don't stop.) One PR may carry several worklist items as
