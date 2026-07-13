@@ -19,6 +19,7 @@ so the prompt is the single source of truth and the skill just adds triggering +
 | `derive-all-worklists` | `derive-all-worklists.prompt.md` | — | Fan-out, no actioning |
 | `review-all-projects` | `review-all-projects.prompt.md` | — | Fan-out, evidence-only |
 | `loop-all-worklists` | `loop-all-worklists.prompt.md` | — | Fan-out, **mutating — explicit only** |
+| `portfolio-status` | `portfolio-status.prompt.md` | — | Whole-portfolio status, strictly read-only |
 | `analyze-repo` | `github-repo-analysis-prompt.md` | `<repo> [depth]` | Zero-config; any repo, no registry |
 
 `analyze-repo` is the **zero-config pilot** — it needs no `project`, registry, or contract, so it is
