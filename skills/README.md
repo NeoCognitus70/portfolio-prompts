@@ -3,12 +3,14 @@
 This repo is a **Claude Code plugin** (`.claude-plugin/plugin.json`). Each skill here is a
 description-triggered entry point that **delegates to the canonical `*.prompt.md`** at the repo root —
 so the prompt is the single source of truth and the skill just adds triggering + argument handling
-(PP-24). `project` is an argument to the single-project skills.
+(PP-24). `project` is an argument to the single-project skills; `onboard-project` instead takes the
+prospective folder that is not registered yet.
 
 ## Skills
 
 | Skill | Delegates to | Arg | Notes |
 |---|---|---|---|
+| `onboard-project` | `onboard-project.prompt.md` | `<project> [GITHUB=<owner/repo>]` | Explicit-only; staged scaffold + registry draft PRs |
 | `resume-session` | `resume-session.prompt.md` | `<project>` | Start of a session |
 | `derive-worklist` | `derive-worklist.prompt.md` | `<project>` | Plan a worklist (no actioning) |
 | `loop-worklist` | `loop-worklist.prompt.md` | `<project>` | Execute a worklist (mutating; `/loop`) |
@@ -46,6 +48,6 @@ by name (e.g. `/resume-session calculator-screenplay-bdd`) and auto-trigger on t
   the single-project and fan-out skills are built for a session whose CWD is the
   **test-automation-portfolio root**. Making those paths fully project-agnostic (run the lifecycle on
   any workspace) is follow-on work; `analyze-repo` already has no such dependency.
-- `onboard-project` (scaffold a new registry row + backlog) is **not** shipped here — it is tracked
-  separately as backlog item **PP-20**; registry regeneration is `tools/render-registry.py` (PP-23),
-  not a skill.
+- `onboard-project` is the prospective-project exception: it inspects an existing local checkout,
+  stops for approval, and stages target-scaffold then registry PRs. Registry regeneration remains
+  the responsibility of `tools/render-registry.py` (PP-23), which the canonical prompt invokes.

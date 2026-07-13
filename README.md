@@ -17,12 +17,13 @@ absorb either before choosing and running a prompt.
 
 ## The `PROJECT` parameter
 
-Every prompt is invoked against **one project**, named as `PROJECT=<folder name>` from the
-[registry below](#project-registry) (state it in the first line you paste, e.g.
-`PROJECT=calculator-screenplay-bdd`). The full rule — including the portfolio-scoped
-orchestration exception that needs no `PROJECT=` — and all paths, globs, and conventions the
-prompts rely on are defined once in [project-layout.md](project-layout.md). If no `PROJECT` is
-given where one is required, the agent must ask, never guess.
+Every project-bound lifecycle prompt is invoked against **one registered project**, named as
+`PROJECT=<folder name>` from the [registry below](#project-registry) (state it in the first line you
+paste, e.g. `PROJECT=calculator-screenplay-bdd`). `onboard-project` is the setup exception: its
+`PROJECT` names an existing local folder that is not registered yet. The full rule — including
+portfolio-scoped prompts that need no `PROJECT=` — and all paths, globs, and conventions are
+defined once in [project-layout.md](project-layout.md). If no `PROJECT` is given where one is
+required, the agent must ask, never guess.
 
 ## Project registry
 
@@ -50,6 +51,8 @@ given where one is required, the agent must ask, never guess.
 **Typical lifecycle** (single project):
 `resume-session` -> `derive-worklist` -> `loop-worklist` -> `write-implementation-log` ->
 `write-code-review` -> `write-handover` -> `close-project`.
+Before a project's first lifecycle, `onboard-project` establishes its backlog/scaffold and registry
+entry through staged PRs.
 The three `*-all-*` orchestrators (`derive-all-worklists`, `loop-all-worklists`,
 `review-all-projects`) fan the corresponding single-project step across the whole registry in one
 pass. `portfolio-status` is a read-only portfolio snapshot outside the lifecycle, while
@@ -59,6 +62,7 @@ next approved worklist.
 
 | Prompt | When to use | What it does |
 |---|---|---|
+| [onboard-project.prompt.md](onboard-project.prompt.md) | Adding an existing local repository to the portfolio | Discovers and proposes the project's registry metadata, gates, backlog, and recommended scaffold; after explicit approval, publishes a target scaffold PR when needed, waits for it to merge, then publishes the generated registry-row PR — never merges either. |
 | [write-handover.prompt.md](write-handover.prompt.md) | End of a session | Reconciles the project's `docs/backlog.md` (source of truth), then writes the next `{PROJECT}_session-notes` handover (`.md` + generated `.html`) into `session-notes/`, superseding the previous version. |
 | [resume-session.prompt.md](resume-session.prompt.md) | Start of a session | Loads the project's latest handover from `session-notes/` (or bootstraps from the backlog if none exists), cross-checks it against the backlog and the live repo, and proposes the resume point — then waits for confirmation. |
 | [write-implementation-log.prompt.md](write-implementation-log.prompt.md) | After a dev task | Writes a new immutable implementation log into `{PROJECT}/docs/implementation-logs/` from the project's template. |
@@ -100,6 +104,8 @@ Two equivalent forms (both require `PROJECT=` — without it the agent stops and
    divider is guidance for humans, not part of the instructions.
 
 **Exceptions:** `loop-worklist.prompt.md` is driven via the `/loop` command, not a plain message.
+`onboard-project` requires a prospective local `PROJECT` that is **not yet** a registry row and may
+take `GITHUB=<owner/repo>` when the checkout remote is not sufficient.
 The portfolio-scoped orchestrators (`derive-all-worklists`, `loop-all-worklists`,
 `review-all-projects`), the read-only `portfolio-status`, and the general-purpose
 `github-repo-analysis-prompt.md` take **no `PROJECT=`** — the orchestrators and status prompt target
@@ -108,6 +114,8 @@ the whole registry, while the analysis prompt targets an arbitrary repo supplied
 One example per prompt:
 
 ```text
+Read and follow portfolio-prompts/onboard-project.prompt.md using PROJECT=mobile-forex-automation GITHUB=GBrooks1970/mobile-forex-automation
+
 Read and follow portfolio-prompts/resume-session.prompt.md using PROJECT=calculator-screenplay-bdd
 
 Read and follow portfolio-prompts/write-handover.prompt.md using PROJECT=hand-baked-screenplay-pattern
@@ -144,7 +152,7 @@ This repo is also a **Claude Code plugin** (`.claude-plugin/plugin.json`): every
 matching **skill** in [`skills/`](skills/README.md) that triggers on a description and takes the
 `project` (or, for `analyze-repo`, the `repo`) as an **argument** — e.g. `/resume-session
 calculator-screenplay-bdd`. `triage-review-findings` also requires `REVIEW=<path>`. Each skill is a
-thin wrapper that reads and follows its canonical
-`*.prompt.md`, so the prompts stay the single source of truth. `analyze-repo` is the zero-config
-pilot (any repo, no registry). See [`skills/README.md`](skills/README.md) for install and the current
-portability caveat.
+thin wrapper that reads and follows its canonical `*.prompt.md`, so the prompts stay the single
+source of truth. `onboard-project` takes a prospective, unregistered project; `analyze-repo` is the
+zero-config pilot (any repo, no registry). See [`skills/README.md`](skills/README.md) for install and
+the current portability caveat.
