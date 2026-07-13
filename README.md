@@ -52,8 +52,8 @@ given where one is required, the agent must ask, never guess.
 `write-code-review` -> `write-handover` -> `close-project`.
 The three `*-all-*` orchestrators (`derive-all-worklists`, `loop-all-worklists`,
 `review-all-projects`) fan the corresponding single-project step across the whole registry in one
-pass. `github-repo-analysis-prompt.md` sits outside this lifecycle (general-purpose, not
-registry-bound — see below).
+pass. `portfolio-status` is a read-only portfolio snapshot outside the lifecycle, while
+`github-repo-analysis-prompt.md` is general-purpose and not registry-bound (see below).
 
 | Prompt | When to use | What it does |
 |---|---|---|
@@ -66,6 +66,7 @@ registry-bound — see below).
 | [derive-all-worklists.prompt.md](derive-all-worklists.prompt.md) | Preparing work portfolio-wide | Orchestration fan-out, **no actioning**: one parallel sub-agent per registry project, each following derive-worklist for its project; collates all breakdowns, guard-stops, and user decisions into a single report. |
 | [loop-worklist.prompt.md](loop-worklist.prompt.md) | Working through an ordered list of steps | Driven via the `/loop` command (not pasted). Completes one worklist item per iteration — implement → validate → verify → commit → record — tracked in `WORKLIST_{PROJECT}.md` (portfolio root), with stop conditions and a closing report. |
 | [loop-all-worklists.prompt.md](loop-all-worklists.prompt.md) | Actioning all prepared worklists at once | Orchestration fan-out that **mutates**: one sub-agent per project with unchecked worklist items, each executing loop-worklist iterations consecutively (commit + PR per its rules, never merging); coupled projects (e.g. calculator → hand-baked sibling build) share one sequential agent; collated report of commits, PRs, and blocked questions. |
+| [portfolio-status.prompt.md](portfolio-status.prompt.md) | Checking the whole portfolio without changing it | Read-only aggregation across every registry project: local repo state, open backlog counts, latest handover, open PRs, and default-branch CI; reports unavailable evidence and registry-drift candidates instead of mutating or guessing. |
 | [close-project.prompt.md](close-project.prompt.md) | Final session of a project | Verifies every public-facing claim the README makes, reconciles the backlog one last time, retires `WORKLIST_{PROJECT}.md`, and writes a terminal handover marked FINAL. |
 
 ### General-purpose (not registry-bound)
@@ -97,9 +98,9 @@ Two equivalent forms (both require `PROJECT=` — without it the agent stops and
 
 **Exceptions:** `loop-worklist.prompt.md` is driven via the `/loop` command, not a plain message.
 The portfolio-scoped orchestrators (`derive-all-worklists`, `loop-all-worklists`,
-`review-all-projects`) and the general-purpose `github-repo-analysis-prompt.md` take **no
-`PROJECT=`** — the orchestrators target the whole registry, and the analysis prompt targets an
-arbitrary repo supplied by URL or path.
+`review-all-projects`), the read-only `portfolio-status`, and the general-purpose
+`github-repo-analysis-prompt.md` take **no `PROJECT=`** — the orchestrators and status prompt target
+the whole registry, while the analysis prompt targets an arbitrary repo supplied by URL or path.
 
 One example per prompt:
 
@@ -119,6 +120,8 @@ Read and follow portfolio-prompts/derive-all-worklists.prompt.md
 Read and follow portfolio-prompts/loop-all-worklists.prompt.md
 
 Read and follow portfolio-prompts/review-all-projects.prompt.md
+
+Read and follow portfolio-prompts/portfolio-status.prompt.md
 
 /loop Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 

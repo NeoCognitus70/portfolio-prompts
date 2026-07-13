@@ -228,11 +228,14 @@ PP-03/04/05 duplication pattern, not yet centralised.
 
 #### PP-21: Add a read-only `portfolio-status` prompt — Score: 6
 **Score:** Security (0) + Drift (2) + Maintenance (4) = **6**
-**Status:** OPEN
+**Status:** RESOLVED 2026-07-13 — added a no-argument prompt and thin plugin skill that report every
+registry project's local repo state, open backlog counts, latest handover, open PRs, and
+default-branch CI. Missing evidence and registry-drift candidates remain explicit; the workflow
+writes nothing, changes no repository, and does not refresh remote Git state.
 **Problem:** There is no single command to see cross-registry state (latest handover version, open
 PRs, CI colour, backlog counts) without mutating anything.
 **Success Criteria:**
-- [ ] A read-only prompt that reports a per-project status line across the registry; writes no files
+- [x] A read-only prompt that reports a per-project status line across the registry; writes no files
       and makes no repo changes.
 
 #### PP-18: Make invocation paths OS-neutral — Score: 6
@@ -326,13 +329,13 @@ but the reciprocal pointer is missing.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 9 | **9 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16) — 0 open |
-| LOW (0–9) | 16 | 13 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-19, PP-23, PP-24) + **3 open** (PP-20..PP-22) |
-| **Total Outstanding** | **3** | PP-20..PP-22 — all LOW additions |
-| Resolved | 22 | PP-00..PP-19, PP-23, PP-24 |
+| LOW (0–9) | 16 | 14 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-19, PP-21, PP-23, PP-24) + **2 open** (PP-20, PP-22) |
+| **Total Outstanding** | **2** | PP-20 and PP-22 — both LOW additions |
+| Resolved | 23 | PP-00..PP-19, PP-21, PP-23, PP-24 |
 
-**Outstanding, by suggested order:** PP-20 (`onboard-project`) -> PP-21 (`portfolio-status`) ->
-PP-22 (`triage-review-findings`). All three are independent LOW additions; PP-20 has the highest
-maintenance value because it replaces today's ad-hoc onboarding process.
+**Outstanding, by suggested order:** PP-20 (`onboard-project`) -> PP-22
+(`triage-review-findings`). Both are independent LOW additions; PP-20 has the highest maintenance
+value because it replaces today's ad-hoc onboarding process.
 
 ---
 
