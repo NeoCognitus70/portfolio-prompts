@@ -177,16 +177,33 @@ regenerator makes the human-readable table a generated view, so the two copies c
 
 #### PP-24: Package the collection as a portable skill/plugin pack — Score: 9
 **Score:** Security (0) + Drift (3) + Maintenance (6) = **9**
-**Status:** OPEN (epic) — POC exists at `proposals/skills/analyze-repo/` + `proposals/README.md`.
+**Status:** RESOLVED 2026-07-13 — this repo is now a Claude Code plugin (`.claude-plugin/plugin.json`)
+with 11 skills in `skills/`.
 **Problem:** The prompts are portfolio-coupled only through `project-layout.md` + the registry.
 Externalising those into loadable config (PP-13) lets each `*.prompt.md` become a `SKILL.md` with
 `project` as an argument, runnable on any project.
 **Success Criteria:**
-- [ ] `github-repo-analysis` shipped as the zero-config pilot skill and smoke-tested on a real repo.
-- [ ] A plugin manifest packages the skills + `registry.yml`/`project-layout.md` config + templates.
-- [ ] Skill `description`s disambiguated so the seven single-project skills trigger correctly;
-      `loop-all-worklists` kept explicit-invocation only (mutating).
-**Depends on:** PP-13 (for the registry-bound skills). The pilot skill needs neither.
+- [x] `github-repo-analysis` shipped as the zero-config pilot skill — **Done:** `skills/analyze-repo/`
+      (takes `repo` + `depth`, no PROJECT). **[~] "smoke-tested on a real repo":** all 11 skills are
+      **structurally** validated by `tools/check-library.py` (frontmatter is valid YAML, `name`
+      matches folder, the delegated `*.prompt.md` exists) — a real bug was caught and fixed
+      (unquoted colons broke the YAML frontmatter). A **live auto-trigger test needs the plugin
+      installed in an interactive session** (cannot be done in this non-interactive run) — recommended
+      as a post-merge check.
+- [x] A plugin manifest packages the skills + `registry.yml`/`project-layout.md` config + templates.
+      — **Done:** `.claude-plugin/plugin.json`; the config/templates are bundled by virtue of living
+      in the same repo, and skills load them via `${CLAUDE_PLUGIN_ROOT}`.
+- [x] Skill `description`s disambiguated so the seven single-project skills trigger correctly;
+      `loop-all-worklists` kept explicit-invocation only (mutating). — **Done:** each description
+      states when-to-use + a "NOT for X (use Y)" disambiguator; `loop-all-worklists` is marked
+      MUTATING/explicit-only.
+**Design:** each skill is a **thin wrapper** that reads-and-follows its canonical `*.prompt.md`
+(single source of truth, no duplication). **Not shipped:** `onboard-project` (= PP-20); a separate
+`refresh-registry` skill (superseded by `tools/render-registry.py`).
+**Residual (portability):** the delegated lifecycle prompts still resolve portfolio-relative paths
+against the CWD, so the single-project/fan-out skills target a session whose CWD is the portfolio
+root; full any-workspace portability is follow-on. `analyze-repo` already has no such dependency.
+**Depends on:** PP-13 (done).
 
 #### PP-20: Add an `onboard-project` prompt — Score: 8
 **Score:** Security (0) + Drift (3) + Maintenance (5) = **8**
@@ -303,9 +320,9 @@ but the reciprocal pointer is missing.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 9 | **9 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16) — 0 open |
-| LOW (0–9) | 16 | 9 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-23) + **7 open** (PP-17..PP-22, PP-24) |
-| **Total Outstanding** | **7** | PP-17..PP-22, PP-24 — all LOW (PP-13/PP-14/PP-15/PP-23 resolved 2026-07-13; PP-16 by PR #18) |
-| Resolved | 18 | PP-00..PP-16, PP-23 |
+| LOW (0–9) | 16 | 10 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-23, PP-24) + **6 open** (PP-17..PP-22) |
+| **Total Outstanding** | **6** | PP-17..PP-22 — all LOW polish (PP-13/PP-14/PP-15/PP-23/PP-24 resolved 2026-07-13; PP-16 by PR #18) |
+| Resolved | 19 | PP-00..PP-16, PP-23, PP-24 |
 
 **Outstanding, by suggested order:** PP-13 (keystone — structured registry) -> PP-14, PP-15, PP-16
 (cheap high-value follow-ons) -> PP-23, PP-24 (registry-dependent) -> PP-17..PP-22 (new prompts /
