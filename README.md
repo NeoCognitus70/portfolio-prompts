@@ -53,7 +53,9 @@ given where one is required, the agent must ask, never guess.
 The three `*-all-*` orchestrators (`derive-all-worklists`, `loop-all-worklists`,
 `review-all-projects`) fan the corresponding single-project step across the whole registry in one
 pass. `portfolio-status` is a read-only portfolio snapshot outside the lifecycle, while
-`github-repo-analysis-prompt.md` is general-purpose and not registry-bound (see below).
+`github-repo-analysis-prompt.md` is general-purpose and not registry-bound (see below). After a
+code review, `triage-review-findings` is the optional explicit route from one named review to the
+next approved worklist.
 
 | Prompt | When to use | What it does |
 |---|---|---|
@@ -61,6 +63,7 @@ pass. `portfolio-status` is a read-only portfolio snapshot outside the lifecycle
 | [resume-session.prompt.md](resume-session.prompt.md) | Start of a session | Loads the project's latest handover from `session-notes/` (or bootstraps from the backlog if none exists), cross-checks it against the backlog and the live repo, and proposes the resume point — then waits for confirmation. |
 | [write-implementation-log.prompt.md](write-implementation-log.prompt.md) | After a dev task | Writes a new immutable implementation log into `{PROJECT}/docs/implementation-logs/` from the project's template. |
 | [write-code-review.prompt.md](write-code-review.prompt.md) | Code review | Uses `templates/code-review.template.md` and the project's `docs/backlog.md` to write a comprehensive review into the repo's `.review/` folder. |
+| [triage-review-findings.prompt.md](triage-review-findings.prompt.md) | Turning one named review into planned work | Reads the named review, deduplicates and backlog-checks its findings, presents prioritised candidates for explicit user approval, then writes the canonical portfolio-root worklist without actioning the project. |
 | [review-all-projects.prompt.md](review-all-projects.prompt.md) | Reviewing the whole portfolio | Orchestration fan-out, **evidence-only**: one parallel sub-agent per registry project, each following write-code-review for its project (review artefacts committed on a branch + PR, never merged); collates top findings into a cross-portfolio synthesis of common themes and highest-severity issues. |
 | [derive-worklist.prompt.md](derive-worklist.prompt.md) | Preparing work before a loop | Derivation only, **no actioning**: orients from handover + backlog, derives and cross-checks the items, writes `WORKLIST_{PROJECT}.md` (portfolio root) in exactly the format the loop consumes, and reports a detailed per-item breakdown in chat for review. |
 | [derive-all-worklists.prompt.md](derive-all-worklists.prompt.md) | Preparing work portfolio-wide | Orchestration fan-out, **no actioning**: one parallel sub-agent per registry project, each following derive-worklist for its project; collates all breakdowns, guard-stops, and user decisions into a single report. |
@@ -113,6 +116,8 @@ Read and follow portfolio-prompts/write-implementation-log.prompt.md using PROJE
 
 Read and follow portfolio-prompts/write-code-review.prompt.md using PROJECT=gb.automation.smoketests.sudoku.poc
 
+Read and follow portfolio-prompts/triage-review-findings.prompt.md using PROJECT=calculator-screenplay-bdd REVIEW=.review/CODE_REVIEW_<agent>_v<N>_<timestamp>
+
 Read and follow portfolio-prompts/derive-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
 Read and follow portfolio-prompts/derive-all-worklists.prompt.md
@@ -138,7 +143,8 @@ Read and follow portfolio-prompts/github-repo-analysis-prompt.md
 This repo is also a **Claude Code plugin** (`.claude-plugin/plugin.json`): every prompt has a
 matching **skill** in [`skills/`](skills/README.md) that triggers on a description and takes the
 `project` (or, for `analyze-repo`, the `repo`) as an **argument** — e.g. `/resume-session
-calculator-screenplay-bdd`. Each skill is a thin wrapper that reads and follows its canonical
+calculator-screenplay-bdd`. `triage-review-findings` also requires `REVIEW=<path>`. Each skill is a
+thin wrapper that reads and follows its canonical
 `*.prompt.md`, so the prompts stay the single source of truth. `analyze-repo` is the zero-config
 pilot (any repo, no registry). See [`skills/README.md`](skills/README.md) for install and the current
 portability caveat.
