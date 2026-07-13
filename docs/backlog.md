@@ -94,7 +94,7 @@ silently skip them. `proposals/registry.yml` lists them under `unregistered_cand
 `unregistered_candidates:`. That prototype is reconciled when PP-13 promotes it from proposal to the
 live source of truth — the README registry (the current source of truth) is already correct.
 
-
+#### PP-03: Centralise the validation-gate cascade — Score: 12
 **Score:** Security (0) + Drift (6) + Maintenance (6) = **12**
 **Status:** COMPLETE (PP-03)
 **Problem:** The first-hit-wins gate cascade is restated near-verbatim in `loop-worklist`,
