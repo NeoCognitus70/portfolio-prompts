@@ -141,6 +141,16 @@ projects:
       honestly returns nothing actionable. Treat its tests as the product's own suite, not portfolio
       Screenplay conventions. Live demo: gbrooks1970.github.io/markdown-renderer/.
 
+  - project: mobile-forex-automation
+    github: GBrooks1970/mobile-forex-automation
+    status: active
+    orchestration_target: true
+    gates: ["npm run verify"]
+    notes: >-
+      Mobile-web test-automation showcase: a deterministic forex demo SUT with Playwright Pixel and
+      iPhone emulation, Screenplay journeys, and a Vitest-tested P&L core. Live demo:
+      gbrooks1970.github.io/mobile-forex-automation/.
+
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta
@@ -157,11 +167,9 @@ projects:
 # ---------------------------------------------------------------------------
 # Drift watch — workspace repos (folders with a .git) that are NOT registry members above.
 # `tools/check-library.py` fails if a sibling repo is neither a registry row nor listed here, so
-# every workspace repo is deliberately classified. These two are acknowledged non-members pending a
+# every workspace repo is deliberately classified. This acknowledged non-member is pending a
 # membership decision (the same situation PP-16 resolved for markdown-renderer/orangehrm):
 #   - portfolio-landing        — the portfolio landing page, not a test-automation project
-#   - mobile-forex-automation  — present in the workspace; onboard-or-exclude decision outstanding
 # ---------------------------------------------------------------------------
 unregistered_candidates:
   - portfolio-landing
-  - mobile-forex-automation
