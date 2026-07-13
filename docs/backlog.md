@@ -78,15 +78,21 @@ asks every project for gates but under-gates itself.
 
 #### PP-16: Reconcile the registry with the two unregistered projects — Score: 10
 **Score:** Security (0) + Drift (8) + Maintenance (2) = **10**
-**Status:** OPEN — needs a user decision on membership.
+**Status:** RESOLVED 2026-07-13 — both projects were already onboarded to the README registry by
+**PR #18** (`dfc8c5e`), which landed independently before the 2026-07-13 review PRs. This item was
+authored against a `main` that predated #18, so it was born already-satisfied.
 **Problem (review weakness #8):** `markdown-renderer` and `orangehrm-pim-automation` exist in the
 workspace (both published, CI + Pages live) but are not registry rows, so the `*-all-*` fan-outs
 silently skip them. `proposals/registry.yml` lists them under `unregistered_candidates:`.
 **Success Criteria:**
-- [ ] A recorded decision: add each as a full registry row (with its gates/deviations), or document
-      why it is deliberately excluded.
-- [ ] If added, `orchestration_target` is set correctly so the fan-outs see them.
-**Note:** cheap and high-value; do early regardless of the score.
+- [x] A recorded decision: add each as a full registry row (with its gates/deviations), or document
+      why it is deliberately excluded. — **Done (#18):** both added as full `Active` rows with gates
+      (`markdown-renderer` = `npm run verify`; `orangehrm-pim-automation` = per `ci.yml`, docker + `npm test`).
+- [x] If added, `orchestration_target` is set correctly so the fan-outs see them. — **Done:** both
+      are plain `Active` rows, so the `*-all-*` fan-outs now target them.
+**Residual (tracked under PP-13, not here):** `proposals/registry.yml` still lists both under
+`unregistered_candidates:`. That prototype is reconciled when PP-13 promotes it from proposal to the
+live source of truth — the README registry (the current source of truth) is already correct.
 
 
 **Score:** Security (0) + Drift (6) + Maintenance (6) = **12**
@@ -272,10 +278,10 @@ but the reciprocal pointer is missing.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 9 | 5 complete (PP-00, PP-03, PP-04, PP-05, PP-10) + **4 open** (PP-13, PP-14, PP-15, PP-16) |
+| MEDIUM (10–19) | 9 | 6 complete (PP-00, PP-03, PP-04, PP-05, PP-10, PP-16) + **3 open** (PP-13, PP-14, PP-15) |
 | LOW (0–9) | 16 | 8 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12) + **8 open** (PP-17..PP-24) |
-| **Total Outstanding** | **12** | PP-13..PP-24 (from the 2026-07-13 review) |
-| Resolved | 13 | PP-00..PP-12 |
+| **Total Outstanding** | **11** | PP-13, PP-14, PP-15 + PP-17..PP-24 (PP-16 resolved by PR #18) |
+| Resolved | 14 | PP-00..PP-12, PP-16 |
 
 **Outstanding, by suggested order:** PP-13 (keystone — structured registry) -> PP-14, PP-15, PP-16
 (cheap high-value follow-ons) -> PP-23, PP-24 (registry-dependent) -> PP-17..PP-22 (new prompts /
