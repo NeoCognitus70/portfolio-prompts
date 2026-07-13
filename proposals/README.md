@@ -1,15 +1,19 @@
 # Proposals — structured registry + skills packaging
 
-Prototype artefacts from the "turn the prompts into portable skills" review. **Nothing here is
-wired into the live library yet** — these are drafts for discussion, kept in `proposals/` so they
-don't touch the shipping prompts.
+Artefacts from the "turn the prompts into portable skills" review.
 
-Two deliverables:
+- **`registry.yml` has been promoted** out of this folder to [`../registry.yml`](../registry.yml)
+  — it is now the library's machine-readable registry (**PP-13, done**). The notes below describe
+  its design; the live file lives at the library root.
+- The **`analyze-repo` skill** below is **still a draft** (**PP-24**), deliberately kept out of
+  `.claude/skills/` so it cannot auto-fire until reviewed.
 
-1. [`registry.yml`](registry.yml) — the prose README registry table, restructured as
-   machine-readable data.
+Deliverables:
+
+1. [`../registry.yml`](../registry.yml) — the prose README registry table, restructured as
+   machine-readable data. **Promoted (PP-13).**
 2. [`skills/analyze-repo/`](skills/analyze-repo/SKILL.md) — the proof-of-concept skill, distilled
-   from [`github-repo-analysis-prompt.md`](../github-repo-analysis-prompt.md).
+   from [`github-repo-analysis-prompt.md`](../github-repo-analysis-prompt.md). **Still a draft (PP-24).**
 
 ---
 
@@ -39,8 +43,9 @@ targets  = registry.projects where orchestration_target  # the *-all-* fan-out s
 **What it fixes from the review**, concretely:
 - Weakness #1 (prose registry) — paths become data.
 - Weakness #7 (hand-maintained couplings) — `couples_with` makes the coupling check mechanical.
-- Weakness #8 (silent drift) — `unregistered_candidates:` lists projects in the workspace but not
-  the registry (here: `markdown-renderer`, `orangehrm-pim-automation`), so a self-check can flag them.
+- Weakness #8 (silent drift) — `unregistered_candidates:` lists workspace folders with no registry
+  row so a self-check (PP-15) can flag them; now **empty**, since `markdown-renderer` and
+  `orangehrm-pim-automation` were onboarded (PP-16).
 
 **The README stays** — but as a *generated* view. A `refresh-registry` skill/script would render
 the table from `registry.yml`, so the human-readable and machine-readable copies can never diverge.

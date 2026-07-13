@@ -1,14 +1,15 @@
-# registry.yml — structured project registry for the portfolio-prompts library
+# registry.yml — machine-readable project registry for the portfolio-prompts library
 #
-# PROPOSAL / PROTOTYPE. Replaces the prose table in README.md as the machine-readable
-# source of truth. The README table would be *regenerated* from this file (see the
-# `refresh-registry` proposal in proposals/README.md), so the human view and the machine
-# view can never drift apart.
+# This is the **structured, machine-readable form** of the project registry table in README.md.
+# Tooling and skills LOAD this file instead of parsing English out of the README's prose cells;
+# humans read the README table. The two mirror each other row-for-row.
 #
-# Why this exists: today every prompt must parse English cells in the README to resolve a
-# project's backlog path, review folder, gates, and couplings. That is the collection's
-# chief drift risk (review weakness #1) and the main blocker to turning the prompts into
-# portable skills. A skill LOADS this file; it does not re-read prose each invocation.
+# Promoted from proposals/ under PP-13 (was a prototype merged in PR #20). Until PP-23 automates
+# generating the README table from this file, **edit both together** — the README table is the
+# human view, this file is the source tooling consumes.
+#
+# Precedence, exactly as project-layout.md describes: a project's `deviations:` override the
+# `defaults:` below; recorded deviations are still full onboarding, not "not onboarded".
 #
 # House style: en-GB, ASCII, two-space indent. `{project}` interpolates the row's `project`.
 
@@ -42,7 +43,7 @@ defaults:
     - ask                  # otherwise, ask the user what "validated" means
 
 # ---------------------------------------------------------------------------
-# Projects — one row per registry member. `project` is the PROJECT= value.
+# Projects — one row per registry member, in README order. `project` is the PROJECT= value.
 # ---------------------------------------------------------------------------
 projects:
   - project: magento-checkout-automation
@@ -52,8 +53,8 @@ projects:
     gates: ["npm run verify"]
     orchestration_target: true
     notes: >-
-      Reference project. Reopened 2026-06-19 to deliver backlog item #12 (screenshots in
-      reports, ADR-0007). Future-work proposals in docs/planning/.
+      Reference project. Reopened 2026-06-19 to deliver backlog item #12 (screenshots in reports,
+      ADR-0007). Future-work proposals in docs/planning/.
 
   - project: hand-baked-screenplay-pattern
     github: NeoCognitus70/hand-baked-screenplay-pattern
@@ -108,6 +109,33 @@ projects:
       One SPEC unit at a time; feature file reviewed before framework code; deviations need an
       ADR change note. Gates per docs/project-contract.md.
 
+  - project: orangehrm-pim-automation
+    github: GBrooks1970/orangehrm-pim-automation
+    status: active
+    orchestration_target: true
+    gates:                    # no root `verify` script
+      type: ci
+      static: ["npx tsc --noEmit"]          # npm run typecheck
+      e2e:
+        bring_up: docker compose up -d --wait   # docker-compose.yml; seeded DB + Conf.php
+        run: npm test                            # cucumber `default`, not @deferred
+      notes: CI (Node 20) also builds Serenity living docs and deploys Pages
+    notes: >-
+      OrangeHRM PIM add-employee E2E (Serenity/JS + Playwright + Cucumber). Backlog is a simple
+      table (not the scored template). One open, deliberately non-blocking item (#4). Live docs:
+      gbrooks1970.github.io/orangehrm-pim-automation.
+
+  - project: markdown-renderer
+    github: GBrooks1970/markdown-renderer
+    status: active
+    product: true             # a shipped product with its own suite, NOT a Screenplay test project
+    orchestration_target: true
+    gates: ["npm run verify"]  # typecheck + Vitest units + Playwright e2e; CI Node 24 + Pages
+    notes: >-
+      Static, offline, browser-based Markdown viewer. Currently 0 outstanding (FR-1..FR-11 shipped
+      and live), so a derive honestly returns nothing actionable. Treat its "tests" as the product's
+      own suite, not portfolio Screenplay conventions. Live demo: gbrooks1970.github.io/markdown-renderer/.
+
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta              # the prompt library itself, self-onboarded
@@ -119,11 +147,9 @@ projects:
       type: docs_only         # link/grep checks, no build
 
 # ---------------------------------------------------------------------------
-# Drift watch — projects present in the workspace but NOT yet registry members.
-# The *-all-* fan-outs silently skip anything not listed under `projects:` above,
-# so an unregistered project is invisible to portfolio-wide work (review weakness #8).
-# A `refresh-registry`/self-check skill would diff the workspace against this list and flag it.
+# Drift watch — workspace folders that are NOT registry members above.
+# Empty now (markdown-renderer + orangehrm-pim-automation were onboarded in PR #18, PP-16).
+# A PP-15 self-check would diff the workspace against `projects:` and repopulate this if a new
+# project folder appears without a row, so the *-all-* fan-outs never silently skip one.
 # ---------------------------------------------------------------------------
-unregistered_candidates:
-  - markdown-renderer          # 5th project; published, CI + Pages live
-  - orangehrm-pim-automation   # 6th project; published, CI + Pages live
+unregistered_candidates: []

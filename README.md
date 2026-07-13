@@ -28,6 +28,10 @@ given where one is required, the agent must ask, never guess.
 | `markdown-renderer` | GBrooks1970/markdown-renderer | Active (product) | **A shipped product, not a Screenplay test suite** — a static, offline, browser-based Markdown viewer with its own test suite. **Backlog:** `docs/backlog.md`; design in `docs/design-document*.md`. Gates: `npm run verify` (typecheck + Vitest units + Playwright e2e), CI Node 24 + Pages deploy. Live demo: gbrooks1970.github.io/markdown-renderer/. Currently **0 outstanding** (FR-1..FR-11 shipped and live), so a derive honestly returns nothing actionable. Treat its "tests" as the product's own suite, not portfolio Screenplay conventions. |
 | `portfolio-prompts` | NeoCognitus70/portfolio-prompts | Meta (self-onboarded) | The prompt library itself. **Backlog:** `portfolio-prompts/docs/backlog.md`; gates: docs-only (link/grep checks — no build). Single-project prompts (`resume-session`, `derive-worklist`, `loop-worklist`, `write-implementation-log`, `write-code-review`) may target `PROJECT=portfolio-prompts`. **Not a target of the orchestration fan-outs** (`derive-all-worklists`, `loop-all-worklists`, `review-all-projects`) — those operate on the test-automation projects, not the library. |
 
+> **Machine-readable twin:** this table mirrors [`registry.yml`](registry.yml), the structured form
+> that tooling and skills load (see [project-layout.md](project-layout.md) §"Machine-readable
+> registry"). Until PP-23 automates generating this table from it, keep both in sync when a row changes.
+
 ## Prompts
 
 **Typical lifecycle** (single project):
