@@ -1,6 +1,6 @@
 # portfolio-prompts — Backlog
 
-**Version:** 4 — PP-17..PP-19 documentation-polish tranche resolved; PP-20..PP-22 remain open
+**Version:** 5 — PP-20..PP-22 workflow tranche resolved; no outstanding items
 **Last Updated:** 2026-07-13
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
@@ -198,8 +198,8 @@ Externalising those into loadable config (PP-13) lets each `*.prompt.md` become 
       states when-to-use + a "NOT for X (use Y)" disambiguator; `loop-all-worklists` is marked
       MUTATING/explicit-only.
 **Design:** each skill is a **thin wrapper** that reads-and-follows its canonical `*.prompt.md`
-(single source of truth, no duplication). **Not shipped:** `onboard-project` (= PP-20); a separate
-`refresh-registry` skill (superseded by `tools/render-registry.py`).
+(single source of truth, no duplication). `onboard-project` was intentionally left to PP-20 and is
+now shipped; a separate `refresh-registry` skill remains superseded by `tools/render-registry.py`.
 **Residual (portability):** the delegated lifecycle prompts still resolve portfolio-relative paths
 against the CWD, so the single-project/fan-out skills target a session whose CWD is the portfolio
 root; full any-workspace portability is follow-on. `analyze-repo` already has no such dependency.
@@ -207,11 +207,15 @@ root; full any-workspace portability is follow-on. `analyze-repo` already has no
 
 #### PP-20: Add an `onboard-project` prompt — Score: 8
 **Score:** Security (0) + Drift (3) + Maintenance (5) = **8**
-**Status:** OPEN
+**Status:** RESOLVED 2026-07-13 — added a prospective-project prompt and thin plugin skill. The
+workflow discovers and confirms registry metadata, gates, backlog seed items, path deviations, and
+recommended scaffold before any write. It stages the target scaffold PR first when needed, waits
+for that contract to reach the target default branch, and only then stages the generated registry
+PR; neither PR is merged by the workflow.
 **Problem:** Onboarding a new project (registry row + `docs/backlog.md` + template scaffolding) is
 implicit today — the inverse of `close-project` does not exist. It is done ad hoc.
 **Success Criteria:**
-- [ ] A prompt that scaffolds a new project's backlog from the template, creates the recommended
+- [x] A prompt that scaffolds a new project's backlog from the template, creates the recommended
       layout, and adds its registry row (via PR), stopping for the user where a decision is needed.
 
 #### PP-17: Centralise the branch + PR universal norm into the contract — Score: 7
@@ -332,11 +336,11 @@ but the reciprocal pointer is missing.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 9 | **9 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16) — 0 open |
-| LOW (0–9) | 16 | 15 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-19, PP-21..PP-24) + **1 open** (PP-20) |
-| **Total Outstanding** | **1** | PP-20 — LOW addition |
-| Resolved | 24 | PP-00..PP-19, PP-21..PP-24 |
+| LOW (0–9) | 16 | **16 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24) — 0 open |
+| **Total Outstanding** | **0** | — |
+| Resolved | 25 | PP-00..PP-24 |
 
-**Outstanding, by suggested order:** PP-20 (`onboard-project`).
+**Outstanding, by suggested order:** None.
 
 ---
 

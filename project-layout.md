@@ -12,15 +12,21 @@ when neither the default path nor a registry-recorded alternative exists).
 
 ## The `PROJECT` parameter
 
-Every prompt is invoked against one project, named as `PROJECT=<folder name at the portfolio
-root>` (e.g. `PROJECT=magento-checkout-automation`). The README's **project registry** lists the
-valid values. If an invocation does not name a `PROJECT`, the agent must **ask — never guess**,
-and never infer it from which files happen to be open.
+Every project-bound lifecycle prompt is invoked against one registered project, named as
+`PROJECT=<folder name at the portfolio root>` (e.g. `PROJECT=magento-checkout-automation`). The
+README's **project registry** lists the valid values. If an invocation does not name a required
+`PROJECT`, the agent must **ask — never guess**, and never infer it from which files happen to be
+open.
 
-**Exception — portfolio-scoped orchestration prompts** (`derive-all-worklists.prompt.md`,
-`loop-all-worklists.prompt.md`, `review-all-projects.prompt.md`): these take the whole registry as
-their target and need no `PROJECT=`; each sub-agent they launch receives a single `PROJECT=` and
-is bound by this contract as normal.
+**Onboarding exception:** `onboard-project.prompt.md` requires `PROJECT=`, but it names a
+prospective local folder that must **not** already be a registry row. The prompt verifies that
+folder and stages the required project/registry PRs before it becomes a valid lifecycle target.
+
+**Portfolio-scoped exception:** `derive-all-worklists.prompt.md`, `loop-all-worklists.prompt.md`,
+`review-all-projects.prompt.md`, and `portfolio-status.prompt.md` take the whole registry as their
+target and need no `PROJECT=`. Each sub-agent launched by an orchestration prompt receives one
+registered `PROJECT=` and is bound by this contract as normal. The standalone
+`github-repo-analysis-prompt.md` is general-purpose and not registry-bound.
 
 ## Machine-readable registry — `registry.yml`
 
