@@ -1,10 +1,12 @@
 # portfolio-prompts — Backlog
 
-**Version:** 2 — all PP items (PP-00..PP-12) merged to `main` via PR #12 (`85c860f`)
-**Last Updated:** 2026-06-17
-**Based on:** Analysis of all 13 library files (chat review, 2026-06-17), focus on
-`github-repo-analysis-prompt.md`. Items carry the `PP-` prefix and mirror
-`WORKLIST_portfolio-prompts.md` at the portfolio root (loop memory, outside this repo).
+**Version:** 3 — PP-13..PP-24 added from the 2026-07-13 library review (PP-00..PP-12 remain merged via PR #12, `85c860f`)
+**Last Updated:** 2026-07-13
+**Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
+whose theme is turning the prose registry into machine-readable config and packaging the prompts as
+portable skills. The first review (2026-06-17) produced PP-00..PP-12 (all resolved). Items carry the
+`PP-` prefix and mirror `WORKLIST_portfolio-prompts.md` at the portfolio root (loop memory, outside
+this repo).
 
 This backlog is the source of truth for improvements to the **prompt library itself**. Ordering is
 by priority score (highest first).
@@ -26,11 +28,67 @@ test-automation projects, not the prompt library.
 
 ## Outstanding Items
 
-Ordered by priority score (highest first).
+Ordered by priority score (highest first). PP-13..PP-24 derive from the 2026-07-13 review
+([`library-review_2026-07-13.md`](library-review_2026-07-13.md)); the review's section 4 weakness
+numbers are cited per item. A `WORKLIST_portfolio-prompts.md` can be derived from these with
+`derive-worklist.prompt.md using PROJECT=portfolio-prompts`.
 
 ### MEDIUM Priority (Score: 10–19)
 
-#### PP-03: Centralise the validation-gate cascade — Score: 12
+#### PP-13: Extract the project registry into a structured `registry.yml` — Score: 14
+**Score:** Security (0) + Drift (8) + Maintenance (6) = **14**
+**Status:** OPEN — prototype exists at `proposals/registry.yml` (not yet wired in).
+**Problem (review weaknesses #1, #7, #8):** Every prompt resolves a project's backlog path, review
+folder, gates, and couplings by *parsing English* out of the README table and its prose deviation
+notes. This is the library's chief drift risk and the main blocker to turning the prompts into
+portable skills.
+**Success Criteria:**
+- [ ] A machine-readable `registry.yml` (or equivalent) holds one `defaults:` block plus one row
+      per project: `github`, `status`, `gates`, `deviations` (backlog/review/log/template paths),
+      `couples_with`, `orchestration_target`, and any live-API/SDD/multi-stack flags.
+- [ ] The prompts/contract cite it as the source a skill loads; the README table becomes a
+      *generated* view (see PP-23) rather than a hand-maintained one.
+- [ ] The prototype in `proposals/registry.yml` is reviewed, corrected, and promoted (or replaced).
+**Depends on:** nothing. **Unblocks:** PP-16, PP-23, PP-24.
+
+#### PP-14: Add a handover manifest/index to kill the version-parsing hazard — Score: 10
+**Score:** Security (0) + Drift (6) + Maintenance (4) = **10**
+**Status:** OPEN
+**Problem (review weakness #2):** Handover version lives in the filename (`_v13_`), so every prompt
+must repeat "parse `{N}` numerically, not lexically" and "glob the root for stray files". The design
+causes a recurring class of bug (a v11 was once written to the root and missed).
+**Success Criteria:**
+- [ ] `session-notes/` carries a manifest (e.g. `index.json`/`manifest.yml`) listing
+      `{project, version, timestamp, path}`, updated by `write-handover` on every write.
+- [ ] `resume-session`, `derive-worklist`, `loop-worklist`, and `write-handover` read "latest" from
+      the manifest, falling back to the numeric-glob rule only if the manifest is absent.
+
+#### PP-15: Add real self-gates for the library (path/registry/format checks) — Score: 10
+**Score:** Security (0) + Drift (5) + Maintenance (5) = **10**
+**Status:** OPEN
+**Problem (review weakness #4):** The library's gates are "docs-only (link/grep)". Nothing checks
+that a path a prompt cites still exists, that every registry project name maps to a real folder, or
+that the canonical worklist example parses as the format `loop-worklist` Step 0 expects. The library
+asks every project for gates but under-gates itself.
+**Success Criteria:**
+- [ ] A check script (invoked as the library's `verify` gate) asserts: every registry `project`
+      resolves to a folder; every path cited in `project-layout.md`/prompts exists; the worklist
+      example parses; internal doc links resolve.
+- [ ] `registry.yml` (PP-13), if present, is the input for the folder/name check.
+
+#### PP-16: Reconcile the registry with the two unregistered projects — Score: 10
+**Score:** Security (0) + Drift (8) + Maintenance (2) = **10**
+**Status:** OPEN — needs a user decision on membership.
+**Problem (review weakness #8):** `markdown-renderer` and `orangehrm-pim-automation` exist in the
+workspace (both published, CI + Pages live) but are not registry rows, so the `*-all-*` fan-outs
+silently skip them. `proposals/registry.yml` lists them under `unregistered_candidates:`.
+**Success Criteria:**
+- [ ] A recorded decision: add each as a full registry row (with its gates/deviations), or document
+      why it is deliberately excluded.
+- [ ] If added, `orchestration_target` is set correctly so the fan-outs see them.
+**Note:** cheap and high-value; do early regardless of the score.
+
+
 **Score:** Security (0) + Drift (6) + Maintenance (6) = **12**
 **Status:** COMPLETE (PP-03)
 **Problem:** The first-hit-wins gate cascade is restated near-verbatim in `loop-worklist`,
@@ -77,6 +135,82 @@ the loop/resume/derive prompts have nothing to orient from.
       confirmation, with the coupled/sequential agent included in the count.
 
 ### LOW Priority (Score: 0–9)
+
+#### PP-23: Add a `refresh-registry` prompt/script (regenerate README from `registry.yml`) — Score: 9
+**Score:** Security (0) + Drift (5) + Maintenance (4) = **9**
+**Status:** OPEN — **depends on PP-13.**
+**Problem:** Once the registry is data (PP-13), the README table must stay in sync with it. A
+regenerator makes the human-readable table a generated view, so the two copies cannot diverge.
+**Success Criteria:**
+- [ ] A prompt or script renders the README registry table from `registry.yml`; running it on a
+      clean tree produces no diff.
+
+#### PP-24: Package the collection as a portable skill/plugin pack — Score: 9
+**Score:** Security (0) + Drift (3) + Maintenance (6) = **9**
+**Status:** OPEN (epic) — POC exists at `proposals/skills/analyze-repo/` + `proposals/README.md`.
+**Problem:** The prompts are portfolio-coupled only through `project-layout.md` + the registry.
+Externalising those into loadable config (PP-13) lets each `*.prompt.md` become a `SKILL.md` with
+`project` as an argument, runnable on any project.
+**Success Criteria:**
+- [ ] `github-repo-analysis` shipped as the zero-config pilot skill and smoke-tested on a real repo.
+- [ ] A plugin manifest packages the skills + `registry.yml`/`project-layout.md` config + templates.
+- [ ] Skill `description`s disambiguated so the seven single-project skills trigger correctly;
+      `loop-all-worklists` kept explicit-invocation only (mutating).
+**Depends on:** PP-13 (for the registry-bound skills). The pilot skill needs neither.
+
+#### PP-20: Add an `onboard-project` prompt — Score: 8
+**Score:** Security (0) + Drift (3) + Maintenance (5) = **8**
+**Status:** OPEN
+**Problem:** Onboarding a new project (registry row + `docs/backlog.md` + template scaffolding) is
+implicit today — the inverse of `close-project` does not exist. It is done ad hoc.
+**Success Criteria:**
+- [ ] A prompt that scaffolds a new project's backlog from the template, creates the recommended
+      layout, and adds its registry row (via PR), stopping for the user where a decision is needed.
+
+#### PP-17: Centralise the branch + PR universal norm into the contract — Score: 7
+**Score:** Security (0) + Drift (4) + Maintenance (3) = **7**
+**Status:** OPEN
+**Problem (review weakness #6):** "All changes to `main` via branch + PR (harness blocks direct
+pushes, 2026-06-10)" is restated in resume, loop, handover, close, and the contract — the same
+PP-03/04/05 duplication pattern, not yet centralised.
+**Success Criteria:**
+- [ ] The norm appears in full in exactly one place (`project-layout.md` §"Working norms"); the
+      prompts cite it rather than restating the 2026-06-10 detail.
+
+#### PP-21: Add a read-only `portfolio-status` prompt — Score: 6
+**Score:** Security (0) + Drift (2) + Maintenance (4) = **6**
+**Status:** OPEN
+**Problem:** There is no single command to see cross-registry state (latest handover version, open
+PRs, CI colour, backlog counts) without mutating anything.
+**Success Criteria:**
+- [ ] A read-only prompt that reports a per-project status line across the registry; writes no files
+      and makes no repo changes.
+
+#### PP-18: Make invocation paths OS-neutral — Score: 6
+**Score:** Security (0) + Drift (3) + Maintenance (3) = **6**
+**Status:** OPEN
+**Problem (review weakness #3):** Every invocation example uses Windows backslashes
+(`portfolio-prompts\name.prompt.md`), a friction for cross-platform reuse and skill packaging.
+**Success Criteria:**
+- [ ] Examples use forward slashes (valid on Windows too), or note both; no behaviour change.
+
+#### PP-19: Add a human "reader's map" to the README — Score: 5
+**Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
+**Status:** OPEN
+**Problem (review weakness #5):** The prompts are dense; a newcomer has no short orientation
+separate from the machine conventions.
+**Success Criteria:**
+- [ ] A one-paragraph "start here" map in the README distinguishing the human reading path from the
+      machine conventions in `project-layout.md`.
+
+#### PP-22: Add a `triage-review-findings` prompt — Score: 5
+**Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
+**Status:** OPEN
+**Problem:** The bridge from a `write-code-review` output to a derived worklist is folded into
+`derive-worklist` today; an explicit triage step would make the review -> worklist hand-off legible.
+**Success Criteria:**
+- [ ] A prompt (or a documented `derive-worklist` mode) that reads a named review and emits a
+      prioritised, deduplicated candidate worklist for the user to approve.
 
 #### PP-06: De-duplicate the `PROJECT=` rules between README and project-layout — Score: 9
 **Score:** Security (0) + Drift (5) + Maintenance (4) = **9**
@@ -138,10 +272,14 @@ but the reciprocal pointer is missing.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 5 | 5 complete (PP-00, PP-03, PP-04, PP-05, PP-10) |
-| LOW (0–9) | 8 | 8 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12) |
-| **Total Outstanding** | **0** | all PP items complete 2026-06-17 |
+| MEDIUM (10–19) | 9 | 5 complete (PP-00, PP-03, PP-04, PP-05, PP-10) + **4 open** (PP-13, PP-14, PP-15, PP-16) |
+| LOW (0–9) | 16 | 8 complete (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12) + **8 open** (PP-17..PP-24) |
+| **Total Outstanding** | **12** | PP-13..PP-24 (from the 2026-07-13 review) |
 | Resolved | 13 | PP-00..PP-12 |
+
+**Outstanding, by suggested order:** PP-13 (keystone — structured registry) -> PP-14, PP-15, PP-16
+(cheap high-value follow-ons) -> PP-23, PP-24 (registry-dependent) -> PP-17..PP-22 (new prompts /
+polish). PP-16 needs a user decision on project membership; PP-23/PP-24 depend on PP-13.
 
 ---
 
