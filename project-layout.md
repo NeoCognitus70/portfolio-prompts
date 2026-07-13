@@ -33,10 +33,11 @@ flags). The README table is the human-readable view of the same data.
 - **Resolution order is unchanged.** A project's `deviations:` override the `defaults:`, exactly as
   the prose rules in this contract describe; `orchestration_target: false` marks a row (currently
   only the meta `portfolio-prompts`) out of the `*-all-*` fan-outs.
-- **Two views, kept in lockstep.** Until PP-23 automates generating the README table from
-  `registry.yml`, **edit both together** whenever a project's row changes — the same discipline the
-  handovers' `.md`/`.html` pair uses. `registry.yml` is the source tooling trusts; the README table
-  is the source humans read.
+- **The README table is generated** (PP-23). To change a project's row, edit `registry.yml`, then
+  run `python tools/render-registry.py` (from `portfolio-prompts/`); it rewrites the block between
+  the README's `<!-- REGISTRY:START -->`/`<!-- REGISTRY:END -->` markers. `--check` exits non-zero
+  if the table is stale — usable as a gate. Never hand-edit the table between the markers.
+  `registry.yml` is the source tooling trusts; the README table is its generated human view.
 - A skill resolves a project by loading its row:
   `backlog = row.deviations.backlog ?? defaults.backlog`,
   `gates = first-hit(defaults.gate_cascade, row.gates)`,
