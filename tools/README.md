@@ -7,6 +7,7 @@ and are run from the `portfolio-prompts/` directory.
 |---|---|---|
 | [`render-registry.py`](render-registry.py) | Generate the README project-registry table from `registry.yml` (the source of truth). Rewrites the block between the README `<!-- REGISTRY:START/END -->` markers. `--check` exits non-zero if the table is stale. | PP-23 |
 | [`check-library.py`](check-library.py) | The library's **self-gate**: registry rows map to real folders, no unclassified workspace repo, README table is generated, internal doc links resolve, and the worklist example parses. | PP-15 |
+| [`build-handover-manifest.py`](build-handover-manifest.py) | Rebuild `session-notes/manifest.json` (the handover index) by scanning the folder, so readers resolve "latest per project" without re-deriving it from filenames. Run by `write-handover`; `--check` exits non-zero if stale. Writes outside the repo (untracked). | PP-14 |
 
 ## The library's verify gate
 
