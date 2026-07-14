@@ -18,6 +18,7 @@ Checks:
                           is not restated in operational prompts or skill bodies.
   7. Invocation paths   — active invocation examples use OS-neutral forward slashes.
   8. Worklist example   — the canonical example in project-layout.md parses as the documented format.
+  9. Workspace preflight — deterministic clean/dirty/behind/topic/missing-evidence scenarios pass.
 
 Usage (from the portfolio-prompts/ directory):
     python tools/check-library.py            # exit 0 if all checks pass, 1 otherwise
@@ -293,6 +294,41 @@ def check_worklist_example(fails: list[str]) -> None:
         fails.append("[worklist-example] example has no `- [ ] <id> — <desc> — <source>` item line")
 
 
+def check_workspace_preflight(fails: list[str]) -> None:
+    command = "python portfolio-prompts/tools/workspace_preflight.py"
+    for name in (
+        "derive-all-worklists.prompt.md",
+        "review-all-projects.prompt.md",
+        "loop-all-worklists.prompt.md",
+    ):
+        text = (HERE / name).read_text(encoding="utf-8")
+        step_one = re.search(r"^## Step 1\b.*?(?=^## Step 2\b)", text, re.MULTILINE | re.DOTALL)
+        if not step_one or command not in step_one.group(0):
+            fails.append(
+                f"[workspace-preflight] {name} must run the canonical command in Step 1"
+            )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-B",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/tests",
+            "-p",
+            "test_workspace_preflight.py",
+        ],
+        cwd=HERE,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        detail = (result.stdout + "\n" + result.stderr).strip()
+        fails.append("[workspace-preflight] deterministic scenario tests failed:\n" + detail)
+
+
 def main() -> int:
     fails: list[str] = []
     for check in (
@@ -305,6 +341,7 @@ def main() -> int:
         check_working_norms,
         check_invocation_paths,
         check_worklist_example,
+        check_workspace_preflight,
     ):
         check(fails)
     if fails:
@@ -314,7 +351,7 @@ def main() -> int:
         return 1
     print("check-library: PASS (registry classification and lifecycle semantics, README generated, "
           "least-privilege CI, internal links, skills, working norms, invocation paths, "
-          "worklist example)")
+          "worklist example, workspace preflight scenarios)")
     return 0
 
 

@@ -19,15 +19,17 @@ the fan-out and the collated report. (This is the portfolio-scoped exception to 
 rule in `portfolio-prompts/project-layout.md`: the orchestration needs no `PROJECT=`; every
 sub-agent receives its own.)
 
-## Step 1 — Establish the project list
+## Step 1 — Preflight and establish the project list
 
-Read the **project registry** table in `portfolio-prompts/README.md`:
+From the portfolio root, run `python portfolio-prompts/tools/workspace_preflight.py`; if the
+invocation names `PROJECTS=`, append `--projects=<the same comma-separated value>`. This is the
+mandatory read-only preflight in `portfolio-prompts/project-layout.md` §"Workspace preflight".
 
-- If the invocation names `PROJECTS=`, use exactly that subset (validate each name against the
-  registry — an unknown name is reported, not guessed at).
-- Otherwise take **every registry row**, including projects marked Complete (their derivation
-  honestly returning "nothing actionable" is a useful confirmation, and a stale "Complete" claim
-  would surface here). Skip only rows whose status says **not onboarded**.
+- Use the command's registry-derived target list — do not reconstruct one from README prose.
+- Exit `2` stops the fan-out. On exit `1`, exclude every `BLOCKED` project and carry its blockers
+  into the final report. `READY` and `WARN` projects remain eligible; carry their warnings into the
+  report rather than silently treating the evidence as current.
+- Resting targets remain in scope: an honest "nothing actionable" result is useful confirmation.
 
 Note for the report which projects already have a `WORKLIST_{PROJECT}.md` at the portfolio root —
 expect their agents to stop at the guard rather than derive.

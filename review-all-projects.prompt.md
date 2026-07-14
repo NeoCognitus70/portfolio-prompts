@@ -20,19 +20,18 @@ fan-out, and the collated cross-portfolio summary. (Portfolio-scoped orchestrati
 is needed; every sub-agent receives its own — see the exception in
 `portfolio-prompts/project-layout.md`.)
 
-## Step 1 — Establish the targets
+## Step 1 — Preflight and establish the targets
 
-Read the **project registry** table in `portfolio-prompts/README.md`:
+From the portfolio root, run `python portfolio-prompts/tools/workspace_preflight.py`; if the
+invocation names `PROJECTS=`, append `--projects=<the same comma-separated value>`. This is the
+mandatory read-only preflight in `portfolio-prompts/project-layout.md` §"Workspace preflight".
 
-- If the invocation names `PROJECTS=`, use exactly that subset (validate each name against the
-  registry — an unknown name is reported, not guessed at).
-- Otherwise take **every onboarded registry row**. Skip only rows whose status says **not
-  onboarded** (a project with no `docs/backlog.md`, or no registry-recorded backlog deviation,
-  cannot be reviewed against its source of truth — report it as skipped).
-
-Note each project's registry-recorded **deviations** (e.g. the sudoku POC's review folder is
-`DOCS/.review/`, its backlog `DOCS/.planning/backlog.md`) — the sub-agents need these, and the
-review's output location follows them.
+- Use the command's registry-derived target list — do not reconstruct one from README prose.
+- Exit `2` stops the fan-out. On exit `1`, exclude every `BLOCKED` project and carry its blockers
+  into the final report. `READY` and `WARN` projects remain eligible; carry their warnings into the
+  report rather than silently treating the evidence as current.
+- Note each target's registry-resolved deviations and gates from the report. The review output
+  follows the registry review-folder deviation (for example Sudoku uses `DOCS/.review/`).
 
 ## Step 2 — Parallelism and the coupling note
 
@@ -90,6 +89,7 @@ When all agents return, produce one report:
 
 **Per project**, in registry order:
 - The review directory path and the PR URL (awaiting the user's review/merge).
+- The preflight status and any warning that qualified the local evidence.
 - Validation run and result (or that it was not run, and why — e.g. the cross-tree build skip).
 - The top 3–5 findings by severity, as the agent reported them.
 - Any question the agent recorded.

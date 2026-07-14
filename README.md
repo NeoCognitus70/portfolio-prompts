@@ -68,7 +68,9 @@ Before a project's first lifecycle, `onboard-project` establishes its backlog/sc
 entry through staged PRs.
 The three `*-all-*` orchestrators (`derive-all-worklists`, `loop-all-worklists`,
 `review-all-projects`) fan the corresponding single-project step across the whole registry in one
-pass. `portfolio-status` is a read-only portfolio snapshot outside the lifecycle, while
+pass. Each starts with the registry-driven read-only
+[`workspace_preflight.py`](tools/workspace_preflight.py) safety report before launching any agent.
+`portfolio-status` is a read-only portfolio snapshot outside the lifecycle, while
 `github-repo-analysis-prompt.md` is general-purpose and not registry-bound (see below). After a
 code review, `triage-review-findings` is the optional explicit route from one named review to the
 next approved worklist.
@@ -96,6 +98,8 @@ next approved worklist.
 | [github-repo-analysis-prompt.md](github-repo-analysis-prompt.md) | Understanding or evaluating **any** repository (typically one outside this portfolio) | Standalone, evidence-based, pedagogical technical report on a repo by URL or path: purpose, architecture, data flow, SOLID, an ISTQB-aligned test-strategy review, a dependency/security/licence pass, risks, and an improvement roadmap. Takes **no `PROJECT=`** and is not bound to the registry. Depth-controlled (`summary`/`standard`/`deep-dive`). For an *onboarded* portfolio project reviewed against its own backlog into `.review/`, use `write-code-review.prompt.md` instead. |
 
 **Conventions the prompts rely on** (full detail in [project-layout.md](project-layout.md)):
+- Every orchestration fan-out first runs `python portfolio-prompts/tools/workspace_preflight.py`;
+  blocked targets are excluded/reported and warnings qualify the local evidence.
 - Source of truth: `{PROJECT}/docs/backlog.md`.
 - Handovers live in the root support repository's `../session-notes/`, named
   `{PROJECT}_session-notes_v{N}_{YYYYMMDD}T{HHMM}Z.{md,html}`. The Markdown/HTML pairs are tracked

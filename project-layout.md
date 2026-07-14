@@ -172,6 +172,39 @@ Minimal example:
   - Acceptance: README count equals `--profile smoke --dry-run`; no other doc states the old count. **Docs-only.**
 ```
 
+### Workspace preflight (portfolio P-06)
+
+Every orchestration fan-out starts by running this command from the portfolio root:
+
+```bash
+python portfolio-prompts/tools/workspace_preflight.py
+```
+
+Pass `--projects=<folder>,<folder>` when the invocation or available worklists restrict the target
+set; `--json` provides the same report as structured data. The tool loads only project rows whose
+`orchestration_target` is true from `registry.yml` — there is no second hard-coded target list.
+
+The preflight is deliberately **read-only**. It reads local files and already-fetched Git refs with
+optional Git locks disabled; it never fetches, pulls, switches, resets, cleans, stages, commits, or
+otherwise changes a checkout. Consequently `ahead`/`behind` and freshness describe the local view
+of the upstream/default refs from the last fetch, not an implicit network refresh.
+
+For each target it reports folder/Git readability, branch, dirty state, upstream, ahead/behind
+counts, authoritative backlog path/presence, resolved gate source and commands/CI steps, latest
+handover pair, and whether that handover predates the fetched default head. Results are classified:
+
+- `BLOCKED`: evidence is unsafe or structurally incomplete — for example a missing repository,
+  unreadable Git state, dirty tree, or missing authoritative backlog.
+- `WARN`: evidence is readable but may be non-current — for example ahead/behind state, a topic or
+  detached branch, no upstream/default ref, a missing/incomplete handover, or a stale handover.
+- `READY`: no blocker or warning was found.
+
+Exit `0` means every selected target is `READY`/`WARN`; exit `1` means one or more target reports
+are `BLOCKED`; exit `2` means the registry/invocation itself (including an invalid selection) could
+not be evaluated. A fan-out may
+continue with `READY` and `WARN` targets while faithfully reporting warnings, but must exclude and
+report every `BLOCKED` target. Exit `2` stops the entire fan-out.
+
 ### Orchestration fan-out (shared conventions)
 
 The portfolio-scoped orchestrators (`derive-all-worklists`, `loop-all-worklists`,
@@ -179,6 +212,9 @@ The portfolio-scoped orchestrators (`derive-all-worklists`, `loop-all-worklists`
 conventions are common to all three — each orchestrator cites this section and adds only its
 **mode-specific deltas** (no-actioning / mutating / evidence-only):
 
+- **Preflight first.** Run the workspace preflight above before coupling or launching any agent;
+  use its registry-derived target set, exclude `BLOCKED` targets, and carry all warnings into the
+  final report.
 - **No `PROJECT=` for the orchestrator** (it targets the registry); every sub-agent it launches
   receives a single `PROJECT=` and is bound by this contract as normal.
 - **Self-contained sub-agent prompts.** Sub-agents start with no conversation context — each
