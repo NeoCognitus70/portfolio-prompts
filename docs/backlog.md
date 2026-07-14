@@ -74,8 +74,9 @@ causes a recurring class of bug (a v11 was once written to the root and missed).
       the manifest, falling back to the numeric-glob rule only if the manifest is absent. — **Done:**
       all four prompts prefer `manifest.json` `latest["{PROJECT}"]` and keep the numeric-glob rule as
       an explicit fallback. Contract documents the manifest (`project-layout.md` §Handovers).
-**Note:** the manifest is untracked (session-notes/ is outside the repos), so it is not part of any
-PR — it is regenerated in place; the prompts/tool that maintain it are the tracked deliverable.
+**Note:** the root support repository tracks the paired handovers but deliberately ignores the
+generated manifest, so the manifest is not part of any PR; it is regenerated in place while the
+prompts/tool that maintain it are tracked deliverables.
 
 #### PP-15: Add real self-gates for the library (path/registry/format checks) — Score: 10
 **Score:** Security (0) + Drift (5) + Maintenance (5) = **10**

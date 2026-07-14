@@ -27,7 +27,8 @@ engineer or agent who comes next.
   - `short-slug` = a few kebab-case words naming the work (match the style of the files already in
     that folder, if any — e.g. `2026-06-06_backlog-3-api-background.md`). If the work maps to a
     backlog item, lead the slug with it (`backlog-{n}-...`).
-  - This file lives **inside the repo** (unlike the session handovers) — it is a tracked artifact.
+  - This file is tracked **inside the target project repository**. Session handovers are also
+    tracked, but by the separate portfolio root support repository.
 
 ## Gather the facts before writing (don't invent them)
 - **What changed:** `git -C {PROJECT} status --porcelain`,

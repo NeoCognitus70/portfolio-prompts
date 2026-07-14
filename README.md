@@ -30,14 +30,14 @@ required, the agent must ask, never guess.
 <!-- REGISTRY:START (generated from registry.yml by tools/render-registry.py — do not edit between the markers) -->
 | `PROJECT` | GitHub | Status | Notes |
 |---|---|---|---|
-| `magento-checkout-automation` | GBrooks1970/magento-checkout-automation | Active (reopened 2026-06-19) | Reference project. Was closed 2026-06-19 (v16 FINAL) then reopened the same day to deliver backlog item #12 (screenshots in reports, ADR-0007); latest handover v17 in `session-notes/`. Future-work proposals in `docs/planning/`. Gates: `npm run verify`. |
-| `hand-baked-screenplay-pattern` | NeoCognitus70/hand-baked-screenplay-pattern | Active | Open work in `planning/`. Gates: `npm run verify`. |
-| `calculator-screenplay-bdd` | NeoCognitus70/calculator-screenplay-bdd | Active | Gates: `npm run verify`. Depends on `hand-baked-screenplay-pattern` — prepare:screenplay installs and builds inside the sibling checkout (provider-first). |
+| `magento-checkout-automation` | GBrooks1970/magento-checkout-automation | Active | Reference project. Was closed 2026-06-19 (v16 FINAL) then reopened the same day to deliver backlog item #12 (screenshots in reports, ADR-0007); latest handover v18 in `session-notes/`. Backlog items #13 and #14 remain open; future-work proposals live in `docs/planning/`. Gates: `npm run verify`. |
+| `hand-baked-screenplay-pattern` | NeoCognitus70/hand-baked-screenplay-pattern | Resting | Stable teaching library with zero required backlog items. Material in `planning/` remains optional until promoted into the backlog. Gates: `npm run verify`. |
+| `calculator-screenplay-bdd` | NeoCognitus70/calculator-screenplay-bdd | Resting | Stable consumer example with zero required backlog items. Gates: `npm run verify`. Depends on `hand-baked-screenplay-pattern` — prepare:screenplay installs and builds inside the sibling checkout (provider-first). |
 | `gb.automation.smoketests.sudoku.poc` | GBrooks1970/gb.automation.smoketests.sudoku.poc | Active | Multi-stack POC with its own doc system; run stack defaults inside the touched stack's directory, never at the repo root. Gates: per `ci.yml` — stack jobs (demoapp001 cypress/typescript; demoapp002 pytest/python; demoapp003 specflow/csharp) + `.batch/*.ps1` parity; run the job(s) for the stack(s) touched. Deviations: backlog `DOCS/.planning/backlog.md`, implementation-logs `DOCS/.implementation-logs/`, reviews `DOCS/.review/`, templates `DOCS/.templates/`. |
 | `bfx-ws-screenplay` | GBrooks1970/bfx-ws-screenplay | Active | In-repo `SPECIFICATION.md` is normative (SDD) — one SPEC unit at a time; feature file reviewed before framework code; deviations need an ADR change note. `test:smoke` hits the live public API; `environment-blocked` outcomes are platform maintenance, not failures; `@extended` runs nightly only. Gates: `npm run typecheck`, `npm run lint`, `npm run test:smoke`. |
 | `orangehrm-pim-automation` | GBrooks1970/orangehrm-pim-automation | Active | OrangeHRM PIM add-employee E2E (Serenity/JS + Playwright + Cucumber). Backlog is a simple table (not the scored template). One open, deliberately non-blocking item (#4). Live docs: gbrooks1970.github.io/orangehrm-pim-automation. Gates: per `ci.yml` — static `npx tsc --noEmit`; E2E `docker compose up -d --wait` then `npm test`. CI (Node 20) also builds Serenity living docs and deploys Pages. |
-| `markdown-renderer` | GBrooks1970/markdown-renderer | Active (product) | A shipped product, not a Screenplay test suite: a static, offline, browser-based Markdown viewer with its own suite. Currently 0 outstanding (FR-1..FR-11 shipped and live), so a derive honestly returns nothing actionable. Treat its tests as the product's own suite, not portfolio Screenplay conventions. Live demo: gbrooks1970.github.io/markdown-renderer/. Gates: `npm run verify`. |
-| `mobile-forex-automation` | GBrooks1970/mobile-forex-automation | Active | Mobile-web test-automation showcase: a deterministic forex demo SUT with Playwright Pixel and iPhone emulation, Screenplay journeys, and a Vitest-tested P&L core. Live demo: gbrooks1970.github.io/mobile-forex-automation/. Gates: `npm run verify`. |
+| `markdown-renderer` | GBrooks1970/markdown-renderer | Resting (product) | A shipped product, not a Screenplay test suite: a static, offline, browser-based Markdown viewer with its own suite. Currently 0 outstanding (FR-1..FR-11 shipped and live), so a derive honestly returns nothing actionable. Treat its tests as the product's own suite, not portfolio Screenplay conventions. Live demo: gbrooks1970.github.io/markdown-renderer/. Gates: `npm run verify`. |
+| `mobile-forex-automation` | GBrooks1970/mobile-forex-automation | Resting | Mobile-web test-automation showcase: a deterministic forex demo SUT with Playwright Pixel and iPhone emulation, Screenplay journeys, and a Vitest-tested P&L core. The MF-01..MF-14 roadmap is complete with zero required backlog items. Live demo: gbrooks1970.github.io/mobile-forex-automation/. Gates: `npm run verify`. |
 | `portfolio-prompts` | NeoCognitus70/portfolio-prompts | Meta (self-onboarded) | The prompt library itself. Single-project prompts (`resume-session`, `derive-worklist`, `loop-worklist`, `write-implementation-log`, `write-code-review`) may target `PROJECT=portfolio-prompts`. Not a target of the orchestration fan-outs. Gates: `python tools/check-library.py`. Deviations: backlog `portfolio-prompts/docs/backlog.md`. |
 <!-- REGISTRY:END -->
 
@@ -46,6 +46,18 @@ required, the agent must ask, never guess.
 > [`tools/render-registry.py`](tools/render-registry.py). To change a row, edit `registry.yml` and
 > run `python tools/render-registry.py`; `--check` exits non-zero if the table is stale. See
 > [project-layout.md](project-layout.md) §"Machine-readable registry".
+
+**Lifecycle labels:** `Active` means the canonical backlog contains open work; `Resting` means it
+has zero outstanding items; `Meta` identifies control-plane tooling. Lifecycle does not decide
+fan-out eligibility: resting projects remain orchestration targets, while the separate
+`orchestration_target` field is authoritative.
+
+### Classified support repositories
+
+`registry.yml` classifies `portfolio-landing`
+([`GBrooks1970/portfolio`](https://github.com/GBrooks1970/portfolio)) as the active public
+presentation surface. It is a support repository, not a registered test-automation `PROJECT=`,
+and is explicitly excluded from orchestration fan-outs.
 
 ## Prompts
 
@@ -64,15 +76,15 @@ next approved worklist.
 | Prompt | When to use | What it does |
 |---|---|---|
 | [onboard-project.prompt.md](onboard-project.prompt.md) | Adding an existing local repository to the portfolio | Discovers and proposes the project's registry metadata, gates, backlog, and recommended scaffold; after explicit approval, publishes a target scaffold PR when needed, waits for it to merge, then publishes the generated registry-row PR — never merges either. |
-| [write-handover.prompt.md](write-handover.prompt.md) | End of a session | Reconciles the project's `docs/backlog.md` (source of truth), then writes the next `{PROJECT}_session-notes` handover (`.md` + generated `.html`) into `session-notes/`, superseding the previous version. |
+| [write-handover.prompt.md](write-handover.prompt.md) | End of a session | Reconciles the project's `docs/backlog.md` (source of truth), then writes the next root-tracked `{PROJECT}_session-notes` handover pair (`.md` + generated `.html`) into `session-notes/`, superseding the previous version. |
 | [resume-session.prompt.md](resume-session.prompt.md) | Start of a session | Loads the project's latest handover from `session-notes/` (or bootstraps from the backlog if none exists), cross-checks it against the backlog and the live repo, and proposes the resume point — then waits for confirmation. |
 | [write-implementation-log.prompt.md](write-implementation-log.prompt.md) | After a dev task | Writes a new immutable implementation log into `{PROJECT}/docs/implementation-logs/` from the project's template. |
 | [write-code-review.prompt.md](write-code-review.prompt.md) | Code review | Uses `templates/code-review.template.md` and the project's `docs/backlog.md` to write a comprehensive review into the repo's `.review/` folder. |
-| [triage-review-findings.prompt.md](triage-review-findings.prompt.md) | Turning one named review into planned work | Reads the named review, deduplicates and backlog-checks its findings, presents prioritised candidates for explicit user approval, then writes the canonical portfolio-root worklist without actioning the project. |
+| [triage-review-findings.prompt.md](triage-review-findings.prompt.md) | Turning one named review into planned work | Reads the named review, deduplicates and backlog-checks its findings, presents prioritised candidates for explicit user approval, then writes the canonical root-tracked portfolio worklist without actioning the project. |
 | [review-all-projects.prompt.md](review-all-projects.prompt.md) | Reviewing the whole portfolio | Orchestration fan-out, **evidence-only**: one parallel sub-agent per registry project, each following write-code-review for its project (review artefacts committed on a branch + PR, never merged); collates top findings into a cross-portfolio synthesis of common themes and highest-severity issues. |
-| [derive-worklist.prompt.md](derive-worklist.prompt.md) | Preparing work before a loop | Derivation only, **no actioning**: orients from handover + backlog, derives and cross-checks the items, writes `WORKLIST_{PROJECT}.md` (portfolio root) in exactly the format the loop consumes, and reports a detailed per-item breakdown in chat for review. |
+| [derive-worklist.prompt.md](derive-worklist.prompt.md) | Preparing work before a loop | Derivation only, **no actioning**: orients from handover + backlog, derives and cross-checks the items, writes root-tracked `WORKLIST_{PROJECT}.md` in exactly the format the loop consumes, and reports a detailed per-item breakdown in chat for review. |
 | [derive-all-worklists.prompt.md](derive-all-worklists.prompt.md) | Preparing work portfolio-wide | Orchestration fan-out, **no actioning**: one parallel sub-agent per registry project, each following derive-worklist for its project; collates all breakdowns, guard-stops, and user decisions into a single report. |
-| [loop-worklist.prompt.md](loop-worklist.prompt.md) | Working through an ordered list of steps | Driven via the `/loop` command (not pasted). Completes one worklist item per iteration — implement → validate → verify → commit → record — tracked in `WORKLIST_{PROJECT}.md` (portfolio root), with stop conditions and a closing report. |
+| [loop-worklist.prompt.md](loop-worklist.prompt.md) | Working through an ordered list of steps | Driven via the `/loop` command (not pasted). Completes one worklist item per iteration — implement → validate → verify → commit → record — with root-tracked `WORKLIST_{PROJECT}.md` as its control record, stop conditions, and a closing report. |
 | [loop-all-worklists.prompt.md](loop-all-worklists.prompt.md) | Actioning all prepared worklists at once | Orchestration fan-out that **mutates**: one sub-agent per project with unchecked worklist items, each executing loop-worklist iterations consecutively (commit + PR per its rules, never merging); coupled projects (e.g. calculator → hand-baked sibling build) share one sequential agent; collated report of commits, PRs, and blocked questions. |
 | [portfolio-status.prompt.md](portfolio-status.prompt.md) | Checking the whole portfolio without changing it | Read-only aggregation across every registry project: local repo state, open backlog counts, latest handover, open PRs, and default-branch CI; reports unavailable evidence and registry-drift candidates instead of mutating or guessing. |
 | [close-project.prompt.md](close-project.prompt.md) | Final session of a project | Verifies every public-facing claim the README makes, reconciles the backlog one last time, retires `WORKLIST_{PROJECT}.md`, and writes a terminal handover marked FINAL. |
@@ -85,9 +97,11 @@ next approved worklist.
 
 **Conventions the prompts rely on** (full detail in [project-layout.md](project-layout.md)):
 - Source of truth: `{PROJECT}/docs/backlog.md`.
-- Handovers live in `../session-notes/` (outside the repos, untracked), named
-  `{PROJECT}_session-notes_v{N}_{YYYYMMDD}T{HHMM}Z.{md,html}` —
-  versioned per project, UTC-timestamped, en-GB.
+- Handovers live in the root support repository's `../session-notes/`, named
+  `{PROJECT}_session-notes_v{N}_{YYYYMMDD}T{HHMM}Z.{md,html}`. The Markdown/HTML pairs are tracked
+  there; only generated `session-notes/manifest.json` remains untracked.
+- Worklists live at the portfolio root as root-tracked `WORKLIST_{PROJECT}.md` control records;
+  they never enter a target project's history.
 - Implementation logs live **inside each repo** at
   `{PROJECT}/docs/implementation-logs/YYYY-MM-DD_short-slug.md` (tracked, append-only).
 - Validation gates resolve: project contract → registry-row gates → `npm run verify` → stack

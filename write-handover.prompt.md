@@ -109,8 +109,9 @@ re-deriving "latest": run `python portfolio-prompts/tools/build-handover-manifes
 `session-notes/manifest.json` by scanning the folder). Confirm your new version appears as
 `latest["{PROJECT}"]`. If Python is unavailable, add an entry for the new file to `manifest.json` by
 hand matching the existing shape, or state in your report that the manifest was not updated (the
-readers' numeric-glob fallback still works). The manifest is untracked (session-notes/ is outside
-the repos) — do not commit it.
+readers' numeric-glob fallback still works). The paired handover files are tracked by the portfolio
+root support repository; `manifest.json` alone is generated and deliberately ignored there. Never
+hand-edit or commit the manifest.
 
 ## Rules
 - **en-GB** spelling throughout (behaviour, prioritise, recognise…).
@@ -129,3 +130,5 @@ the repos) — do not commit it.
 - The two filenames written.
 - The new version number and what it supersedes (or that it is the project's v1).
 - A 3–5 line summary of what changed in the backlog (source of truth) this session.
+- The portfolio-root working-tree state. The handover pair uses the root repository's separate
+  branch/PR flow and must never be folded into the target project's commit.

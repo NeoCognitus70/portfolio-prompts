@@ -59,9 +59,10 @@ small, reviewable, per-item commits are the point.
    done or closed (note each drop in this iteration's report rather than silently omitting it),
    and where the two disagree on priority, the backlog's view wins.
 4. Materialise it as a checklist file — `WORKLIST_{PROJECT}.md` at the **portfolio root**, beside
-   `session-notes/` and `portfolio-prompts/` and therefore **outside the repo's git history** — in
-   the **canonical worklist format** defined in `portfolio-prompts/project-layout.md` §"Worklist
-   file format". This file is the loop's memory: every iteration reads it first and updates it last.
+   `session-notes/` and `portfolio-prompts/`, outside the target project's history but tracked by
+   the portfolio root support repository — in the **canonical worklist format** defined in
+   `portfolio-prompts/project-layout.md` §"Worklist file format". This file is the loop's memory:
+   every iteration reads it first and updates it last.
 5. If a `WORKLIST_{PROJECT}.md` already exists, do **not** regenerate it — pick up where it stands
    (the orientation read in item 1 still applies if this session has not yet performed it).
 
@@ -134,6 +135,8 @@ the item off on a partial.
 - Update `WORKLIST_{PROJECT}.md`: check the item off with the commit hash and a one-line outcome.
   Update any tracking docs the project mandates (e.g. `CHANGELOG.md` for user-visible changes, the
   review's finding status if the worklist came from a review).
+- Keep the worklist out of the target-project commit. Its root-repository diff is separate control
+  state; report that state explicitly so it can use the root's own branch/PR flow.
 - End the iteration with a short report: item done, evidence, commit(s), what the next iteration
   will pick up.
 
@@ -145,13 +148,15 @@ When every item is checked or blocked:
   merge — do not merge it yourself unless the user has already authorised it.
 - Produce the closing report: items completed (with commits), items blocked (with reasons),
   follow-on items discovered and added, and validation status of the final state.
+- Report the final portfolio-root worklist diff as a separate support-repository change; do not
+  silently commit or push the root from this project loop.
 - Recommend whether a new session-notes handover or review-status update is warranted.
 - Do not schedule a further wake-up.
 
 ## Rules
 
-- en-GB spelling. One item per iteration. One project per loop. Never leave the tree dirty
-  between iterations.
+- en-GB spelling. One item per iteration. One project per loop. Never leave the target project tree
+  dirty between iterations; the separately reported root worklist change is expected control state.
 - Never commit on red: all applicable gates pass, or the item is reverted and marked blocked.
 - Commit messages describe the change and its reason, not the process ("loop iteration 3" is not
   a commit message).
