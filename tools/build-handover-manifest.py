@@ -14,9 +14,16 @@ hand-edited.
 `write-handover` runs this after writing a new handover. Readers (`resume-session`,
 `derive-worklist`, `loop-worklist`) prefer the manifest and fall back to the glob rule if absent.
 
+Pair integrity (P-09): every handover is a Markdown/HTML *pair*. A Markdown handover without its
+HTML companion is a contract violation, so both modes below exit non-zero while listing each
+unpaired file. The build mode still writes the manifest first (recording `"html": null`), so the
+index stays truthful while the violation is being repaired. Handover freshness against a project's
+default head is deliberately NOT checked here — freshness is advisory and belongs to
+`workspace_preflight.py` warnings.
+
 Usage (from the portfolio-prompts/ directory):
     python tools/build-handover-manifest.py           # (re)write session-notes/manifest.json
-    python tools/build-handover-manifest.py --check     # exit 1 if the manifest is missing/stale
+    python tools/build-handover-manifest.py --check     # exit 1 if missing/stale or a pair is incomplete
 
 No third-party dependencies.
 """
@@ -41,10 +48,22 @@ def iso(ts: str) -> str:
     return f"{ts[0:4]}-{ts[4:6]}-{ts[6:8]}T{ts[9:11]}:{ts[11:13]}:00Z"
 
 
-def build() -> dict:
+def unpaired(session_notes: Path = None) -> list[str]:
+    """Markdown handovers whose HTML companion is missing (P-09 pair-integrity violations)."""
+    folder = SESSION_NOTES if session_notes is None else session_notes
+    missing: list[str] = []
+    if folder.is_dir():
+        for md in sorted(folder.glob("*_session-notes_v*.md")):
+            if NAME_RE.match(md.name) and not md.with_suffix(".html").exists():
+                missing.append(md.name)
+    return missing
+
+
+def build(session_notes: Path = None) -> dict:
+    folder = SESSION_NOTES if session_notes is None else session_notes
     handovers = []
-    if SESSION_NOTES.is_dir():
-        for md in sorted(SESSION_NOTES.glob("*_session-notes_v*.md")):
+    if folder.is_dir():
+        for md in sorted(folder.glob("*_session-notes_v*.md")):
             m = NAME_RE.match(md.name)
             if not m:
                 continue
@@ -76,10 +95,18 @@ def dumps(manifest: dict) -> str:
     return json.dumps(manifest, indent=2, ensure_ascii=True) + "\n"
 
 
+def report_unpaired(missing: list[str]) -> None:
+    print(f"build-handover-manifest: PAIR INTEGRITY FAIL — {len(missing)} Markdown handover(s) "
+          "have no HTML companion (P-09):")
+    for name in missing:
+        print(f"  - {name}")
+
+
 def main() -> int:
     check = "--check" in sys.argv[1:]
     manifest = build()
     text = dumps(manifest)
+    missing = unpaired()
     if check:
         if not MANIFEST.exists():
             print("build-handover-manifest: manifest.json is MISSING — run the builder.")
@@ -89,7 +116,10 @@ def main() -> int:
         if current != text:
             print("build-handover-manifest: manifest.json is STALE — run the builder.")
             return 1
-        print("build-handover-manifest: manifest.json is up to date.")
+        if missing:
+            report_unpaired(missing)
+            return 1
+        print("build-handover-manifest: manifest.json is up to date; all handover pairs complete.")
         return 0
     if not SESSION_NOTES.is_dir():
         print(f"build-handover-manifest: no session-notes/ at {SESSION_NOTES} — nothing to do.")
@@ -98,6 +128,9 @@ def main() -> int:
     n = len(manifest["handovers"])
     print(f"build-handover-manifest: wrote {MANIFEST.relative_to(HERE.parent)} ({n} handovers, "
           f"{len(manifest['latest'])} projects).")
+    if missing:
+        report_unpaired(missing)
+        return 1
     return 0
 
 
