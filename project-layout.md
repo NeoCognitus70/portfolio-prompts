@@ -134,6 +134,19 @@ npx tsc --noEmit
   `derive-worklist`, and `loop-worklist` **prefer it and fall back to the numeric-glob rule only when
   it is absent**. Unlike the paired handovers, `manifest.json` is generated, deliberately ignored
   by the root support repository, and never hand-edited or committed.
+- **Handover pair integrity (P-09):** a Markdown handover without its HTML companion is a contract
+  violation, not a cosmetic gap. It fails hard in two places: `tools/build-handover-manifest.py`
+  (both build and `--check` modes exit non-zero listing each unpaired file — so `write-handover`'s
+  post-step catches it at the moment of authorship) and the library self-gate
+  `tools/check-library.py` (when the sibling `session-notes/` archive is present). The workspace
+  preflight additionally surfaces it as a per-target `WARN`.
+- **Handover freshness (P-09):** whether the latest handover predates the project's fetched default
+  head is **advisory only** — a preflight `WARN`, never a hard failure — because commits
+  legitimately land after a handover is written. Refresh policy: for a **resting or closed**
+  project, a post-handover commit does not by itself require a terminal refresh; judge currency by
+  cross-checking the project's backlog and Git history. Write a fresh handover when closing a
+  project (`close-project` writes the terminal one), when resuming work whose scope the latest
+  handover no longer describes, or when the handover's public-facing claims have become wrong.
 - **Worklists:** `WORKLIST_{PROJECT}.md` at the portfolio root — control records tracked by the root
   support repository, outside every target project's history. One worklist exists per project; a
   `/loop` binds to exactly one. A target-project commit must never absorb a root worklist change.

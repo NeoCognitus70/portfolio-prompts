@@ -19,6 +19,8 @@ Checks:
   7. Invocation paths   — active invocation examples use OS-neutral forward slashes.
   8. Worklist example   — the canonical example in project-layout.md parses as the documented format.
   9. Workspace preflight — deterministic clean/dirty/behind/topic/missing-evidence scenarios pass.
+ 10. Handover pairs     — every root session-notes Markdown handover has its HTML companion
+                          (P-09; skipped in a standalone clone with no sibling session-notes/).
 
 Usage (from the portfolio-prompts/ directory):
     python tools/check-library.py            # exit 0 if all checks pass, 1 otherwise
@@ -294,6 +296,23 @@ def check_worklist_example(fails: list[str]) -> None:
         fails.append("[worklist-example] example has no `- [ ] <id> — <desc> — <source>` item line")
 
 
+def check_handover_pairs(fails: list[str]) -> None:
+    """P-09: a Markdown handover without its HTML companion is a contract violation.
+
+    Freshness (latest handover versus a project's default head) is deliberately NOT gated here —
+    it is an advisory warning owned by workspace_preflight.py.
+    """
+    session_notes = PORTFOLIO_ROOT / "session-notes"
+    if not session_notes.is_dir():
+        # Standalone clone of just the library — the root session-notes archive is not present.
+        print("check-library: note — no sibling session-notes/ present; skipping handover-pair check.")
+        return
+    name_re = re.compile(r"^.+_session-notes_v\d+_\d{8}T\d{4}Z\.md$")
+    for md in sorted(session_notes.glob("*_session-notes_v*.md")):
+        if name_re.match(md.name) and not md.with_suffix(".html").exists():
+            fails.append(f"[handover-pairs] {md.name} has no HTML companion")
+
+
 def check_workspace_preflight(fails: list[str]) -> None:
     command = "python portfolio-prompts/tools/workspace_preflight.py"
     for name in (
@@ -318,7 +337,7 @@ def check_workspace_preflight(fails: list[str]) -> None:
             "-s",
             "tools/tests",
             "-p",
-            "test_workspace_preflight.py",
+            "test_*.py",
         ],
         cwd=HERE,
         capture_output=True,
@@ -326,7 +345,7 @@ def check_workspace_preflight(fails: list[str]) -> None:
     )
     if result.returncode != 0:
         detail = (result.stdout + "\n" + result.stderr).strip()
-        fails.append("[workspace-preflight] deterministic scenario tests failed:\n" + detail)
+        fails.append("[workspace-preflight] deterministic tool tests failed:\n" + detail)
 
 
 def main() -> int:
@@ -342,6 +361,7 @@ def main() -> int:
         check_invocation_paths,
         check_worklist_example,
         check_workspace_preflight,
+        check_handover_pairs,
     ):
         check(fails)
     if fails:
@@ -351,7 +371,7 @@ def main() -> int:
         return 1
     print("check-library: PASS (registry classification and lifecycle semantics, README generated, "
           "least-privilege CI, internal links, skills, working norms, invocation paths, "
-          "worklist example, workspace preflight scenarios)")
+          "worklist example, workspace preflight scenarios, handover pairs)")
     return 0
 
 

@@ -1,6 +1,6 @@
 # portfolio-prompts — Backlog
 
-**Version:** 6 — PP-25 workspace preflight resolved; no outstanding items
+**Version:** 7 — PP-26 handover pair integrity resolved; no outstanding items
 **Last Updated:** 2026-07-14
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
@@ -362,10 +362,10 @@ but the reciprocal pointer is missing.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 10 | **10 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25) — 0 open |
+| MEDIUM (10–19) | 11 | **11 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26) — 0 open |
 | LOW (0–9) | 16 | **16 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24) — 0 open |
 | **Total Outstanding** | **0** | — |
-| Resolved | 26 | PP-00..PP-25 |
+| Resolved | 27 | PP-00..PP-26 |
 
 **Outstanding, by suggested order:** None.
 
@@ -374,6 +374,23 @@ but the reciprocal pointer is missing.
 ## Resolved Items
 
 Resolved items are kept as a record that the gap existed.
+
+#### PP-26: Enforce handover pair integrity; keep freshness advisory (portfolio P-09) ✅ Resolved 2026-07-14
+**Score: Security 0 + Drift 8 + Maintenance 4 = 12 (MEDIUM).**
+**Problem:** four root handovers existed as Markdown without HTML companions and nothing failed —
+missing presentation companions could recur silently. Handover-vs-head freshness needed to stay a
+warning so legitimate post-handover commits do not produce false failures.
+**Resolution:** `build-handover-manifest.py` now exits non-zero from both modes listing each
+unpaired Markdown handover (write-handover's post-step becomes the authorship-time gate);
+`check-library.py` gained a `handover-pairs` check that fails when the sibling `session-notes/`
+archive contains an unpaired handover and skips with a note in standalone clones; deterministic
+tests (`tools/tests/test_handover_manifest.py`) cover complete pairs, violations, numeric-latest,
+and non-handover files, discovered by the self-gate's widened `test_*.py` pattern. Freshness
+remains an advisory preflight `WARN`; `project-layout.md` now records the pair-integrity contract
+and the refresh policy for resting/closed projects (backlog/Git cross-checking suffices; terminal
+refresh at close, on scope-changing resume, or when public claims become wrong). The four missing
+HTML companions themselves are generated in the root support repository's paired P-09/P-10 change.
+**See:** portfolio `PORTFOLIO_BACKLOG.md` P-09.
 
 #### PP-01: Integrate the orphaned github-repo-analysis prompt ✅ Resolved 2026-06-17
 **Resolution:** Rewrote and committed the previously-untracked `github-repo-analysis-prompt.md`
