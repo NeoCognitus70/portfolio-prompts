@@ -38,7 +38,9 @@ item P-06. The review's section 4 weakness numbers are cited where applicable. A
 
 #### PP-25: Add a safe portfolio workspace preflight — Score: 18
 **Score:** Security (0) + Drift (10) + Maintenance (8) = **18**
-**Status:** RESOLVED 2026-07-14 — `tools/workspace_preflight.py` now gates every orchestration fan-out.
+**Status:** RESOLVED 2026-07-14 in
+[`portfolio-prompts` PR #34](https://github.com/NeoCognitus70/portfolio-prompts/pull/34) —
+`tools/workspace_preflight.py` now gates every orchestration fan-out.
 **Problem (portfolio P-06):** fan-outs selected targets from prose and launched without a common,
 non-mutating check that each checkout was structurally complete and that its local evidence was
 qualified against already-fetched remote state.
