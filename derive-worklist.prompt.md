@@ -83,12 +83,14 @@ make sense together.
 ## Step 3 — Materialise `WORKLIST_{PROJECT}.md`
 
 Write the file at the **portfolio root** (beside `session-notes/` and `portfolio-prompts/`,
-therefore outside the repo's git history), in the **canonical worklist format** defined in
-`portfolio-prompts/project-layout.md` §"Worklist file format" (header naming project / source(s) /
-date; one `- [ ] <id> — <description> — <source ref>` line per item, in execution order; acceptance
-criteria + docs-only/code beneath each) — the loop must be able to pick it up unchanged.
+outside the target project's git history but tracked by the portfolio root support repository), in
+the **canonical worklist format** defined in `portfolio-prompts/project-layout.md` §"Worklist file
+format" (header naming project / source(s) / date; one
+`- [ ] <id> — <description> — <source ref>` line per item, in execution order; acceptance criteria +
+docs-only/code beneath each) — the loop must be able to pick it up unchanged.
 
-Do not commit this file anywhere; it is untracked loop memory.
+Do not include this control record in a target-project commit. Report it as a portfolio-root change;
+publishing it uses a separate root-repository branch/PR and is outside this derivation-only prompt.
 
 ## Step 4 — Report the detailed breakdown in chat
 

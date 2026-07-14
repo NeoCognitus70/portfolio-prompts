@@ -90,6 +90,8 @@ def status_label(p: dict) -> str:
         return "Meta (self-onboarded)"
     if s == "active":
         return "Active (product)" if p.get("product") else "Active"
+    if s == "resting":
+        return "Resting (product)" if p.get("product") else "Resting"
     return s.capitalize()
 
 

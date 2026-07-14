@@ -105,9 +105,11 @@ portfolio root in the canonical format defined in `portfolio-prompts/project-lay
 cross-check, and derivation date. Preserve source finding ids in each item's source reference and
 include verifiable acceptance criteria plus docs-only/code classification.
 
-Do not commit the worklist; it is untracked loop memory outside the project repositories. Finish by
-reporting the file path, approved/merged/dropped counts, unresolved decisions (which must not appear
-as executable items), and the exact suggested `/loop` invocation.
+Do not include the worklist in a target-project commit. It is root-tracked control state outside the
+project repositories; publishing it uses the portfolio root's separate branch/PR flow and is outside
+this triage-only prompt. Finish by reporting the file path, root working-tree state,
+approved/merged/dropped counts, unresolved decisions (which must not appear as executable items),
+and the exact suggested `/loop` invocation.
 
 ## Rules
 

@@ -11,5 +11,6 @@ Read and follow the canonical prompt **`${CLAUDE_PLUGIN_ROOT}/write-implementati
 
 - `PROJECT` = the project folder name the user supplied — a row in `${CLAUDE_PLUGIN_ROOT}/registry.yml`.
   If none was given, **ask — never guess**.
-- The log is a tracked, append-only file **inside** the repo (unlike handovers). Conventions and the
-  template location are in `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.
+- The log is a tracked, append-only file **inside the target project repo**; handovers are tracked
+  separately by the portfolio root support repository. Conventions and the template location are
+  in `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.
