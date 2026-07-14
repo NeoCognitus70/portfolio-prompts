@@ -22,15 +22,19 @@ selection, the coupling check, the fan-out, and the collated report. (Portfolio-
 orchestration: no `PROJECT=` is needed; every sub-agent receives its own — see the exception in
 `portfolio-prompts/project-layout.md`.)
 
-## Step 1 — Establish the targets
+## Step 1 — Establish candidates and run the preflight
 
 1. Glob the portfolio root for `WORKLIST_*.md`. A project is a target if its worklist has at
-   least one unchecked `- [ ]` item (honour `PROJECTS=` if given; validate names against the
-   README registry).
-2. Read each target worklist in full. Note per project: unchecked item count, recorded
+   least one unchecked `- [ ]` item (honour `PROJECTS=` if given). If there are no candidates,
+   report that and stop without launching a fan-out.
+2. From the portfolio root, run `python portfolio-prompts/tools/workspace_preflight.py
+   --projects=<comma-separated candidate folders>`. This is the mandatory read-only preflight in
+   `portfolio-prompts/project-layout.md` §"Workspace preflight" and validates the names against
+   the machine-readable registry. Exit `2` stops the fan-out. On exit `1`, exclude every `BLOCKED`
+   target and carry its blockers into the final report. `READY` and `WARN` targets remain eligible;
+   carry every warning into the report.
+3. Read each eligible target worklist in full. Note per project: unchecked item count, recorded
    `**DECISION**` blocks (these prevent stops), and any items already marked `BLOCKED`.
-3. Skip — and report as skipped — any target whose repo working tree is dirty with
-   unrecognised changes, or that the registry marks not onboarded.
 
 ## Step 2 — Coupling check (do this before any fan-out)
 
@@ -90,6 +94,7 @@ When all agents return, report per project, in registry order:
 - **Blocked items** — the recorded question or failing gate, verbatim.
 - **PRs opened** — URL + one-line contents; all await the user's review and merge.
 - **Worklist state** — checked/unchecked/blocked counts after the run.
+- **Preflight state** — every warning carried into the run, plus every excluded target/blocker.
 - **Follow-on items** the agent added while staying on-scope.
 
 Close with the cross-portfolio view:

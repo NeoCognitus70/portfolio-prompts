@@ -9,7 +9,8 @@ Orchestrate worklist **derivation** across the whole portfolio (no actioning).
 Read and follow the canonical prompt **`${CLAUDE_PLUGIN_ROOT}/derive-all-worklists.prompt.md`** (bundled
 at this plugin's root), following the body below its `---` divider exactly.
 
-- Takes **no `PROJECT=`** — it targets every row in `${CLAUDE_PLUGIN_ROOT}/registry.yml`. Optionally
-  restrict with `PROJECTS=<folder>,<folder>,...`.
+- Takes **no `PROJECT=`** — it targets every orchestration-enabled row in
+  `${CLAUDE_PLUGIN_ROOT}/registry.yml`. Optionally restrict with `PROJECTS=<folder>,<folder>,...`.
+- The canonical prompt runs the read-only registry-driven workspace preflight before fan-out.
 - Each sub-agent writes only its own `WORKLIST_<project>.md`; the orchestrator writes nothing.
   Shared fan-out conventions are in `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.

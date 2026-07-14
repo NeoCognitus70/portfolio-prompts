@@ -1,7 +1,7 @@
 # portfolio-prompts — Backlog
 
-**Version:** 5 — PP-20..PP-22 workflow tranche resolved; no outstanding items
-**Last Updated:** 2026-07-13
+**Version:** 6 — PP-25 workspace preflight resolved; no outstanding items
+**Last Updated:** 2026-07-14
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills. The first review (2026-06-17) produced PP-00..PP-12 (all resolved). Items carry the
@@ -29,11 +29,37 @@ test-automation projects, not the prompt library.
 ## Outstanding Items
 
 Ordered by priority score (highest first). PP-13..PP-24 derive from the 2026-07-13 review
-([`library-review_2026-07-13.md`](library-review_2026-07-13.md)); the review's section 4 weakness
-numbers are cited per item. A `WORKLIST_portfolio-prompts.md` can be derived from these with
+([`library-review_2026-07-13.md`](library-review_2026-07-13.md)); PP-25 implements portfolio backlog
+item P-06. The review's section 4 weakness numbers are cited where applicable. A
+`WORKLIST_portfolio-prompts.md` can be derived from these with
 `derive-worklist.prompt.md using PROJECT=portfolio-prompts`.
 
 ### MEDIUM Priority (Score: 10–19)
+
+#### PP-25: Add a safe portfolio workspace preflight — Score: 18
+**Score:** Security (0) + Drift (10) + Maintenance (8) = **18**
+**Status:** RESOLVED 2026-07-14 in
+[`portfolio-prompts` PR #34](https://github.com/NeoCognitus70/portfolio-prompts/pull/34) —
+`tools/workspace_preflight.py` now gates every orchestration fan-out.
+**Problem (portfolio P-06):** fan-outs selected targets from prose and launched without a common,
+non-mutating check that each checkout was structurally complete and that its local evidence was
+qualified against already-fetched remote state.
+**Success Criteria:**
+- [x] A documented command loads `orchestration_target: true` rows from `registry.yml`, with optional
+      subset and JSON modes; no second project list exists.
+- [x] Each target reports folder/Git state, branch, dirty/upstream/ahead/behind state, authoritative
+      backlog, resolved gate source/steps, latest handover pair, and advisory freshness against the
+      fetched default head.
+- [x] Missing/unsafe evidence is `BLOCKED`; behind/ahead, topic/detached branch, and handover
+      qualifications are `WARN`; the exit-code contract distinguishes target blockers from a
+      registry/invocation failure.
+- [x] Git execution is restricted to a read-only allowlist with optional locks disabled. The tool
+      never refreshes a remote or mutates a checkout.
+- [x] `derive-all-worklists`, `review-all-projects`, and `loop-all-worklists` run the preflight before
+      coupling or agent launch and faithfully exclude/report blocked targets.
+- [x] Deterministic integration coverage exercises clean, dirty, behind, topic-branch,
+      missing-backlog, and missing-handover fixtures and asserts checkout-visible Git state is
+      unchanged. The library self-gate runs the suite in CI.
 
 #### PP-13: Extract the project registry into a structured `registry.yml` — Score: 14
 **Score:** Security (0) + Drift (8) + Maintenance (6) = **14**
@@ -336,10 +362,10 @@ but the reciprocal pointer is missing.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 9 | **9 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16) — 0 open |
+| MEDIUM (10–19) | 10 | **10 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25) — 0 open |
 | LOW (0–9) | 16 | **16 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24) — 0 open |
 | **Total Outstanding** | **0** | — |
-| Resolved | 25 | PP-00..PP-24 |
+| Resolved | 26 | PP-00..PP-25 |
 
 **Outstanding, by suggested order:** None.
 

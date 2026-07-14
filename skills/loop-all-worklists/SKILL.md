@@ -12,5 +12,7 @@ at this plugin's root), following the body below its `---` divider exactly.
 
 - Takes **no `PROJECT=`** — it targets every `WORKLIST_<project>.md` with unchecked items. Optionally
   restrict with `PROJECTS=...` and cap per project with `MAXITEMS=<n>`.
-- Do the coupling check first (coupled projects run in one sequential agent). Sub-agents commit and
-  open PRs but **never merge**. Shared fan-out conventions are in `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.
+- The canonical prompt runs the read-only registry-driven workspace preflight before fan-out.
+- After preflight, do the coupling check (coupled projects run in one sequential agent). Sub-agents
+  commit and open PRs but **never merge**. Shared fan-out conventions are in
+  `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.
