@@ -1,12 +1,15 @@
 # portfolio-prompts — Backlog
 
-**Version:** 7 — PP-26 handover pair integrity resolved; no outstanding items
-**Last Updated:** 2026-07-14
+**Version:** 8 — 2026-07-15 update review verified PP-13..PP-26 against the live repo and added
+PP-27..PP-29 (plugin trigger test, skill portability, backlog restructure)
+**Last Updated:** 2026-07-15
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
-portable skills. The first review (2026-06-17) produced PP-00..PP-12 (all resolved). Items carry the
-`PP-` prefix and mirror `WORKLIST_portfolio-prompts.md` at the portfolio root (loop memory, outside
-this repo).
+portable skills, and its update review
+([`docs/library-review_2026-07-15.md`](library-review_2026-07-15.md)), which confirmed all eight
+2026-07-13 weaknesses resolved or acceptably residual. The first review (2026-06-17) produced
+PP-00..PP-12 (all resolved). Items carry the `PP-` prefix and mirror
+`WORKLIST_portfolio-prompts.md` at the portfolio root (loop memory, outside this repo).
 
 This backlog is the source of truth for improvements to the **prompt library itself**. Ordering is
 by priority score (highest first).
@@ -30,9 +33,58 @@ test-automation projects, not the prompt library.
 
 Ordered by priority score (highest first). PP-13..PP-24 derive from the 2026-07-13 review
 ([`library-review_2026-07-13.md`](library-review_2026-07-13.md)); PP-25 implements portfolio backlog
-item P-06. The review's section 4 weakness numbers are cited where applicable. A
-`WORKLIST_portfolio-prompts.md` can be derived from these with
-`derive-worklist.prompt.md using PROJECT=portfolio-prompts`.
+item P-06; PP-27..PP-29 derive from the 2026-07-15 update review
+([`library-review_2026-07-15.md`](library-review_2026-07-15.md)). The review's section 4 weakness
+numbers are cited where applicable. A `WORKLIST_portfolio-prompts.md` can be derived from these
+with `derive-worklist.prompt.md using PROJECT=portfolio-prompts`.
+
+> **Note:** the resolved PP-03..PP-25 entries below are retained in place pending the PP-29
+> restructure; only PP-27..PP-29 are open.
+
+### Open items (2026-07-15 update review)
+
+#### PP-28: Make the lifecycle skills workspace-portable — Score: 9
+**Score:** Security (0) + Drift (4) + Maintenance (5) = **9**
+**Status:** OPEN
+**Problem (update review §4.1b, PP-24 residual):** the plugin's lifecycle skills resolve
+portfolio-relative paths (registry, contract, `session-notes/`, worklists) against the session
+CWD, so they only work when the session is rooted at the portfolio root. Full "any-workspace"
+portability was the 2026-07-13 review's stated strategic direction and is the one unbuilt piece.
+`analyze-repo` already has no such dependency.
+**Success Criteria:**
+- [ ] The skills resolve `portfolio_root` (and thence `registry.yml`/`project-layout.md`) from
+      configuration — e.g. `${CLAUDE_PLUGIN_ROOT}`-relative config or an explicit argument — with
+      the CWD retained only as a documented fallback.
+- [ ] At least one lifecycle skill is demonstrated working from a session rooted outside the
+      portfolio; the mechanism is documented in `skills/README.md`.
+- [ ] `tools/check-library.py` still passes; no prompt/skill duplication is introduced.
+**Depends on:** PP-24 (done).
+
+#### PP-29: Restructure the backlog so Outstanding contains only open items — Score: 6
+**Score:** Security (0) + Drift (3) + Maintenance (3) = **6**
+**Status:** OPEN
+**Problem (update review §4.2):** v7 listed eleven fully-resolved items under "Outstanding
+Items" while the risk summary said zero outstanding — a reader must check each item's `Status:`
+line to learn the heading is wrong, in the library's most-read file.
+**Success Criteria:**
+- [ ] Every item with a resolved/complete status lives under "Resolved Items"; "Outstanding
+      Items" holds only open items, ordered by score.
+- [ ] No item text is lost (resolved records are kept verbatim); internal links still resolve
+      (self-gate passes).
+
+#### PP-27: Live auto-trigger smoke test of the installed plugin — Score: 5
+**Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
+**Status:** OPEN
+**Problem (update review §4.1a, PP-24 residual):** skill auto-triggering has never been tested
+live; the `[~]` in PP-24 explicitly deferred it to a post-merge interactive check that has not
+happened. All 11+ skills are only structurally validated.
+**Success Criteria:**
+- [ ] With the plugin installed in an interactive session, at least `analyze-repo` and one
+      lifecycle skill trigger from a natural request (no explicit `/skill` invocation) and one
+      mutating skill (`loop-all-worklists`) is confirmed explicit-invocation-only.
+- [ ] Outcome (including any description tweaks needed) is recorded here and in
+      `skills/README.md`.
+**Note:** needs a human-driven interactive session; cannot be closed by an unattended run.
 
 ### MEDIUM Priority (Score: 10–19)
 
@@ -363,11 +415,12 @@ but the reciprocal pointer is missing.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 11 | **11 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26) — 0 open |
-| LOW (0–9) | 16 | **16 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24) — 0 open |
-| **Total Outstanding** | **0** | — |
+| LOW (0–9) | 19 | **16 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24) — **3 open (PP-27, PP-28, PP-29)** |
+| **Total Outstanding** | **3** | PP-27, PP-28, PP-29 (all LOW, from the 2026-07-15 update review) |
 | Resolved | 27 | PP-00..PP-26 |
 
-**Outstanding, by suggested order:** None.
+**Outstanding, by suggested order:** PP-28 -> PP-29 -> PP-27 (PP-27 needs an interactive session,
+so it closes whenever one is next available, independent of the other two).
 
 ---
 
