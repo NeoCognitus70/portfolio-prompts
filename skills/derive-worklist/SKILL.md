@@ -1,7 +1,7 @@
 ---
 name: derive-worklist
 description: "PREPARE (without actioning) a worklist for one test-automation-portfolio project — orient from handover + backlog, derive and cross-check the items, write WORKLIST_<project>.md, and report a per-item breakdown for review. Use when planning work before a loop (\"prepare/plan a worklist for <project>\"). Read-only in the repo. NOT for executing the work (that is loop-worklist) or reviewing code (that is write-code-review)."
-argument-hint: "<project-folder> [WORKLIST=<path-or-description>]"
+argument-hint: "<project-folder> [WORKLIST=<path-or-description>] [PORTFOLIO_ROOT=<path>]"
 ---
 
 Derive-a-worklist (no actioning) for a **test-automation-portfolio** project.
@@ -14,3 +14,6 @@ this plugin's root), following the body below its `---` divider exactly.
 - Optionally pass `WORKLIST=<path-or-description>` to name the source instead of deriving one.
 - This session writes **only** `WORKLIST_<project>.md` at the portfolio root and a chat breakdown;
   it makes no project changes. Conventions are in `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.
+- Resolve the **portfolio root** first, per `${CLAUDE_PLUGIN_ROOT}/project-layout.md`
+  §"Resolving the portfolio root" — an explicit `PORTFOLIO_ROOT=<path>` argument wins, else the
+  plugin-parent, else the CWD; all portfolio-relative paths resolve against it.

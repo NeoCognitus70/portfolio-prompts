@@ -1,7 +1,8 @@
 # portfolio-prompts — Backlog
 
-**Version:** 9 — PP-29 resolved: "Outstanding Items" now holds only open items; all resolved
-records moved verbatim to "Resolved Items", grouped by review cycle
+**Version:** 10 — PP-28 resolved: portfolio-bound skills resolve the portfolio root from
+configuration (`PORTFOLIO_ROOT=` argument > plugin-parent > CWD fallback), defined once in
+`project-layout.md` §"Resolving the portfolio root"
 **Last Updated:** 2026-07-15
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
@@ -32,29 +33,12 @@ test-automation projects, not the prompt library.
 ## Outstanding Items
 
 Ordered by priority score (highest first); this section holds **open items only** — resolved
-records live under [Resolved Items](#resolved-items). PP-27 and PP-28 derive from the 2026-07-15
+records live under [Resolved Items](#resolved-items). PP-27 derives from the 2026-07-15
 update review ([`library-review_2026-07-15.md`](library-review_2026-07-15.md)). A
 `WORKLIST_portfolio-prompts.md` can be derived from these with
 `derive-worklist.prompt.md using PROJECT=portfolio-prompts`.
 
 ### LOW Priority (Score: 0–9)
-
-#### PP-28: Make the lifecycle skills workspace-portable — Score: 9
-**Score:** Security (0) + Drift (4) + Maintenance (5) = **9**
-**Status:** OPEN
-**Problem (update review §4.1b, PP-24 residual):** the plugin's lifecycle skills resolve
-portfolio-relative paths (registry, contract, `session-notes/`, worklists) against the session
-CWD, so they only work when the session is rooted at the portfolio root. Full "any-workspace"
-portability was the 2026-07-13 review's stated strategic direction and is the one unbuilt piece.
-`analyze-repo` already has no such dependency.
-**Success Criteria:**
-- [ ] The skills resolve `portfolio_root` (and thence `registry.yml`/`project-layout.md`) from
-      configuration — e.g. `${CLAUDE_PLUGIN_ROOT}`-relative config or an explicit argument — with
-      the CWD retained only as a documented fallback.
-- [ ] At least one lifecycle skill is demonstrated working from a session rooted outside the
-      portfolio; the mechanism is documented in `skills/README.md`.
-- [ ] `tools/check-library.py` still passes; no prompt/skill duplication is introduced.
-**Depends on:** PP-24 (done).
 
 #### PP-27: Live auto-trigger smoke test of the installed plugin — Score: 5
 **Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
@@ -78,12 +62,12 @@ happened. All 11+ skills are only structurally validated.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 11 | **11 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26) — 0 open |
-| LOW (0–9) | 19 | **17 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-29) — **2 open (PP-27, PP-28)** |
-| **Total Outstanding** | **2** | PP-27, PP-28 (both LOW, from the 2026-07-15 update review) |
-| Resolved | 28 | PP-00..PP-26, PP-29 |
+| LOW (0–9) | 19 | **18 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-28, PP-29) — **1 open (PP-27)** |
+| **Total Outstanding** | **1** | PP-27 (LOW, from the 2026-07-15 update review) |
+| Resolved | 29 | PP-00..PP-26, PP-28, PP-29 |
 
-**Outstanding, by suggested order:** PP-28 -> PP-27 (PP-27 needs an interactive session, so it
-closes whenever one is next available, independent of PP-28).
+**Outstanding, by suggested order:** PP-27 only — it needs a human-driven interactive session with
+the plugin installed, so it closes whenever one is next available.
 
 ---
 
@@ -93,6 +77,42 @@ Resolved items are kept as a record that the gap existed, verbatim as last writt
 review cycle that produced them (newest first) and in item order within each group.
 
 ### From the 2026-07-15 update review (PP-27..PP-29)
+
+#### PP-28: Make the lifecycle skills workspace-portable — Score: 9 ✅ Resolved 2026-07-15
+**Score:** Security (0) + Drift (4) + Maintenance (5) = **9**
+**Status:** RESOLVED 2026-07-15 — the portfolio root is now resolved from configuration, defined
+once in `project-layout.md` §"Resolving the portfolio root" and cited by all 13 portfolio-bound
+skills.
+**Problem (update review §4.1b, PP-24 residual):** the plugin's lifecycle skills resolve
+portfolio-relative paths (registry, contract, `session-notes/`, worklists) against the session
+CWD, so they only work when the session is rooted at the portfolio root. Full "any-workspace"
+portability was the 2026-07-13 review's stated strategic direction and is the one unbuilt piece.
+`analyze-repo` already has no such dependency.
+**Success Criteria:**
+- [x] The skills resolve `portfolio_root` (and thence `registry.yml`/`project-layout.md`) from
+      configuration — e.g. `${CLAUDE_PLUGIN_ROOT}`-relative config or an explicit argument — with
+      the CWD retained only as a documented fallback. — **Done:** resolution order is
+      `PORTFOLIO_ROOT=<path>` argument > parent of `${CLAUDE_PLUGIN_ROOT}` > CWD, first
+      qualifying hit wins (a directory qualifies iff it contains `portfolio-prompts/registry.yml`);
+      none qualifying = **stop and ask, never guess**. The rule lives in one place
+      (`project-layout.md`, which also reconciles every "at/from the portfolio root" phrase in the
+      prompts); all 13 portfolio-bound skills cite it and declare the optional
+      `PORTFOLIO_ROOT=<path>` argument; `onboard-project.prompt.md`'s Phase-0 CWD guard now uses
+      the resolved root. The bundled tools were already root-independent (self-locating +
+      `--workspace`/`--registry`), so no tool change was needed.
+- [x] At least one lifecycle skill is demonstrated working from a session rooted outside the
+      portfolio; the mechanism is documented in `skills/README.md`. — **Done:** from a CWD outside
+      the portfolio, plugin-parent resolution located the root and `resume-session`'s orientation
+      reads all resolved against it (manifest `latest` -> markdown-renderer v4 handover pair ->
+      registry-row backlog path -> worklist location), and `workspace_preflight.py
+      --projects=markdown-renderer` invoked by absolute plugin path returned READY (exit 0). The
+      explicit-argument-wins and no-candidate-stops branches were exercised too. Documented in
+      `skills/README.md` §"Scope and portfolio-root resolution (PP-28)". A live auto-trigger of
+      the *installed* plugin remains PP-27's separate check.
+- [x] `tools/check-library.py` still passes; no prompt/skill duplication is introduced. — **Done:**
+      self-gate PASS; the full rule exists only in `project-layout.md` — skills carry a one-line
+      citation plus the argument declaration.
+**Depends on:** PP-24 (done).
 
 #### PP-29: Restructure the backlog so Outstanding contains only open items — Score: 6 ✅ Resolved 2026-07-15
 **Score:** Security (0) + Drift (3) + Maintenance (3) = **6**

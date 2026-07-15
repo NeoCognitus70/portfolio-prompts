@@ -39,15 +39,27 @@ the one skill that already runs against any repository unchanged.
 Or point Claude Code at a local checkout of this repo as a plugin. Once installed, the skills appear
 by name (e.g. `/resume-session calculator-screenplay-bdd`) and auto-trigger on their descriptions.
 
-## Scope and current portability caveat
+## Scope and portfolio-root resolution (PP-28)
 
 - Skills load the registry and contract from the plugin (`${CLAUDE_PLUGIN_ROOT}/registry.yml`,
   `project-layout.md`), so the **project is genuinely an argument**.
-- The delegated lifecycle prompts still resolve **portfolio-relative paths** (`session-notes/`,
-  `{PROJECT}/docs/backlog.md`, `WORKLIST_{PROJECT}.md`) against the **current working directory**, so
-  the single-project and fan-out skills are built for a session whose CWD is the
-  **test-automation-portfolio root**. Making those paths fully project-agnostic (run the lifecycle on
-  any workspace) is follow-on work; `analyze-repo` already has no such dependency.
+- Every portfolio-bound skill resolves the **portfolio root** per `project-layout.md`
+  §"Resolving the portfolio root" before following its prompt: an explicit
+  `PORTFOLIO_ROOT=<path>` argument wins, else the parent of `${CLAUDE_PLUGIN_ROOT}` when it
+  qualifies (a workspace checkout — the plugin root *is* `<portfolio root>/portfolio-prompts`),
+  else the CWD as the documented fallback. A directory qualifies iff it contains
+  `portfolio-prompts/registry.yml`; if nothing qualifies the skill **stops and asks** rather than
+  guessing. All portfolio-relative paths (`session-notes/`, `{PROJECT}/docs/backlog.md`,
+  `WORKLIST_{PROJECT}.md`, `templates/`) resolve against that root, so the session no longer has
+  to be rooted at the portfolio. `analyze-repo` needs none of this (zero-config, any repo).
+- The bundled tools are root-independent — each locates the library from its own file path, and
+  `workspace_preflight.py` accepts `--workspace`/`--registry` overrides — so prompts invoke them
+  by absolute plugin path from any CWD.
+- Verified 2026-07-15 from a session rooted **outside** the portfolio (see PP-28 in
+  [`../docs/backlog.md`](../docs/backlog.md)): plugin-parent resolution located the root, and the
+  `resume-session` orientation reads (manifest `latest` → handover pair → project backlog) plus
+  the workspace preflight all resolved correctly. Live auto-trigger of the *installed* plugin
+  remains the separate PP-27 check.
 - `onboard-project` is the prospective-project exception: it inspects an existing local checkout,
   stops for approval, and stages target-scaffold then registry PRs. Registry regeneration remains
   the responsibility of `tools/render-registry.py` (PP-23), which the canonical prompt invokes.

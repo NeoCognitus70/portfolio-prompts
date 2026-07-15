@@ -29,11 +29,12 @@ never merge a PR.
 
 ## Phase 0 — Guard and establish identity
 
-From the portfolio root:
+From the portfolio root (resolved per `portfolio-prompts/project-layout.md` §"Resolving the
+portfolio root"):
 
 1. Confirm that `portfolio-prompts/registry.yml`, `portfolio-prompts/project-layout.md`, and
-   `templates/backlog.template.md` exist. If the working directory is not the portfolio root, stop
-   rather than resolving paths from another checkout.
+   `templates/backlog.template.md` exist under the resolved root. If no candidate qualifies as
+   the portfolio root, stop rather than resolving paths from another checkout.
 2. Load `registry.yml`. If `PROJECT` is already under `projects`, stop: it is already onboarded and
    this workflow must not create a duplicate row. Report any missing contract files as a separate
    repair task.

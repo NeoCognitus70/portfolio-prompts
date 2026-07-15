@@ -1,7 +1,7 @@
 ---
 name: close-project
 description: "In the FINAL session of a test-automation-portfolio project, close it out — verify every public-facing README claim (fetch live artefacts, CI green), reconcile the backlog one last time, retire WORKLIST_<project>.md, and write a terminal handover marked FINAL. Use for \"close out / archive <project>\". Takes the project folder name. Only when the backlog is complete or every item is explicitly deferred."
-argument-hint: "<project-folder>"
+argument-hint: "<project-folder> [PORTFOLIO_ROOT=<path>]"
 ---
 
 Close out a **test-automation-portfolio** project (terminal session).
@@ -13,3 +13,6 @@ this plugin's root), following the body below its `---` divider exactly.
   If none was given, **ask — never guess**.
 - Closure requires every backlog item done/closed/deferred; if any is genuinely open, stop and report.
   Nothing destructive without explicit instruction. Conventions are in `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.
+- Resolve the **portfolio root** first, per `${CLAUDE_PLUGIN_ROOT}/project-layout.md`
+  §"Resolving the portfolio root" — an explicit `PORTFOLIO_ROOT=<path>` argument wins, else the
+  plugin-parent, else the CWD; all portfolio-relative paths resolve against it.

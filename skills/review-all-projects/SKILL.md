@@ -1,7 +1,7 @@
 ---
 name: review-all-projects
 description: "CODE-REVIEW every test-automation-portfolio project in one pass — fan out one sub-agent per registry project, each writing a review into its own .review/ folder on a branch + PR (never merged), then collate a cross-portfolio synthesis of common themes and top-severity findings. Evidence-only, no implementation changes. Use for \"review the whole portfolio\". Takes NO project; optionally PROJECTS=<a>,<b>."
-argument-hint: "[PROJECTS=<folder>,<folder>,...]"
+argument-hint: "[PROJECTS=<folder>,<folder>,...] [PORTFOLIO_ROOT=<path>]"
 ---
 
 Orchestrate a **code review** across the whole portfolio (evidence-only).
@@ -16,3 +16,6 @@ at this plugin's root), following the body below its `---` divider exactly.
 - Each sub-agent writes only review artefacts into its own project, committed on a branch + PR, never
   merged; no implementation changes. Shared fan-out conventions are in
   `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.
+- Resolve the **portfolio root** first, per `${CLAUDE_PLUGIN_ROOT}/project-layout.md`
+  §"Resolving the portfolio root" — an explicit `PORTFOLIO_ROOT=<path>` argument wins, else the
+  plugin-parent, else the CWD; all portfolio-relative paths resolve against it.
