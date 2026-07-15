@@ -21,7 +21,7 @@ prospective folder that is not registered yet.
 | `close-project` | `close-project.prompt.md` | `<project>` | Final session |
 | `derive-all-worklists` | `derive-all-worklists.prompt.md` | — | Fan-out, no actioning |
 | `review-all-projects` | `review-all-projects.prompt.md` | — | Fan-out, evidence-only |
-| `loop-all-worklists` | `loop-all-worklists.prompt.md` | — | Fan-out, **mutating — explicit only** |
+| `loop-all-worklists` | `loop-all-worklists.prompt.md` | — | Fan-out, **mutating — explicit only** (enforced: `disable-model-invocation: true`) |
 | `portfolio-status` | `portfolio-status.prompt.md` | — | Whole-portfolio status, strictly read-only |
 | `analyze-repo` | `github-repo-analysis-prompt.md` | `<repo> [depth]` | Zero-config; any repo, no registry |
 
@@ -30,14 +30,25 @@ the one skill that already runs against any repository unchanged.
 
 ## Install
 
+The repo hosts its own single-plugin marketplace (`.claude-plugin/marketplace.json`), so from an
+interactive Claude Code session:
+
 ```bash
-# from an interactive Claude Code session, add this repo as a plugin marketplace/source, e.g.
 /plugin marketplace add NeoCognitus70/portfolio-prompts
-/plugin install portfolio-prompts
+/plugin install portfolio-prompts@portfolio-prompts
 ```
 
-Or point Claude Code at a local checkout of this repo as a plugin. Once installed, the skills appear
-by name (e.g. `/resume-session calculator-screenplay-bdd`) and auto-trigger on their descriptions.
+For development or a one-off session, load a local checkout directly instead (no install step):
+
+```bash
+claude --plugin-dir /path/to/portfolio-prompts
+```
+
+Once loaded, the skills appear **namespaced** (e.g. `/portfolio-prompts:resume-session
+calculator-screenplay-bdd`) and auto-trigger on their descriptions — except `loop-all-worklists`,
+whose frontmatter sets `disable-model-invocation: true`, so it can only ever be run by an explicit
+`/portfolio-prompts:loop-all-worklists` invocation (mutating fan-out; enforced by Claude Code, not
+just by description wording).
 
 ## Scope and portfolio-root resolution (PP-28)
 
@@ -58,8 +69,14 @@ by name (e.g. `/resume-session calculator-screenplay-bdd`) and auto-trigger on t
 - Verified 2026-07-15 from a session rooted **outside** the portfolio (see PP-28 in
   [`../docs/backlog.md`](../docs/backlog.md)): plugin-parent resolution located the root, and the
   `resume-session` orientation reads (manifest `latest` → handover pair → project backlog) plus
-  the workspace preflight all resolved correctly. Live auto-trigger of the *installed* plugin
-  remains the separate PP-27 check.
+  the workspace preflight all resolved correctly.
+- **Live auto-trigger verified 2026-07-15 (PP-27):** in an interactive session with the plugin
+  loaded, `portfolio-prompts:analyze-repo` and `portfolio-prompts:portfolio-status` both fired
+  from natural requests (no `/skill` invocation) and produced the promised outputs — full evidence
+  in [`../docs/pp27-trigger-test_2026-07-15.md`](../docs/pp27-trigger-test_2026-07-15.md). The
+  explicit-only guarantee for `loop-all-worklists` is enforced mechanically
+  (`disable-model-invocation: true`); see PP-27 in [`../docs/backlog.md`](../docs/backlog.md) for
+  the confirmation status of the live negative probe.
 - `onboard-project` is the prospective-project exception: it inspects an existing local checkout,
   stops for approval, and stages target-scaffold then registry PRs. Registry regeneration remains
   the responsibility of `tools/render-registry.py` (PP-23), which the canonical prompt invokes.
