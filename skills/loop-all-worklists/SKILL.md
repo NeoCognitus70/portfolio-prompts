@@ -1,7 +1,7 @@
 ---
 name: loop-all-worklists
 description: "Action ALL prepared worklists across the test-automation-portfolio in one pass — fan out one sub-agent per project with unchecked items, each executing its loop iterations (commit + PR, never merge); coupled projects share one sequential agent. MUTATING and high-impact — invoke EXPLICITLY only, never as an incidental auto-trigger. Use only on a deliberate \"action all worklists\" request. Takes NO project; optionally PROJECTS=<a>,<b> and MAXITEMS=<n>."
-argument-hint: "[PROJECTS=<folder>,<folder>,...] [MAXITEMS=<n>]"
+argument-hint: "[PROJECTS=<folder>,<folder>,...] [MAXITEMS=<n>] [PORTFOLIO_ROOT=<path>]"
 ---
 
 Orchestrate worklist **execution** across the whole portfolio. **Mutating and high-impact** — only
@@ -16,3 +16,6 @@ at this plugin's root), following the body below its `---` divider exactly.
 - After preflight, do the coupling check (coupled projects run in one sequential agent). Sub-agents
   commit and open PRs but **never merge**. Shared fan-out conventions are in
   `${CLAUDE_PLUGIN_ROOT}/project-layout.md`.
+- Resolve the **portfolio root** first, per `${CLAUDE_PLUGIN_ROOT}/project-layout.md`
+  §"Resolving the portfolio root" — an explicit `PORTFOLIO_ROOT=<path>` argument wins, else the
+  plugin-parent, else the CWD; all portfolio-relative paths resolve against it.

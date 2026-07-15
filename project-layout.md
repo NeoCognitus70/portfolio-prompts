@@ -28,6 +28,33 @@ target and need no `PROJECT=`. Each sub-agent launched by an orchestration promp
 registered `PROJECT=` and is bound by this contract as normal. The standalone
 `github-repo-analysis-prompt.md` is general-purpose and not registry-bound.
 
+## Resolving the portfolio root
+
+Every portfolio-relative location in this contract and the prompts — `{PROJECT}/`,
+`session-notes/`, `WORKLIST_{PROJECT}.md`, `templates/`, and `portfolio-prompts/` itself —
+resolves against a single directory, the **portfolio root**. A directory **qualifies** as the
+portfolio root iff it contains `portfolio-prompts/registry.yml` (a checkout of this library with
+its registry). Resolve the root once at the start of a session — first hit wins, skipping any
+candidate that does not qualify:
+
+1. **Explicit argument** — `PORTFOLIO_ROOT=<absolute path>` in the invocation (every
+   portfolio-bound skill accepts it). Use this when the session is rooted anywhere other than
+   the portfolio.
+2. **Plugin-parent** — when running as the installed plugin, the parent directory of
+   `${CLAUDE_PLUGIN_ROOT}`: in a workspace checkout the plugin root *is*
+   `<portfolio root>/portfolio-prompts`, so its parent qualifies. (A standalone clone's parent
+   will not qualify — fall through.)
+3. **CWD fallback** — the current working directory, when it qualifies (the historical default:
+   a session rooted at the portfolio).
+
+If no candidate qualifies, **stop and ask — never guess** a root, and never write
+portfolio-relative artefacts against an unvalidated directory. Wherever a prompt says "at the
+portfolio root" or "from the portfolio root", it means the root resolved by this section;
+orchestrators pass it to sub-agents as the absolute working directory. The bundled tools are
+already root-independent — each locates the library from its own file path (and
+`workspace_preflight.py` additionally accepts `--workspace`/`--registry` overrides), so invoking
+them by absolute path works from any CWD.
+
 ## Machine-readable registry — `registry.yml`
 
 The README's project-registry table has a structured twin: **`portfolio-prompts/registry.yml`**.
