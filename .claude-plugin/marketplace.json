@@ -1,0 +1,11 @@
+{
+  "name": "portfolio-prompts",
+  "owner": { "name": "Gary Brooks" },
+  "plugins": [
+    {
+      "name": "portfolio-prompts",
+      "source": "./",
+      "description": "Session-lifecycle skills for the test-automation-portfolio: resume, derive/loop worklists, code reviews, implementation logs, handovers, project close-out, portfolio-wide fan-outs, and a zero-config repository analyser. Each skill delegates to the canonical prompt in this repo; the project is an argument."
+    }
+  ]
+}

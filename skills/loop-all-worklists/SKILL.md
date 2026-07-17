@@ -2,6 +2,7 @@
 name: loop-all-worklists
 description: "Action ALL prepared worklists across the test-automation-portfolio in one pass — fan out one sub-agent per project with unchecked items, each executing its loop iterations (commit + PR, never merge); coupled projects share one sequential agent. MUTATING and high-impact — invoke EXPLICITLY only, never as an incidental auto-trigger. Use only on a deliberate \"action all worklists\" request. Takes NO project; optionally PROJECTS=<a>,<b> and MAXITEMS=<n>."
 argument-hint: "[PROJECTS=<folder>,<folder>,...] [MAXITEMS=<n>] [PORTFOLIO_ROOT=<path>]"
+disable-model-invocation: true
 ---
 
 Orchestrate worklist **execution** across the whole portfolio. **Mutating and high-impact** — only

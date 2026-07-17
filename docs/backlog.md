@@ -1,8 +1,9 @@
 # portfolio-prompts — Backlog
 
-**Version:** 10 — PP-28 resolved: portfolio-bound skills resolve the portfolio root from
-configuration (`PORTFOLIO_ROOT=` argument > plugin-parent > CWD fallback), defined once in
-`project-layout.md` §"Resolving the portfolio root"
+**Version:** 11 — PP-27 live trigger test run (evidence in
+[`pp27-trigger-test_2026-07-15.md`](pp27-trigger-test_2026-07-15.md)): auto-triggers PASS,
+`loop-all-worklists` now mechanically explicit-only (`disable-model-invocation: true`); one live
+negative probe remains before PP-27 closes
 **Last Updated:** 2026-07-15
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
@@ -42,16 +43,38 @@ update review ([`library-review_2026-07-15.md`](library-review_2026-07-15.md)). 
 
 #### PP-27: Live auto-trigger smoke test of the installed plugin — Score: 5
 **Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
-**Status:** OPEN
+**Status:** OPEN — narrowed to one live negative probe. Test run 2026-07-15 (Claude Code 2.1.210,
+plugin loaded via `--plugin-dir`); full evidence:
+[`pp27-trigger-test_2026-07-15.md`](pp27-trigger-test_2026-07-15.md) (verdict PARTIAL, honestly
+recorded: the mutating-skill probe was never attempted in that session).
 **Problem (update review §4.1a, PP-24 residual):** skill auto-triggering has never been tested
 live; the `[~]` in PP-24 explicitly deferred it to a post-merge interactive check that has not
 happened. All 11+ skills are only structurally validated.
 **Success Criteria:**
-- [ ] With the plugin installed in an interactive session, at least `analyze-repo` and one
+- [~] With the plugin installed in an interactive session, at least `analyze-repo` and one
       lifecycle skill trigger from a natural request (no explicit `/skill` invocation) and one
-      mutating skill (`loop-all-worklists`) is confirmed explicit-invocation-only.
-- [ ] Outcome (including any description tweaks needed) is recorded here and in
-      `skills/README.md`.
+      mutating skill (`loop-all-worklists`) is confirmed explicit-invocation-only. —
+      **Auto-trigger half PASSED 2026-07-15:** `portfolio-prompts:analyze-repo` fired from
+      "Give me a repository analysis of GBrooks1970/markdown-renderer, summary depth" (report
+      file produced) and `portfolio-prompts:portfolio-status` fired from "What's the current
+      status of the whole test-automation portfolio?" (correct read-only inline report); a
+      non-trigger control ("write the report to a suitably named file") correctly fired nothing.
+      **Explicit-only half:** now **mechanically enforced** — `skills/loop-all-worklists/SKILL.md`
+      sets `disable-model-invocation: true`, so Claude Code refuses model invocation regardless of
+      description wording. **Remaining:** one live probe with this change loaded — send an
+      adjacent-but-not-explicit phrasing (e.g. "action all the worklists for every project"),
+      confirm `loop-all-worklists` does not fire, and confirm
+      `/portfolio-prompts:loop-all-worklists` still starts explicitly (interrupt before any
+      write). Tick this criterion and resolve PP-27 when that probe is recorded here.
+- [x] Outcome (including any description tweaks needed) is recorded here and in
+      `skills/README.md`. — **Done:** evidence committed as
+      `docs/pp27-trigger-test_2026-07-15.md`; `skills/README.md` records the verification and the
+      enforcement flag. No description tweaks were needed (both auto-triggers selected the right
+      skill first time); the flag supersedes description-based guarding for the mutating skill.
+      Side fix from the test run: the README install instructions were wrong (no
+      `marketplace.json` existed, so `/plugin marketplace add` could not work) — the repo now
+      hosts a single-plugin self-marketplace (`.claude-plugin/marketplace.json`) and the README
+      gives the corrected install plus the `--plugin-dir` alternative.
 **Note:** needs a human-driven interactive session; cannot be closed by an unattended run.
 
 ---
