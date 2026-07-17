@@ -21,7 +21,7 @@ prospective folder that is not registered yet.
 | `close-project` | `close-project.prompt.md` | `<project>` | Final session |
 | `derive-all-worklists` | `derive-all-worklists.prompt.md` | — | Fan-out, no actioning |
 | `review-all-projects` | `review-all-projects.prompt.md` | — | Fan-out, evidence-only |
-| `loop-all-worklists` | `loop-all-worklists.prompt.md` | — | Fan-out, **mutating — explicit only** (enforced: `disable-model-invocation: true`) |
+| `loop-all-worklists` | `loop-all-worklists.prompt.md` | — | Fan-out, **mutating — explicit only** (`disable-model-invocation` + confirmation gate) |
 | `portfolio-status` | `portfolio-status.prompt.md` | — | Whole-portfolio status, strictly read-only |
 | `analyze-repo` | `github-repo-analysis-prompt.md` | `<repo> [depth]` | Zero-config; any repo, no registry |
 
@@ -45,10 +45,13 @@ claude --plugin-dir /path/to/portfolio-prompts
 ```
 
 Once loaded, the skills appear **namespaced** (e.g. `/portfolio-prompts:resume-session
-calculator-screenplay-bdd`) and auto-trigger on their descriptions — except `loop-all-worklists`,
-whose frontmatter sets `disable-model-invocation: true`, so it can only ever be run by an explicit
-`/portfolio-prompts:loop-all-worklists` invocation (mutating fan-out; enforced by Claude Code, not
-just by description wording).
+calculator-screenplay-bdd`) and auto-trigger on their descriptions — except `loop-all-worklists`
+(the mutating fan-out), which is doubly guarded: `disable-model-invocation: true` keeps it out of
+automatic loading, and a **mandatory confirmation gate** in the wrapper stops it before any action
+(even read-only preflight) until the user explicitly confirms, whenever it was not started by the
+user's own `/portfolio-prompts:loop-all-worklists` command. The gate is the real guarantee: the
+2026-07-17 probe ([`../docs/pp27-negative-probe_2026-07-17.md`](../docs/pp27-negative-probe_2026-07-17.md))
+showed the flag alone does not prevent a model-initiated invocation on a deliberate natural request.
 
 ## Scope and portfolio-root resolution (PP-28)
 
@@ -74,9 +77,12 @@ just by description wording).
   loaded, `portfolio-prompts:analyze-repo` and `portfolio-prompts:portfolio-status` both fired
   from natural requests (no `/skill` invocation) and produced the promised outputs — full evidence
   in [`../docs/pp27-trigger-test_2026-07-15.md`](../docs/pp27-trigger-test_2026-07-15.md). The
-  explicit-only guarantee for `loop-all-worklists` is enforced mechanically
-  (`disable-model-invocation: true`); see PP-27 in [`../docs/backlog.md`](../docs/backlog.md) for
-  the confirmation status of the live negative probe.
+  explicit-only guarantee for `loop-all-worklists` rests on the wrapper's **confirmation gate**
+  (see Install above): the 2026-07-17 probe
+  ([`../docs/pp27-negative-probe_2026-07-17.md`](../docs/pp27-negative-probe_2026-07-17.md))
+  demonstrated that `disable-model-invocation: true` alone did not block a model-initiated
+  invocation on a deliberate natural request (Claude Code 2.1.212, session rooted in this repo).
+  See PP-27 in [`../docs/backlog.md`](../docs/backlog.md) for the gate-verification status.
 - `onboard-project` is the prospective-project exception: it inspects an existing local checkout,
   stops for approval, and stages target-scaffold then registry PRs. Registry regeneration remains
   the responsibility of `tools/render-registry.py` (PP-23), which the canonical prompt invokes.
