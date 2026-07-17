@@ -8,6 +8,13 @@ disable-model-invocation: true
 Orchestrate worklist **execution** across the whole portfolio. **Mutating and high-impact** — only
 run this when the user has explicitly asked to action all worklists; do not trigger it incidentally.
 
+**Confirmation gate (mandatory, before ANY action — including read-only preflight).** Unless this
+skill was started by the user's own explicit `/portfolio-prompts:loop-all-worklists` command in the
+current turn, first state plainly: "This is the mutating portfolio fan-out: it executes worklist
+items and opens commits/PRs across every project with unchecked items", then ask for explicit
+confirmation and **wait**. Proceed only if the user's next message confirms; otherwise stop. Do not
+treat the message that triggered this skill as the confirmation.
+
 Read and follow the canonical prompt **`${CLAUDE_PLUGIN_ROOT}/loop-all-worklists.prompt.md`** (bundled
 at this plugin's root), following the body below its `---` divider exactly.
 

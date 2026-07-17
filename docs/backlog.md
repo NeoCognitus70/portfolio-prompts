@@ -1,10 +1,11 @@
 # portfolio-prompts — Backlog
 
-**Version:** 11 — PP-27 live trigger test run (evidence in
-[`pp27-trigger-test_2026-07-15.md`](pp27-trigger-test_2026-07-15.md)): auto-triggers PASS,
-`loop-all-worklists` now mechanically explicit-only (`disable-model-invocation: true`); one live
-negative probe remains before PP-27 closes
-**Last Updated:** 2026-07-15
+**Version:** 12 — PP-27 negative probe run (evidence in
+[`pp27-negative-probe_2026-07-17.md`](pp27-negative-probe_2026-07-17.md)): FAIL as designed —
+`disable-model-invocation` alone did not block a model-initiated invocation on a deliberate
+request, and the probe phrasing was itself a deliberate command; a mandatory confirmation gate is
+now the guarantee, with one gate-verification probe remaining
+**Last Updated:** 2026-07-17
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills, and its update review
@@ -43,10 +44,13 @@ update review ([`library-review_2026-07-15.md`](library-review_2026-07-15.md)). 
 
 #### PP-27: Live auto-trigger smoke test of the installed plugin — Score: 5
 **Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
-**Status:** OPEN — narrowed to one live negative probe. Test run 2026-07-15 (Claude Code 2.1.210,
-plugin loaded via `--plugin-dir`); full evidence:
-[`pp27-trigger-test_2026-07-15.md`](pp27-trigger-test_2026-07-15.md) (verdict PARTIAL, honestly
-recorded: the mutating-skill probe was never attempted in that session).
+**Status:** OPEN — narrowed to one gate-verification probe. Two live sessions so far:
+2026-07-15 (Claude Code 2.1.210), evidence
+[`pp27-trigger-test_2026-07-15.md`](pp27-trigger-test_2026-07-15.md) (PARTIAL: auto-triggers
+passed; mutating-skill probe not attempted); and 2026-07-17 (Claude Code 2.1.212, `main` at
+`ebf9f6e`), evidence [`pp27-negative-probe_2026-07-17.md`](pp27-negative-probe_2026-07-17.md)
+(**FAIL as designed** — see analysis in the first criterion below; no harm done: the user rejected
+the skill's first tool call and nothing was written or committed).
 **Problem (update review §4.1a, PP-24 residual):** skill auto-triggering has never been tested
 live; the `[~]` in PP-24 explicitly deferred it to a post-merge interactive check that has not
 happened. All 11+ skills are only structurally validated.
@@ -59,18 +63,29 @@ happened. All 11+ skills are only structurally validated.
       file produced) and `portfolio-prompts:portfolio-status` fired from "What's the current
       status of the whole test-automation portfolio?" (correct read-only inline report); a
       non-trigger control ("write the report to a suitably named file") correctly fired nothing.
-      **Explicit-only half:** now **mechanically enforced** — `skills/loop-all-worklists/SKILL.md`
-      sets `disable-model-invocation: true`, so Claude Code refuses model invocation regardless of
-      description wording. **Remaining:** one live probe with this change loaded — send an
-      adjacent-but-not-explicit phrasing (e.g. "action all the worklists for every project"),
-      confirm `loop-all-worklists` does not fire, and confirm
-      `/portfolio-prompts:loop-all-worklists` still starts explicitly (interrupt before any
-      write). Tick this criterion and resolve PP-27 when that probe is recorded here.
+      **Explicit-only half — 2026-07-17 probe findings:** (1) with `disable-model-invocation: true`
+      confirmed on disk, the model still invoked the skill via an explicit `Skill` tool call from
+      the natural message "action all the worklists for every project" — the flag's documented
+      semantics ("prevent Claude from automatically loading this skill") kept it out of automatic
+      loading but did not hard-block a deliberate model-initiated call, at least in this
+      self-referential setup (session CWD = the plugin repo, so the skill names are readable on
+      disk). (2) The probe phrasing was itself flawed as a "negative" test: it *is* a deliberate
+      "action all worklists" request, which the skill description explicitly permits — the model
+      matched the described intent; the criterion's real target is *incidental* triggering and
+      unattended mutation. (3) Explicit `/portfolio-prompts:loop-all-worklists` invocation
+      correctly starts the skill. **Consequence:** the wrapper now carries a **mandatory
+      confirmation gate** — unless started by the user's own slash command, the skill must state
+      what it mutates and wait for explicit confirmation before ANY action, including read-only
+      preflight; the flag is retained as a first layer. **Remaining (final):** one gate
+      verification with this change loaded — send "action all the worklists for every project",
+      and PASS = whether or not the skill loads, nothing executes: it states the mutation warning
+      and asks; reply "no" and confirm no tool call ran. Record that here and resolve PP-27.
 - [x] Outcome (including any description tweaks needed) is recorded here and in
       `skills/README.md`. — **Done:** evidence committed as
-      `docs/pp27-trigger-test_2026-07-15.md`; `skills/README.md` records the verification and the
-      enforcement flag. No description tweaks were needed (both auto-triggers selected the right
-      skill first time); the flag supersedes description-based guarding for the mutating skill.
+      `docs/pp27-trigger-test_2026-07-15.md` and `docs/pp27-negative-probe_2026-07-17.md`;
+      `skills/README.md` records the verification and the guarding. No description tweaks were
+      needed (both auto-triggers selected the right skill first time); the mutating skill is
+      guarded by the flag plus the wrapper's confirmation gate (2026-07-17).
       Side fix from the test run: the README install instructions were wrong (no
       `marketplace.json` existed, so `/plugin marketplace add` could not work) — the repo now
       hosts a single-plugin self-marketplace (`.claude-plugin/marketplace.json`) and the README
