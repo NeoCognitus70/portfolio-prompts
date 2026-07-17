@@ -81,8 +81,11 @@ showed the flag alone does not prevent a model-initiated invocation on a deliber
   (see Install above): the 2026-07-17 probe
   ([`../docs/pp27-negative-probe_2026-07-17.md`](../docs/pp27-negative-probe_2026-07-17.md))
   demonstrated that `disable-model-invocation: true` alone did not block a model-initiated
-  invocation on a deliberate natural request (Claude Code 2.1.212, session rooted in this repo).
-  See PP-27 in [`../docs/backlog.md`](../docs/backlog.md) for the gate-verification status.
+  invocation on a deliberate natural request (Claude Code 2.1.212, session rooted in this repo),
+  and the same-day **gate verification PASSED**
+  ([`../docs/pp27-gate-probe_2026-07-17.md`](../docs/pp27-gate-probe_2026-07-17.md)): on the same
+  phrasing, the mutation warning was stated, confirmation was requested before any skill action,
+  and the session stopped cleanly on "no". PP-27 closed 2026-07-17.
 - `onboard-project` is the prospective-project exception: it inspects an existing local checkout,
   stops for approval, and stages target-scaffold then registry PRs. Registry regeneration remains
   the responsibility of `tools/render-registry.py` (PP-23), which the canonical prompt invokes.

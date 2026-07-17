@@ -1,10 +1,9 @@
 # portfolio-prompts — Backlog
 
-**Version:** 12 — PP-27 negative probe run (evidence in
-[`pp27-negative-probe_2026-07-17.md`](pp27-negative-probe_2026-07-17.md)): FAIL as designed —
-`disable-model-invocation` alone did not block a model-initiated invocation on a deliberate
-request, and the probe phrasing was itself a deliberate command; a mandatory confirmation gate is
-now the guarantee, with one gate-verification probe remaining
+**Version:** 13 — PP-27 RESOLVED: gate verification PASSED
+([`pp27-gate-probe_2026-07-17.md`](pp27-gate-probe_2026-07-17.md)) — the confirmation gate held on
+a deliberate natural request (warning stated, confirmation requested, clean stop on "no", zero
+mutating actions). **No outstanding items** — PP-00..PP-29 all resolved.
 **Last Updated:** 2026-07-17
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
@@ -34,63 +33,10 @@ test-automation projects, not the prompt library.
 
 ## Outstanding Items
 
-Ordered by priority score (highest first); this section holds **open items only** — resolved
-records live under [Resolved Items](#resolved-items). PP-27 derives from the 2026-07-15
-update review ([`library-review_2026-07-15.md`](library-review_2026-07-15.md)). A
-`WORKLIST_portfolio-prompts.md` can be derived from these with
+**None.** This section holds open items only — resolved records live under
+[Resolved Items](#resolved-items). All 30 items (PP-00..PP-29) across three review cycles are
+resolved. A `WORKLIST_portfolio-prompts.md` can be derived from any future items with
 `derive-worklist.prompt.md using PROJECT=portfolio-prompts`.
-
-### LOW Priority (Score: 0–9)
-
-#### PP-27: Live auto-trigger smoke test of the installed plugin — Score: 5
-**Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
-**Status:** OPEN — narrowed to one gate-verification probe. Two live sessions so far:
-2026-07-15 (Claude Code 2.1.210), evidence
-[`pp27-trigger-test_2026-07-15.md`](pp27-trigger-test_2026-07-15.md) (PARTIAL: auto-triggers
-passed; mutating-skill probe not attempted); and 2026-07-17 (Claude Code 2.1.212, `main` at
-`ebf9f6e`), evidence [`pp27-negative-probe_2026-07-17.md`](pp27-negative-probe_2026-07-17.md)
-(**FAIL as designed** — see analysis in the first criterion below; no harm done: the user rejected
-the skill's first tool call and nothing was written or committed).
-**Problem (update review §4.1a, PP-24 residual):** skill auto-triggering has never been tested
-live; the `[~]` in PP-24 explicitly deferred it to a post-merge interactive check that has not
-happened. All 11+ skills are only structurally validated.
-**Success Criteria:**
-- [~] With the plugin installed in an interactive session, at least `analyze-repo` and one
-      lifecycle skill trigger from a natural request (no explicit `/skill` invocation) and one
-      mutating skill (`loop-all-worklists`) is confirmed explicit-invocation-only. —
-      **Auto-trigger half PASSED 2026-07-15:** `portfolio-prompts:analyze-repo` fired from
-      "Give me a repository analysis of GBrooks1970/markdown-renderer, summary depth" (report
-      file produced) and `portfolio-prompts:portfolio-status` fired from "What's the current
-      status of the whole test-automation portfolio?" (correct read-only inline report); a
-      non-trigger control ("write the report to a suitably named file") correctly fired nothing.
-      **Explicit-only half — 2026-07-17 probe findings:** (1) with `disable-model-invocation: true`
-      confirmed on disk, the model still invoked the skill via an explicit `Skill` tool call from
-      the natural message "action all the worklists for every project" — the flag's documented
-      semantics ("prevent Claude from automatically loading this skill") kept it out of automatic
-      loading but did not hard-block a deliberate model-initiated call, at least in this
-      self-referential setup (session CWD = the plugin repo, so the skill names are readable on
-      disk). (2) The probe phrasing was itself flawed as a "negative" test: it *is* a deliberate
-      "action all worklists" request, which the skill description explicitly permits — the model
-      matched the described intent; the criterion's real target is *incidental* triggering and
-      unattended mutation. (3) Explicit `/portfolio-prompts:loop-all-worklists` invocation
-      correctly starts the skill. **Consequence:** the wrapper now carries a **mandatory
-      confirmation gate** — unless started by the user's own slash command, the skill must state
-      what it mutates and wait for explicit confirmation before ANY action, including read-only
-      preflight; the flag is retained as a first layer. **Remaining (final):** one gate
-      verification with this change loaded — send "action all the worklists for every project",
-      and PASS = whether or not the skill loads, nothing executes: it states the mutation warning
-      and asks; reply "no" and confirm no tool call ran. Record that here and resolve PP-27.
-- [x] Outcome (including any description tweaks needed) is recorded here and in
-      `skills/README.md`. — **Done:** evidence committed as
-      `docs/pp27-trigger-test_2026-07-15.md` and `docs/pp27-negative-probe_2026-07-17.md`;
-      `skills/README.md` records the verification and the guarding. No description tweaks were
-      needed (both auto-triggers selected the right skill first time); the mutating skill is
-      guarded by the flag plus the wrapper's confirmation gate (2026-07-17).
-      Side fix from the test run: the README install instructions were wrong (no
-      `marketplace.json` existed, so `/plugin marketplace add` could not work) — the repo now
-      hosts a single-plugin self-marketplace (`.claude-plugin/marketplace.json`) and the README
-      gives the corrected install plus the `--plugin-dir` alternative.
-**Note:** needs a human-driven interactive session; cannot be closed by an unattended run.
 
 ---
 
@@ -100,12 +46,11 @@ happened. All 11+ skills are only structurally validated.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 11 | **11 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26) — 0 open |
-| LOW (0–9) | 19 | **18 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-28, PP-29) — **1 open (PP-27)** |
-| **Total Outstanding** | **1** | PP-27 (LOW, from the 2026-07-15 update review) |
-| Resolved | 29 | PP-00..PP-26, PP-28, PP-29 |
+| LOW (0–9) | 19 | **19 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29) — 0 open |
+| **Total Outstanding** | **0** | — |
+| Resolved | 30 | PP-00..PP-29 |
 
-**Outstanding, by suggested order:** PP-27 only — it needs a human-driven interactive session with
-the plugin installed, so it closes whenever one is next available.
+**Outstanding, by suggested order:** None.
 
 ---
 
@@ -115,6 +60,51 @@ Resolved items are kept as a record that the gap existed, verbatim as last writt
 review cycle that produced them (newest first) and in item order within each group.
 
 ### From the 2026-07-15 update review (PP-27..PP-29)
+
+#### PP-27: Live auto-trigger smoke test of the installed plugin — Score: 5 ✅ Resolved 2026-07-17
+**Score:** Security (0) + Drift (2) + Maintenance (3) = **5**
+**Status:** RESOLVED 2026-07-17 across three live interactive sessions, all evidence committed:
+[`pp27-trigger-test_2026-07-15.md`](pp27-trigger-test_2026-07-15.md) (auto-triggers),
+[`pp27-negative-probe_2026-07-17.md`](pp27-negative-probe_2026-07-17.md) (flag insufficiency),
+[`pp27-gate-probe_2026-07-17.md`](pp27-gate-probe_2026-07-17.md) (gate verification, PASS).
+**Problem (update review §4.1a, PP-24 residual):** skill auto-triggering has never been tested
+live; the `[~]` in PP-24 explicitly deferred it to a post-merge interactive check that has not
+happened. All 11+ skills are only structurally validated.
+**Success Criteria:**
+- [x] With the plugin installed in an interactive session, at least `analyze-repo` and one
+      lifecycle skill trigger from a natural request (no explicit `/skill` invocation) and one
+      mutating skill (`loop-all-worklists`) is confirmed explicit-invocation-only. —
+      **Auto-trigger half PASSED 2026-07-15** (Claude Code 2.1.210):
+      `portfolio-prompts:analyze-repo` fired from "Give me a repository analysis of
+      GBrooks1970/markdown-renderer, summary depth" (report file produced) and
+      `portfolio-prompts:portfolio-status` fired from "What's the current status of the whole
+      test-automation portfolio?" (correct read-only inline report); a non-trigger control
+      correctly fired nothing. **Explicit-only half — resolved as a no-unattended-mutation
+      guarantee, verified 2026-07-17** (Claude Code 2.1.212): the 2026-07-17 negative probe
+      (`main`@`ebf9f6e`) showed `disable-model-invocation: true` alone did not hard-block a
+      model-initiated `Skill` call on the deliberate request "action all the worklists for every
+      project" (the flag's documented semantics cover *automatic loading*; the probe phrasing was
+      itself a deliberate request the description permits — the criterion's real target is
+      incidental triggering and unattended mutation). PR #40 added the wrapper's **mandatory
+      confirmation gate**; the same-day **gate verification (`main`@`5d350af`) PASSED**: on the
+      same deliberate phrasing the skill did not fire, the assistant located and honoured the
+      gate, stated the mutation warning, asked for confirmation, and stopped cleanly on "no" with
+      zero mutating actions (the only pre-confirmation tool calls were two read-only discovery
+      reads to locate the gate text, flagged as an ambiguity in the evidence — the skill's own
+      execution never started). Explicit `/portfolio-prompts:loop-all-worklists` invocation was
+      separately confirmed to start the skill (2026-07-17 negative probe, Test 2).
+- [x] Outcome (including any description tweaks needed) is recorded here and in
+      `skills/README.md`. — **Done:** all three evidence files committed under `docs/`;
+      `skills/README.md` records the verification and the flag + gate guarding. No description
+      tweaks were needed (both auto-triggers selected the right skill first time). Side fix from
+      the test runs: the README install instructions were wrong (no `marketplace.json` existed,
+      so `/plugin marketplace add` could not work) — the repo now hosts a single-plugin
+      self-marketplace (`.claude-plugin/marketplace.json`) and the README gives the corrected
+      install plus the `--plugin-dir` alternative.
+**Durable lesson:** `disable-model-invocation: true` prevents *automatic loading* only — it is not
+a hard block on deliberate model-initiated Skill calls, so a mutating skill's real guarantee must
+be an in-body confirmation gate; and a "negative probe" phrase must be genuinely *incidental*, not
+a deliberate command the description already permits.
 
 #### PP-28: Make the lifecycle skills workspace-portable — Score: 9 ✅ Resolved 2026-07-15
 **Score:** Security (0) + Drift (4) + Maintenance (5) = **9**
