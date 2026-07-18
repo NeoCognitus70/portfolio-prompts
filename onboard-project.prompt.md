@@ -18,23 +18,25 @@ invocation names it as `PROJECT=<folder name at the portfolio root>` and may sup
 
 - If `PROJECT` is missing, ask for it; never infer it from open files.
 - `PROJECT` is the explicit onboarding exception to the normal registered-project rule in
-  `portfolio-prompts/project-layout.md` §"The `PROJECT` parameter": it must name a prospective
-  local folder that is not already a `registry.yml` project row.
+  `project-layout.md` at the resolved library root §"The `PROJECT` parameter": it must name a
+  prospective local folder that is not already a `registry.yml` project row.
 - This workflow does not create or clone a product repository. If the folder or its `.git`
   checkout is missing, stop and report what the user must provide.
 
-Follow `portfolio-prompts/project-layout.md`, including its working norm for branches and PRs. Work
-sequentially across the target and `portfolio-prompts` repositories; do not launch sub-agents and
-never merge a PR.
+Follow `project-layout.md` at the resolved library root, including its working norm for branches
+and PRs. Work sequentially across the target and `portfolio-prompts` repositories; do not launch
+sub-agents and never merge a PR.
 
 ## Phase 0 — Guard and establish identity
 
-From the portfolio root (resolved per `portfolio-prompts/project-layout.md` §"Resolving the
-portfolio root"):
+From the portfolio root (resolved per `project-layout.md` at the resolved library root
+§"Resolving the portfolio root"):
 
-1. Confirm that `portfolio-prompts/registry.yml`, `portfolio-prompts/project-layout.md`, and
-   `templates/backlog.template.md` exist under the resolved root. If no candidate qualifies as
-   the portfolio root, stop rather than resolving paths from another checkout.
+1. Confirm that `registry.yml`, `project-layout.md`, and `templates/backlog.template.md` exist at
+   the resolved library root. Also require a writable workspace checkout at
+   `<portfolio root>/portfolio-prompts` before Phase 4; never edit an installed plugin-cache copy.
+   If no candidate qualifies as the portfolio root, stop rather than resolving paths from another
+   checkout.
 2. Load `registry.yml`. If `PROJECT` is already under `projects`, stop: it is already onboarded and
    this workflow must not create a duplicate row. Report any missing contract files as a separate
    repair task.
@@ -137,8 +139,9 @@ When the target scaffold is present on its default branch (either originally or 
 reports the scaffold PR merged), verify that state from fresh local/remote evidence. Then:
 
 1. Refresh `portfolio-prompts` from its default branch and create a descriptive registry branch.
-2. Edit `portfolio-prompts/registry.yml`: add exactly the approved project row in an intentional
-   order and remove only the matching `unregistered_candidates` entry, if present.
+2. Edit the workspace checkout's `portfolio-prompts/registry.yml`: add exactly the approved project
+   row in an intentional order and remove only the matching `unregistered_candidates` entry, if
+   present.
 3. Run `python tools/render-registry.py` from `portfolio-prompts/`. Never hand-edit the generated
    README registry block.
 4. Inspect the generated row and run `python tools/check-library.py` plus `git diff --check`. Confirm

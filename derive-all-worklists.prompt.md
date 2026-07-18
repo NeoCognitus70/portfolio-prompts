@@ -16,14 +16,15 @@ No `PROJECT=` is needed (the target is the whole registry). To restrict the fan-
 You are **orchestrating worklist derivation across the portfolio**. You do not derive any
 worklist yourself and you write no files — your sub-agents do the per-project work; your job is
 the fan-out and the collated report. (This is the portfolio-scoped exception to the `PROJECT=`
-rule in `portfolio-prompts/project-layout.md`: the orchestration needs no `PROJECT=`; every
-sub-agent receives its own.)
+rule in `project-layout.md` at the resolved library root: the orchestration needs no `PROJECT=`;
+every sub-agent receives its own.)
 
 ## Step 1 — Preflight and establish the project list
 
-From the portfolio root, run `python portfolio-prompts/tools/workspace_preflight.py`; if the
-invocation names `PROJECTS=`, append `--projects=<the same comma-separated value>`. This is the
-mandatory read-only preflight in `portfolio-prompts/project-layout.md` §"Workspace preflight".
+From the portfolio root, run
+`python <absolute library root>/tools/workspace_preflight.py`; if the invocation names
+`PROJECTS=`, append `--projects=<the same comma-separated value>`. This is the mandatory read-only
+preflight in `project-layout.md` at the resolved library root §"Workspace preflight".
 
 - Use the command's registry-derived target list — do not reconstruct one from README prose.
 - Exit `2` stops the fan-out. On exit `1`, exclude every `BLOCKED` project and carry its blockers
@@ -34,22 +35,23 @@ mandatory read-only preflight in `portfolio-prompts/project-layout.md` §"Worksp
 Note for the report which projects already have a `WORKLIST_{PROJECT}.md` at the portfolio root —
 expect their agents to stop at the guard rather than derive.
 
-## Step 2 — Fan out (one sub-agent per project, all in the same turn)
+## Step 2 — Fan out (one sub-agent per project, in bounded parallel waves)
 
-Launch **one sub-agent per project**, all in a single turn so they run in parallel. This is safe
-by design: each agent writes at most one file (`WORKLIST_{PROJECT}.md`, names disjoint per
-project) and is otherwise read-only.
+Launch **one sub-agent per project** in waves no larger than the environment's available
+child-agent slots. Launch each wave in a single turn so that wave runs in parallel. This is safe by
+design: each agent writes at most one file (`WORKLIST_{PROJECT}.md`, names disjoint per project) and
+is otherwise read-only.
 
-**Launch-count check:** the number of agents you launch this turn must equal the number of projects
-in scope from Step 1 — count them off explicitly before moving on; a forgotten agent is a silent
-gap.
+**Launch-count check:** for each wave, the agents launched must equal that wave's projects. Count
+them off explicitly before moving on, collect the wave, then launch the next until every Step 1
+target has run; a forgotten target is a silent gap.
 
 Each sub-agent's prompt must be **self-contained** (sub-agents start with no conversation
 context). Use this template, filling both placeholders:
 
 ```text
 Working directory: <absolute path of the portfolio root>
-Read and follow portfolio-prompts/derive-worklist.prompt.md using PROJECT=<project folder name>
+Read and follow <absolute library root>/derive-worklist.prompt.md using PROJECT=<project folder name>
 Follow it exactly, including the Step 0 guard (never overwrite an existing
 WORKLIST_{PROJECT}.md) and the no-actioning rule (read-only in the project
 repo; the only file you may write is WORKLIST_{PROJECT}.md at the portfolio
@@ -85,15 +87,16 @@ Close with the cross-portfolio view:
 
 - Every **user decision** carried in any worklist or report (e.g. an undecided remediation
   strategy), gathered into one list — these need answers before the loops run.
-- Suggested next `/loop` invocation line **per derived worklist**.
+- Suggested next `loop-worklist` skill or prompt invocation **per derived worklist**, using the
+  active platform's syntax.
 - Any registry/backlog mismatches the agents flagged, so the source of truth can be fixed.
 
 ## Rules
 
-- Follow the **shared orchestration conventions** in `portfolio-prompts/project-layout.md`
+- Follow the **shared orchestration conventions** in `project-layout.md` at the resolved library root
   §"Orchestration fan-out" (no `PROJECT=` for the orchestrator; one agent per project, never two on
-  the same tree; launch-count check; unattended; sequential fallback; re-run a failed agent at most
-  once; relay faithfully).
+  the same tree; bounded waves; launch-count check; unattended; sequential fallback; re-run a
+  failed agent at most once; relay faithfully).
 - **Mode-specific (no-actioning):** in fan-out mode you write **no files** and make **no project
   changes** — only sub-agents write, and only their own `WORKLIST_{PROJECT}.md` (in the sequential
   fallback you write exactly those files yourself, nothing else).

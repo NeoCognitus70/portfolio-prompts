@@ -17,8 +17,8 @@ project. The invocation must provide both `PROJECT=<folder name>` and `REVIEW=<p
 - If `PROJECT` is missing, ask which registered project to use; never guess.
 - If `REVIEW` is missing, ask for the review path; do not silently choose the latest review.
 
-Conventions and registered path deviations are defined in
-`portfolio-prompts/project-layout.md` and `portfolio-prompts/registry.yml`.
+Conventions and registered path deviations are defined in `project-layout.md` and `registry.yml`
+at the resolved library root.
 
 **You are not actioning the findings.** Do not implement, fix, test, commit, push, edit the backlog,
 or change the project repository. This is an interactive two-phase workflow: candidates in chat,
@@ -100,7 +100,7 @@ If no actionable candidates remain, say so and write no file.
 ## Step 4 — Materialise only the approved list
 
 After explicit approval, apply exactly the user's changes and write `WORKLIST_{PROJECT}.md` at the
-portfolio root in the canonical format defined in `portfolio-prompts/project-layout.md`
+portfolio root in the canonical format defined in `project-layout.md` at the resolved library root
 §"Worklist file format". The header must name the project, named review path/version, backlog
 cross-check, and derivation date. Preserve source finding ids in each item's source reference and
 include verifiable acceptance criteria plus docs-only/code classification.
@@ -109,7 +109,7 @@ Do not include the worklist in a target-project commit. It is root-tracked contr
 project repositories; publishing it uses the portfolio root's separate branch/PR flow and is outside
 this triage-only prompt. Finish by reporting the file path, root working-tree state,
 approved/merged/dropped counts, unresolved decisions (which must not appear as executable items),
-and the exact suggested `/loop` invocation.
+and the exact suggested `loop-worklist` invocation for the active platform.
 
 ## Rules
 

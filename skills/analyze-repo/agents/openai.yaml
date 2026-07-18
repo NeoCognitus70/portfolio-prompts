@@ -1,0 +1,6 @@
+interface:
+  display_name: "Analyse Repository"
+  short_description: "Evidence-based analysis of any repository"
+  default_prompt: "Use $portfolio-prompts:analyze-repo to analyse <repo-url-or-path> at standard depth."
+policy:
+  allow_implicit_invocation: true

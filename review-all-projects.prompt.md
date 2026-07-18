@@ -17,14 +17,15 @@ To restrict the fan-out, append `PROJECTS=<folder>,<folder>,...`.
 You are **orchestrating a code review across the portfolio**. You review nothing yourself and
 write no files — your sub-agents do the per-project review; your job is target selection, the
 fan-out, and the collated cross-portfolio summary. (Portfolio-scoped orchestration: no `PROJECT=`
-is needed; every sub-agent receives its own — see the exception in
-`portfolio-prompts/project-layout.md`.)
+is needed; every sub-agent receives its own — see the exception in `project-layout.md` at the
+resolved library root.)
 
 ## Step 1 — Preflight and establish the targets
 
-From the portfolio root, run `python portfolio-prompts/tools/workspace_preflight.py`; if the
-invocation names `PROJECTS=`, append `--projects=<the same comma-separated value>`. This is the
-mandatory read-only preflight in `portfolio-prompts/project-layout.md` §"Workspace preflight".
+From the portfolio root, run
+`python <absolute library root>/tools/workspace_preflight.py`; if the invocation names
+`PROJECTS=`, append `--projects=<the same comma-separated value>`. This is the mandatory read-only
+preflight in `project-layout.md` at the resolved library root §"Workspace preflight".
 
 - Use the command's registry-derived target list — do not reconstruct one from README prose.
 - Exit `2` stops the fan-out. On exit `1`, exclude every `BLOCKED` project and carry its blockers
@@ -47,17 +48,18 @@ without running the cross-tree build gate** (a review does not require a green b
 on the code as written), or assign the coupled pair to one sequential agent. State which you chose
 in the report.
 
-## Step 3 — Fan out (one sub-agent per project, all in the same turn)
+## Step 3 — Fan out (one sub-agent per project, in bounded parallel waves)
 
-Launch **one sub-agent per project**, all in a single turn so they run in parallel. **Launch-count
-check:** agents launched must equal the projects in scope from Step 1 (including any sequential
-coupled agent) — confirm explicitly before proceeding; a forgotten agent is a silent gap. Each
-sub-agent's prompt must be **self-contained** (sub-agents start with no conversation context). Use
-this template, filling both placeholders:
+Launch **one sub-agent per project** in waves no larger than the environment's available
+child-agent slots. Launch each wave in a single turn. **Launch-count check:** agents launched must
+equal that wave's projects (including any sequential coupled agent). Confirm explicitly, collect
+the wave, then launch the next until every Step 1 target has run; a forgotten target is a silent
+gap. Each sub-agent's prompt must be **self-contained** (sub-agents start with no conversation
+context). Use this template, filling all placeholders:
 
 ```text
 Working directory: <absolute path of the portfolio root>
-Read and follow portfolio-prompts/write-code-review.prompt.md using PROJECT=<project folder name>
+Read and follow <absolute library root>/write-code-review.prompt.md using PROJECT=<project folder name>
 Follow it exactly. Use your real model identity for {AGENT}/{AGENT_NAME} in the
 review directory name and reviewer attribution - never copy an identity from a
 previous review directory. Write the review into the project's review folder
@@ -105,10 +107,10 @@ When all agents return, produce one report:
 
 ## Rules
 
-- Follow the **shared orchestration conventions** in `portfolio-prompts/project-layout.md`
+- Follow the **shared orchestration conventions** in `project-layout.md` at the resolved library root
   §"Orchestration fan-out" (no `PROJECT=` for the orchestrator; one agent per project, never two on
-  the same tree; launch-count check; unattended; sequential fallback; re-run a failed agent at most
-  once; relay faithfully).
+  the same tree; bounded waves; launch-count check; unattended; sequential fallback; re-run a
+  failed agent at most once; relay faithfully).
 - **Mode-specific (evidence-only):** you write **no files** and make **no repo changes** — only
   sub-agents write, each into its own project's review folder, committed on its own branch (in the
   sequential fallback those reviews and commits are yours, project by project). Sub-agents make no

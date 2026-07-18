@@ -28,24 +28,39 @@ target and need no `PROJECT=`. Each sub-agent launched by an orchestration promp
 registered `PROJECT=` and is bound by this contract as normal. The standalone
 `github-repo-analysis-prompt.md` is general-purpose and not registry-bound.
 
+## Resolving the library root
+
+The **library root** is the directory containing this `project-layout.md`, `registry.yml`, the
+canonical prompt files, and `tools/`. Resolve it from the source file being followed, not from a
+product-specific environment variable:
+
+1. When a skill is active, its library root is two directories above that skill's `SKILL.md`.
+2. When a canonical prompt is read directly, its library root is the directory containing that
+   prompt.
+
+Validate that both `registry.yml` and `project-layout.md` exist there before using the root. Skill
+links are deliberately relative so the same wrappers work in Claude Code and Codex, including when
+Codex loads an installed copy from its plugin cache. Wherever an operational prompt says
+`<LIBRARY_ROOT>`, substitute this resolved **absolute** path; do not pass the placeholder literally.
+
 ## Resolving the portfolio root
 
 Every portfolio-relative location in this contract and the prompts — `{PROJECT}/`,
 `session-notes/`, `WORKLIST_{PROJECT}.md`, `templates/`, and `portfolio-prompts/` itself —
 resolves against a single directory, the **portfolio root**. A directory **qualifies** as the
-portfolio root iff it contains `portfolio-prompts/registry.yml` (a checkout of this library with
-its registry). Resolve the root once at the start of a session — first hit wins, skipping any
-candidate that does not qualify:
+portfolio root iff it contains `portfolio-prompts/registry.yml` (a workspace checkout of this
+library with its registry). Resolve the root once at the start of a session — first hit wins,
+skipping any candidate that does not qualify:
 
 1. **Explicit argument** — `PORTFOLIO_ROOT=<absolute path>` in the invocation (every
    portfolio-bound skill accepts it). Use this when the session is rooted anywhere other than
    the portfolio.
-2. **Plugin-parent** — when running as the installed plugin, the parent directory of
-   `${CLAUDE_PLUGIN_ROOT}`: in a workspace checkout the plugin root *is*
-   `<portfolio root>/portfolio-prompts`, so its parent qualifies. (A standalone clone's parent
-   will not qualify — fall through.)
-3. **CWD fallback** — the current working directory, when it qualifies (the historical default:
-   a session rooted at the portfolio).
+2. **Library-parent** — when the resolved library root is the workspace checkout at
+   `<portfolio root>/portfolio-prompts`, its parent qualifies. A standalone clone or a Codex plugin
+   cache does not qualify here — fall through.
+3. **CWD/ancestor fallback** — the current working directory, then each ancestor up to the
+   filesystem root; take the nearest candidate that qualifies. This covers sessions launched at
+   the portfolio root or inside one of its project checkouts.
 
 If no candidate qualifies, **stop and ask — never guess** a root, and never write
 portfolio-relative artefacts against an unvalidated directory. Wherever a prompt says "at the
@@ -53,7 +68,7 @@ portfolio root" or "from the portfolio root", it means the root resolved by this
 orchestrators pass it to sub-agents as the absolute working directory. The bundled tools are
 already root-independent — each locates the library from its own file path (and
 `workspace_preflight.py` additionally accepts `--workspace`/`--registry` overrides), so invoking
-them by absolute path works from any CWD.
+them through the absolute library root works from any CWD.
 
 ## Machine-readable registry — `registry.yml`
 
@@ -176,7 +191,8 @@ npx tsc --noEmit
   handover no longer describes, or when the handover's public-facing claims have become wrong.
 - **Worklists:** `WORKLIST_{PROJECT}.md` at the portfolio root — control records tracked by the root
   support repository, outside every target project's history. One worklist exists per project; a
-  `/loop` binds to exactly one. A target-project commit must never absorb a root worklist change.
+  `loop-worklist` invocation or scheduled iteration binds to exactly one. A target-project commit
+  must never absorb a root worklist change.
 - **Shared templates:** `templates/` at the portfolio root — project-agnostic scaffolding
   (backlog, implementation log, code review, ADR, etc.).
 - **Prompts:** this folder (`portfolio-prompts/`), its own git repository.
@@ -185,9 +201,10 @@ npx tsc --noEmit
 
 `WORKLIST_{PROJECT}.md` is the loop's memory: `derive-worklist` writes it, and `loop-worklist`
 reads it first and updates it last each iteration. It lives in the tracked portfolio root support
-repository, outside the target project repository — one worklist per project; a `/loop` binds to
-exactly one. Worklist changes therefore use the root repository's own branch/PR flow and are never
-included in the target project's commit. Both prompts use **exactly** this format — cite this
+repository, outside the target project repository — one worklist per project; a `loop-worklist`
+invocation or scheduled iteration binds to exactly one. Worklist changes therefore use the root
+repository's own branch/PR flow and are never included in the target project's commit. Both
+prompts use **exactly** this format — cite this
 section rather than restating it:
 
 - A short **header** naming the project, the derivation source(s) (review version, backlog
@@ -217,7 +234,7 @@ Minimal example:
 Every orchestration fan-out starts by running this command from the portfolio root:
 
 ```bash
-python portfolio-prompts/tools/workspace_preflight.py
+python <LIBRARY_ROOT>/tools/workspace_preflight.py
 ```
 
 Pass `--projects=<folder>,<folder>` when the invocation or available worklists restrict the target
@@ -258,14 +275,17 @@ conventions are common to all three — each orchestrator cites this section and
 - **No `PROJECT=` for the orchestrator** (it targets the registry); every sub-agent it launches
   receives a single `PROJECT=` and is bound by this contract as normal.
 - **Self-contained sub-agent prompts.** Sub-agents start with no conversation context — each
-  launch prompt must carry everything the sub-agent needs (working directory, the `Read and
-  follow ... using PROJECT=<folder>` line, and the mode-specific rules), not rely on context.
+  launch prompt must carry everything the sub-agent needs (working directory, the absolute
+  `<LIBRARY_ROOT>` canonical-prompt path, `PROJECT=<folder>`, and the mode-specific rules), not
+  rely on context.
 - **One sub-agent per project; never two agents on the same project or the same working tree.**
   Coupled projects (per the registry coupling notes) share **one sequential agent** that works
   them in dependency order (provider/library first, consumer second).
-- **Launch a wave's agents in the same turn** (parallel). After partitioning, confirm the count:
-  the number of agents launched must equal the number of targets (including any sequential
-  coupled agent) — a missing agent is a silent gap.
+- **Launch bounded waves in parallel.** Partition the targets into waves no larger than the
+  environment's available child-agent slots, reserving the orchestrator's own slot. Launch every
+  agent in a wave in the same turn. Before proceeding, confirm that agents launched for the wave
+  equal that wave's targets (including any sequential coupled agent). After collecting the wave,
+  launch the next until every target has run — a missing target is a silent gap.
 - **Unattended:** wherever a sub-prompt says to ask the user, the sub-agent must **not wait** —
   record the question and proceed or stop per its own mode, carrying the question into its report.
 - **The sub-agent's final message is the only thing returned to the orchestrator** — it must be

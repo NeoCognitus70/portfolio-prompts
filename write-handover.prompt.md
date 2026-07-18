@@ -18,11 +18,13 @@ itself) and reconciles the source of truth.
 You are wrapping up a working session on the **`{PROJECT}`** portfolio project and must write a
 clean handover so any agent or human can resume cold without re-deriving decisions. The invocation
 names the target as `PROJECT=<folder name at the portfolio root>` — if it did not, **ask which
-project**; never guess. Conventions are defined in `portfolio-prompts/project-layout.md`.
+project**; never guess. Conventions are defined in `project-layout.md` at the resolved library
+root.
 
 ## Ground truth — read these before writing anything
 1. **Source of truth:** `{PROJECT}/docs/backlog.md` (or the backlog path the project's registry
-   row in `portfolio-prompts/README.md` records as a deviation). Item statuses here are authoritative.
+   row in `README.md` at the resolved library root records as a deviation). Item statuses here are
+   authoritative.
 2. **The latest existing handover.** **Prefer the manifest (PP-14):** if
    `session-notes/manifest.json` exists, its `latest["{PROJECT}"]` entry names the current highest
    version — the file you are about to supersede, and `version + 1` is the number you write.
@@ -105,7 +107,7 @@ never patch the `.html` independently.
 
 ## Update the handover manifest (PP-14)
 After both files exist, regenerate the index so the next session finds this handover without
-re-deriving "latest": run `python portfolio-prompts/tools/build-handover-manifest.py` (it rewrites
+re-deriving "latest": run `python <absolute library root>/tools/build-handover-manifest.py` (it rewrites
 `session-notes/manifest.json` by scanning the folder). Confirm your new version appears as
 `latest["{PROJECT}"]`. If Python is unavailable, add an entry for the new file to `manifest.json` by
 hand matching the existing shape, or state in your report that the manifest was not updated (the

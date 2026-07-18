@@ -22,13 +22,13 @@ invocation names the target as `PROJECT=<folder name at the portfolio root>` - i
 ## Inputs and source of truth
 
 Use exactly these paths, relative to the portfolio root (`test-automation-portfolio/`) — except
-where the project's registry row in `portfolio-prompts/README.md` records a deviation (e.g. a
-different backlog path or an in-repo template set), which overrides the default:
+where the project's registry row in `README.md` at the resolved library root records a deviation
+(e.g. a different backlog path or an in-repo template set), which overrides the default:
 
 - **Repository:** `{PROJECT}/`
 - **Review template:** `templates/code-review.template.md`
 - **Project status source of truth:** `{PROJECT}/docs/backlog.md`
-- **Layout contract:** `portfolio-prompts/project-layout.md`
+- **Layout contract:** `project-layout.md` at the resolved library root
 
 Read the review template first and follow it as the output contract. Then read `docs/backlog.md`
 and treat it as the canonical current project state (if it does not exist, note that as a finding
@@ -94,8 +94,8 @@ Before writing findings:
    assume they are true without evidence.
 4. Inspect the implementation and docs listed in the required scope.
 5. Run lightweight validation if dependencies are available, resolving the project's gates per
-   `portfolio-prompts/project-layout.md` §"Validation gates" — the canonical first-hit-wins cascade
-   lives there in full (project-contract `Gates` -> registry-row gates -> root `npm run verify` ->
+   `project-layout.md` at the resolved library root §"Validation gates" — the canonical
+   first-hit-wins cascade lives there in full (project-contract `Gates` -> registry-row gates -> root `npm run verify` ->
    stack defaults run inside the relevant stack directory -> ask; with the cucumber-js vs
    playwright-bdd nuance).
    - Do not start heavyweight infrastructure (e.g. a full Docker application stack) or a long E2E

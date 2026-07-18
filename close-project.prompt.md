@@ -18,8 +18,8 @@ state where (a) a portfolio reviewer finds everything accurate, and (b) any futu
 
 ## Step 0 — Confirm closure is warranted
 
-Read `{PROJECT}/docs/backlog.md` (or the backlog path the project's registry row in
-`portfolio-prompts/README.md` records as a deviation) in full. Closure requires every item to be
+Read `{PROJECT}/docs/backlog.md` (or the backlog path the project's registry row in `README.md` at
+the resolved library root records as a deviation) in full. Closure requires every item to be
 **done, closed, or explicitly deferred with a recorded reason**. If any item is genuinely open,
 **stop and report** — recommend either finishing it or formally deferring it (a user decision);
 do not close over an open item.
@@ -58,12 +58,13 @@ Verify every public-facing claim the project makes and record the evidence:
   trail — ask only if no preference is on record).
 - Note in the terminal handover where each artefact class lives: handovers (`session-notes/`),
   implementation logs (`docs/implementation-logs/`), reviews (`.review/`), ADRs (`docs/adr/`).
-- Update the project's row in the `portfolio-prompts/README.md` registry to **Complete** with the
-  closure date (commit in the `portfolio-prompts` repo).
+- Update the project's row in the workspace checkout's `portfolio-prompts/registry.yml`, then run
+  its registry renderer so the generated README row shows **Complete** with the closure date
+  (commit in the `portfolio-prompts` repo). Never edit an installed plugin-cache copy.
 
 ## Step 4 — Write the terminal handover
 
-Follow `portfolio-prompts/write-handover.prompt.md` in full (versioning, naming, frontmatter,
+Follow `<absolute library root>/write-handover.prompt.md` in full (versioning, naming, frontmatter,
 `.md` + generated `.html`, en-GB), with these deltas:
 
 - Title suffix: `# Session Notes — {Project Display Name} (Handover v{N+1} — FINAL)`.

@@ -1,0 +1,38 @@
+{
+  "name": "portfolio-prompts",
+  "version": "0.1.0",
+  "description": "Session-lifecycle skills for the test-automation portfolio: onboarding, status, worklists, reviews, implementation logs, handovers, close-out, portfolio fan-outs, and repository analysis.",
+  "author": {
+    "name": "Gary Brooks",
+    "url": "https://github.com/NeoCognitus70"
+  },
+  "homepage": "https://github.com/NeoCognitus70/portfolio-prompts",
+  "repository": "https://github.com/NeoCognitus70/portfolio-prompts",
+  "keywords": [
+    "test-automation",
+    "bdd",
+    "screenplay",
+    "worklist",
+    "code-review",
+    "handover",
+    "portfolio"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Portfolio Prompts",
+    "shortDescription": "Test-automation portfolio lifecycle workflows",
+    "longDescription": "Install reusable workflows for onboarding, planning, executing, reviewing, documenting, reporting, and closing test-automation portfolio projects.",
+    "developerName": "Gary Brooks",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/NeoCognitus70/portfolio-prompts",
+    "defaultPrompt": [
+      "Use $portfolio-prompts:portfolio-status to report the current portfolio state.",
+      "Use $portfolio-prompts:resume-session to resume work on a named project.",
+      "Use $portfolio-prompts:analyze-repo to analyse an unfamiliar repository."
+    ]
+  }
+}

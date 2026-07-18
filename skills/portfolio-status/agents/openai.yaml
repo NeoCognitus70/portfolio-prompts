@@ -1,0 +1,6 @@
+interface:
+  display_name: "Portfolio Status"
+  short_description: "Report portfolio health without changing anything"
+  default_prompt: "Use $portfolio-prompts:portfolio-status to report the current portfolio state."
+policy:
+  allow_implicit_invocation: true

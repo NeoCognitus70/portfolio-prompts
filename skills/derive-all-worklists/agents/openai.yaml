@@ -1,0 +1,6 @@
+interface:
+  display_name: "Derive All Worklists"
+  short_description: "Prepare worklists across the whole portfolio"
+  default_prompt: "Use $portfolio-prompts:derive-all-worklists to prepare worklists for every eligible project."
+policy:
+  allow_implicit_invocation: true

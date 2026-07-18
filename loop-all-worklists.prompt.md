@@ -10,9 +10,10 @@ this fan-out **mutates**: agents implement, commit, push, and open PRs (never me
 To restrict the fan-out, append `PROJECTS=<folder>,<folder>,...`. To cap how much any one agent
 does in this pass, append `MAXITEMS=<n>` (per project).
 
-**When to prefer this over a single `/loop`:** worklists are short, decisions are pre-recorded,
-and the projects are independent. Prefer one project at a time when a worklist is long or risky
-(quality and reviewability beat wall-clock time), or when you want to review PRs incrementally.
+**When to prefer this over a single-project `loop-worklist` invocation:** worklists are short,
+decisions are pre-recorded, and the projects are independent. Prefer one project at a time when a
+worklist is long or risky (quality and reviewability beat wall-clock time), or when you want to
+review PRs incrementally.
 
 ---
 
@@ -20,19 +21,20 @@ You are **orchestrating worklist execution across the portfolio**. You implement
 yourself and write no files — your sub-agents do the per-project work; your job is target
 selection, the coupling check, the fan-out, and the collated report. (Portfolio-scoped
 orchestration: no `PROJECT=` is needed; every sub-agent receives its own — see the exception in
-`portfolio-prompts/project-layout.md`.)
+`project-layout.md` at the resolved library root.)
 
 ## Step 1 — Establish candidates and run the preflight
 
 1. Glob the portfolio root for `WORKLIST_*.md`. A project is a target if its worklist has at
    least one unchecked `- [ ]` item (honour `PROJECTS=` if given). If there are no candidates,
    report that and stop without launching a fan-out.
-2. From the portfolio root, run `python portfolio-prompts/tools/workspace_preflight.py
+2. From the portfolio root, run
+   `python <absolute library root>/tools/workspace_preflight.py
    --projects=<comma-separated candidate folders>`. This is the mandatory read-only preflight in
-   `portfolio-prompts/project-layout.md` §"Workspace preflight" and validates the names against
-   the machine-readable registry. Exit `2` stops the fan-out. On exit `1`, exclude every `BLOCKED`
-   target and carry its blockers into the final report. `READY` and `WARN` targets remain eligible;
-   carry every warning into the report.
+   `project-layout.md` at the resolved library root §"Workspace preflight" and validates the names
+   against the machine-readable registry. Exit `2` stops the fan-out. On exit `1`, exclude every
+   `BLOCKED` target and carry its blockers into the final report. `READY` and `WARN` targets remain
+   eligible; carry every warning into the report.
 3. Read each eligible target worklist in full. Note per project: unchecked item count, recorded
    `**DECISION**` blocks (these prevent stops), and any items already marked `BLOCKED`.
 
@@ -49,14 +51,15 @@ project first, consumer second). State the partition in the report before launch
 
 ## Step 3 — Fan out
 
-Launch the agents for one wave **in the same turn** (parallel). **Launch-count check:** agents
-launched this wave must equal the wave's targets, **including the one sequential agent for any
-coupled pair** (the count that has been missed before) — confirm explicitly before proceeding.
-Each sub-agent's prompt must be self-contained:
+Partition eligible targets into waves no larger than the environment's available child-agent
+slots. Launch one wave **in the same turn** (parallel). **Launch-count check:** agents launched this
+wave must equal the wave's targets, **including the one sequential agent for any coupled pair**
+(the count that has been missed before). Confirm explicitly, collect the wave, then launch the next
+until every target has run. Each sub-agent's prompt must be self-contained:
 
 ```text
 Working directory: <absolute path of the portfolio root>
-Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<project folder name>
+Read and follow <absolute library root>/loop-worklist.prompt.md using PROJECT=<project folder name>
 You cannot schedule wake-ups, so execute iterations CONSECUTIVELY in this
 run: complete one item fully (implement -> validate -> verify -> commit ->
 record in WORKLIST_<project>.md), then proceed to the next unchecked item,
@@ -108,10 +111,10 @@ Close with the cross-portfolio view:
 
 ## Rules
 
-- Follow the **shared orchestration conventions** in `portfolio-prompts/project-layout.md`
+- Follow the **shared orchestration conventions** in `project-layout.md` at the resolved library root
   §"Orchestration fan-out" (no `PROJECT=` for the orchestrator; one agent per project, coupled
-  projects share one sequential agent, never two on the same tree; launch-count check; unattended;
-  sequential fallback; re-run a failed agent at most once; relay faithfully).
+  projects share one sequential agent, never two on the same tree; bounded waves; launch-count
+  check; unattended; sequential fallback; re-run a failed agent at most once; relay faithfully).
 - **Mode-specific (mutating):** in fan-out mode you write **no files** and make **no repo
   changes** — only sub-agents write, each inside its own project repo and its own
   `WORKLIST_{PROJECT}.md` (in the sequential fallback those writes are yours, project by project).

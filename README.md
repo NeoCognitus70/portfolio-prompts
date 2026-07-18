@@ -10,7 +10,7 @@ polluting any project's history.
 
 As a human reader, start with the [prompt lifecycle and table](#prompts), choose the workflow that
 matches your job, then use its example under [Invocation](#invocation); if you installed the plugin,
-use the [skills entry points](#use-as-a-claude-code-plugin-skills) instead. The machine and maintainer
+use the [skills entry points](#use-as-plugin-skills-claude-code-and-codex) instead. The machine and maintainer
 contract is separate: [project-layout.md](project-layout.md) defines paths, gates, worklists, and
 working norms, while [`registry.yml`](registry.yml) is the source tooling loads — you do not need to
 absorb either before choosing and running a prompt.
@@ -86,7 +86,7 @@ next approved worklist.
 | [review-all-projects.prompt.md](review-all-projects.prompt.md) | Reviewing the whole portfolio | Orchestration fan-out, **evidence-only**: one parallel sub-agent per registry project, each following write-code-review for its project (review artefacts committed on a branch + PR, never merged); collates top findings into a cross-portfolio synthesis of common themes and highest-severity issues. |
 | [derive-worklist.prompt.md](derive-worklist.prompt.md) | Preparing work before a loop | Derivation only, **no actioning**: orients from handover + backlog, derives and cross-checks the items, writes root-tracked `WORKLIST_{PROJECT}.md` in exactly the format the loop consumes, and reports a detailed per-item breakdown in chat for review. |
 | [derive-all-worklists.prompt.md](derive-all-worklists.prompt.md) | Preparing work portfolio-wide | Orchestration fan-out, **no actioning**: one parallel sub-agent per registry project, each following derive-worklist for its project; collates all breakdowns, guard-stops, and user decisions into a single report. |
-| [loop-worklist.prompt.md](loop-worklist.prompt.md) | Working through an ordered list of steps | Driven via the `/loop` command (not pasted). Completes one worklist item per iteration — implement → validate → verify → commit → record — with root-tracked `WORKLIST_{PROJECT}.md` as its control record, stop conditions, and a closing report. |
+| [loop-worklist.prompt.md](loop-worklist.prompt.md) | Working through an ordered list of steps | Completes one worklist item per invocation or scheduled iteration — implement → validate → verify → commit → record — with root-tracked `WORKLIST_{PROJECT}.md` as its control record, stop conditions, and a closing report. Claude Code may repeat it with `/loop`; Codex uses an explicit skill invocation or a separately requested automation. |
 | [loop-all-worklists.prompt.md](loop-all-worklists.prompt.md) | Actioning all prepared worklists at once | Orchestration fan-out that **mutates**: one sub-agent per project with unchecked worklist items, each executing loop-worklist iterations consecutively (commit + PR per its rules, never merging); coupled projects (e.g. calculator → hand-baked sibling build) share one sequential agent; collated report of commits, PRs, and blocked questions. |
 | [portfolio-status.prompt.md](portfolio-status.prompt.md) | Checking the whole portfolio without changing it | Read-only aggregation across every registry project: local repo state, open backlog counts, latest handover, open PRs, and default-branch CI; reports unavailable evidence and registry-drift candidates instead of mutating or guessing. |
 | [close-project.prompt.md](close-project.prompt.md) | Final session of a project | Verifies every public-facing claim the README makes, reconciles the backlog one last time, retires `WORKLIST_{PROJECT}.md`, and writes a terminal handover marked FINAL. |
@@ -98,7 +98,8 @@ next approved worklist.
 | [github-repo-analysis-prompt.md](github-repo-analysis-prompt.md) | Understanding or evaluating **any** repository (typically one outside this portfolio) | Standalone, evidence-based, pedagogical technical report on a repo by URL or path: purpose, architecture, data flow, SOLID, an ISTQB-aligned test-strategy review, a dependency/security/licence pass, risks, and an improvement roadmap. Takes **no `PROJECT=`** and is not bound to the registry. Depth-controlled (`summary`/`standard`/`deep-dive`). For an *onboarded* portfolio project reviewed against its own backlog into `.review/`, use `write-code-review.prompt.md` instead. |
 
 **Conventions the prompts rely on** (full detail in [project-layout.md](project-layout.md)):
-- Every orchestration fan-out first runs `python portfolio-prompts/tools/workspace_preflight.py`;
+- Every orchestration fan-out first runs `python <LIBRARY_ROOT>/tools/workspace_preflight.py` after
+  resolving the absolute library root per [project-layout.md](project-layout.md);
   blocked targets are excluded/reported and warnings qualify the local evidence.
 - Source of truth: `{PROJECT}/docs/backlog.md`.
 - Handovers live in the root support repository's `../session-notes/`, named
@@ -122,7 +123,8 @@ Two equivalent forms (both require `PROJECT=` — without it the agent stops and
    The agent reads the file and follows the body below the `---` divider; the header above the
    divider is guidance for humans, not part of the instructions.
 
-**Exceptions:** `loop-worklist.prompt.md` is driven via the `/loop` command, not a plain message.
+**Exceptions:** one `loop-worklist.prompt.md` invocation completes one item. Claude Code may repeat
+it via `/loop`; Codex may invoke its skill again or use a separately requested automation.
 `onboard-project` requires a prospective local `PROJECT` that is **not yet** a registry row and may
 take `GITHUB=<owner/repo>` when the checkout remote is not sufficient.
 The portfolio-scoped orchestrators (`derive-all-worklists`, `loop-all-worklists`,
@@ -155,6 +157,8 @@ Read and follow portfolio-prompts/review-all-projects.prompt.md
 
 Read and follow portfolio-prompts/portfolio-status.prompt.md
 
+Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
+
 /loop Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
 Read and follow portfolio-prompts/close-project.prompt.md using PROJECT=magento-checkout-automation
@@ -165,13 +169,25 @@ Read and follow portfolio-prompts/github-repo-analysis-prompt.md
 (Optional parameters ride the same line, e.g.
 `... derive-worklist.prompt.md using PROJECT=<folder> WORKLIST=<path-or-description>`.)
 
-## Use as a Claude Code plugin (skills)
+## Use as plugin skills (Claude Code and Codex)
 
-This repo is also a **Claude Code plugin** (`.claude-plugin/plugin.json`): every prompt has a
-matching **skill** in [`skills/`](skills/README.md) that triggers on a description and takes the
-`project` (or, for `analyze-repo`, the `repo`) as an **argument** — e.g. `/resume-session
-calculator-screenplay-bdd`. `triage-review-findings` also requires `REVIEW=<path>`. Each skill is a
-thin wrapper that reads and follows its canonical `*.prompt.md`, so the prompts stay the single
-source of truth. `onboard-project` takes a prospective, unregistered project; `analyze-repo` is the
-zero-config pilot (any repo, no registry). See [`skills/README.md`](skills/README.md) for install and
-the current portability caveat.
+This repo is a dual-platform plugin with Claude Code metadata in
+`.claude-plugin/plugin.json`, Codex metadata in `.codex-plugin/plugin.json`, and a repo-scoped Codex
+marketplace in `.agents/plugins/marketplace.json`. Every prompt has a
+matching **skill** in [`skills/`](skills/README.md) that takes the project (or, for `analyze-repo`,
+the repository) as user input. Each skill is a thin wrapper around its canonical `*.prompt.md`, so
+the prompts remain the single source of truth.
+
+Claude Code uses slash-style namespaced invocations such as
+`/portfolio-prompts:resume-session calculator-screenplay-bdd`. Codex uses `$` skill mentions:
+
+```text
+Use $portfolio-prompts:resume-session for calculator-screenplay-bdd.
+Use $portfolio-prompts:triage-review-findings for calculator-screenplay-bdd with REVIEW=<path>.
+Use $portfolio-prompts:analyze-repo to analyse <repo-url-or-path> at standard depth.
+```
+
+`onboard-project` takes a prospective, unregistered project; `analyze-repo` is the zero-config
+pilot (any repo, no registry). High-impact skills use platform-specific invocation policy plus
+workflow confirmation gates. See [`skills/README.md`](skills/README.md) for installation,
+invocation policy, and path-resolution details.
