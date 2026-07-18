@@ -29,13 +29,13 @@ status.
 
 ## Step 1 — Establish the registered scope
 
-Load `portfolio-prompts/registry.yml` as the source of truth. Include **every row under
+Load `registry.yml` at the resolved library root as the source of truth. Include **every row under
 `projects`**, including the `portfolio-prompts` meta project and projects whose status is complete
 or product-oriented. Do not use `orchestration_target` as a filter; this is reporting, not a
 fan-out workflow.
 
 Resolve paths from the registry defaults plus each row's deviations, as defined in
-`portfolio-prompts/project-layout.md` §"Machine-readable registry". Treat entries under
+`project-layout.md` at the resolved library root §"Machine-readable registry". Treat entries under
 `unregistered_candidates` as a separate **registry-drift watchlist**, never as registered projects
 and never inspect them as though they had a project contract.
 

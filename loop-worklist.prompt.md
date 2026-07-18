@@ -1,14 +1,17 @@
-# Prompt — Work through a list of recommended steps on a /loop
+# Prompt — Work through one item from a prepared worklist
 
-Use this prompt with the `/loop` command to have the agent work through an ordered list of
-recommended steps one item per iteration, validating and verifying each before committing it with a
-descriptive message.
+Use this prompt to complete one item from an ordered worklist, validating and verifying it before
+committing with a descriptive message. One invocation equals one iteration. Claude Code can repeat
+the invocation with `/loop`; Codex can be invoked again explicitly or through a separately requested
+automation.
 
 Invocation examples:
 
 ```text
 /loop Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<folder>
 /loop 10m Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<folder> WORKLIST=<path-or-description>
+Use $portfolio-prompts:loop-worklist for <folder> with WORKLIST=<path-or-description>
+Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<folder>
 ```
 
 `PROJECT` is the project folder name at the portfolio root (see the README registry) — if the
@@ -17,8 +20,8 @@ exactly **one** project. If no `WORKLIST` is given, derive one (see Step 0). To 
 review the worklist **before** starting the loop, run `derive-worklist.prompt.md` first — it
 writes `WORKLIST_{PROJECT}.md` in this prompt's format without actioning anything, and Step 0
 picks an existing file up as-is. The loop is
-self-pacing when no interval is given: end the iteration when one item is fully done, and continue
-on the next wake-up.
+self-pacing when repeated: end the iteration when one item is fully done, and continue only on the
+next explicit invocation or scheduled wake-up.
 
 ---
 
@@ -36,7 +39,7 @@ small, reviewable, per-item commits are the point.
    files carrying the `{PROJECT}_` prefix** (several projects share the folder) and comparing `{N}`
    **numerically**, not by filename sort — and the project's
    `{PROJECT}/docs/backlog.md` (or the backlog path its registry row in
-   `portfolio-prompts/README.md` records as a deviation). If the project has **no handovers
+   `README.md` at the resolved library root records as a deviation). If the project has **no handovers
    yet**, orient from the backlog and repo alone and say so. The **backlog is authoritative**
    where they disagree — but flag any handover/backlog/repo mismatch in this iteration's report
    rather than silently resolving it. Use what you learn (open items, held branches, working
@@ -61,8 +64,8 @@ small, reviewable, per-item commits are the point.
 4. Materialise it as a checklist file — `WORKLIST_{PROJECT}.md` at the **portfolio root**, beside
    `session-notes/` and `portfolio-prompts/`, outside the target project's history but tracked by
    the portfolio root support repository — in the **canonical worklist format** defined in
-   `portfolio-prompts/project-layout.md` §"Worklist file format". This file is the loop's memory:
-   every iteration reads it first and updates it last.
+   `project-layout.md` at the resolved library root §"Worklist file format". This file is the
+   loop's memory: every iteration reads it first and updates it last.
 5. If a `WORKLIST_{PROJECT}.md` already exists, do **not** regenerate it — pick up where it stands
    (the orientation read in item 1 still applies if this session has not yet performed it).
 
@@ -101,8 +104,8 @@ small, reviewable, per-item commits are the point.
 
 ## Step 3 — Validate (mechanical gates)
 
-Resolve the project's gates per `portfolio-prompts/project-layout.md` §"Validation gates" — the
-canonical first-hit-wins cascade lives there in full (project-contract `Gates` -> registry-row
+Resolve the project's gates per `project-layout.md` at the resolved library root §"Validation
+gates" — the canonical first-hit-wins cascade lives there in full (project-contract `Gates` -> registry-row
 gates -> root `npm run verify` -> stack defaults run inside the touched stack's directory -> ask;
 it also carries the cucumber-js vs playwright-bdd nuance). Run every gate that applies to what you
 touched; all must pass before commit. In addition:
@@ -151,7 +154,7 @@ When every item is checked or blocked:
 - Report the final portfolio-root worklist diff as a separate support-repository change; do not
   silently commit or push the root from this project loop.
 - Recommend whether a new session-notes handover or review-status update is warranted.
-- Do not schedule a further wake-up.
+- Do not request or schedule a further iteration.
 
 ## Rules
 

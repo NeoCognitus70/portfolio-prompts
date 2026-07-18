@@ -22,15 +22,15 @@ Typical flow:
 ```text
 1. Paste this prompt            → WORKLIST_{PROJECT}.md written + detailed breakdown in chat
 2. Review/adjust the items      → edit the file or tell the agent what to change
-3. /loop Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=<folder>
-                                → the loop picks the file up and works through it
+3. Invoke loop-worklist for <folder> using the active platform's skill or prompt syntax
+                                → each invocation picks up and completes one item
 ```
 
 ---
 
 You are **deriving a worklist** for the **`{PROJECT}`** portfolio project. The invocation names
 the target as `PROJECT=<folder name at the portfolio root>` — if it did not, **ask which
-project**; never guess. Conventions are defined in `portfolio-prompts/project-layout.md`.
+project**; never guess. Conventions are defined in `project-layout.md` at the resolved library root.
 
 **You are NOT actioning the worklist.** Do not implement, fix, commit, or push anything in the
 project repo — no matter how small or obvious an item looks. The sole outputs of this session are
@@ -53,7 +53,7 @@ only on the user's answer.
    not by filename sort. If the project has no handovers yet, orient from the backlog and repo alone
    and say so.
 2. Read the project's backlog: `{PROJECT}/docs/backlog.md`, or the backlog path its registry row
-   in `portfolio-prompts/README.md` records as a deviation. The **backlog is authoritative**
+   in `README.md` at the resolved library root records as a deviation. The **backlog is authoritative**
    where sources disagree — flag any handover/backlog/repo mismatch in your report rather than
    silently resolving it.
 3. Reality-check the repo: `git -C {PROJECT} status --porcelain`, `git -C {PROJECT} log
@@ -84,8 +84,8 @@ make sense together.
 
 Write the file at the **portfolio root** (beside `session-notes/` and `portfolio-prompts/`,
 outside the target project's git history but tracked by the portfolio root support repository), in
-the **canonical worklist format** defined in `portfolio-prompts/project-layout.md` §"Worklist file
-format" (header naming project / source(s) / date; one
+the **canonical worklist format** defined in `project-layout.md` at the resolved library root
+§"Worklist file format" (header naming project / source(s) / date; one
 `- [ ] <id> — <description> — <source ref>` line per item, in execution order; acceptance criteria +
 docs-only/code beneath each) — the loop must be able to pick it up unchanged.
 
@@ -112,7 +112,8 @@ Then close with:
 - Items considered and **dropped** (backlog says done/closed), each with its reason.
 - Any handover/backlog/repo mismatches found in Step 1.
 - Repo reality notes for the loop's stop conditions: open PRs, held branches, dirty tree.
-- The file path written, and the suggested `/loop` invocation line to start the work.
+- The file path written, and the suggested `loop-worklist` skill or prompt invocation to start the
+  work on the active platform.
 
 ## Rules
 

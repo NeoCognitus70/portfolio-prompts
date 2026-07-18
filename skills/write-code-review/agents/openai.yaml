@@ -1,0 +1,6 @@
+interface:
+  display_name: "Write Code Review"
+  short_description: "Write an evidence-backed portfolio code review"
+  default_prompt: "Use $portfolio-prompts:write-code-review to review <project-folder>."
+policy:
+  allow_implicit_invocation: true

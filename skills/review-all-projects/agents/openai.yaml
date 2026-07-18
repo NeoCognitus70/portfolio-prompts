@@ -1,0 +1,6 @@
+interface:
+  display_name: "Review All Projects"
+  short_description: "Review every eligible portfolio project"
+  default_prompt: "Use $portfolio-prompts:review-all-projects to review every eligible project."
+policy:
+  allow_implicit_invocation: false

@@ -11,9 +11,9 @@ handover, cross-checks it against the source of truth and the live repo, and pro
 You are resuming work on the **`{PROJECT}`** portfolio project in a fresh session with no prior
 context. The invocation names the target as `PROJECT=<folder name at the portfolio root>` — if it
 did not, **ask which project before doing anything else**; never guess. Conventions and paths are
-defined in `portfolio-prompts/project-layout.md`. Orient yourself from the handover trail before
-doing anything else — do not start changing code until you have reconciled the three sources below
-and confirmed the plan.
+defined in `project-layout.md` at the resolved library root. Orient yourself from the handover
+trail before doing anything else — do not start changing code until you have reconciled the three
+sources below and confirmed the plan.
 
 ## Step 1 — Load the latest handover
 In the **`session-notes/`** folder at the portfolio root (`test-automation-portfolio/session-notes/`),
@@ -39,8 +39,8 @@ and recommend closing the session with `write-handover.prompt.md` to create v1.
 
 ## Step 2 — Load the source of truth
 Read `{PROJECT}/docs/backlog.md` — or the backlog path the project's registry row in
-`portfolio-prompts/README.md` records as a deviation. This is the authoritative record of item
-status, priorities, and any credibility checklist. Where the handover narrative and the backlog
+`README.md` at the resolved library root records as a deviation. This is the authoritative record
+of item status, priorities, and any credibility checklist. Where the handover narrative and the backlog
 disagree, the **backlog wins** — but flag the discrepancy. **If no backlog exists at either the
 default or a registry-recorded path, stop:** the project is not onboarded — recommend scaffolding
 it from `templates/backlog.template.md` (a user decision); do not improvise a status picture from

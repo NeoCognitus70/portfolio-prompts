@@ -14,12 +14,13 @@ Checks:
                           (delegates to `render-registry.py --check`).
   4. CI workflow        — the self-gate runs on PRs/main pushes with read-only permissions.
   5. Internal links     — every relative Markdown link in the library's own docs resolves.
-  6. Working norms      — the universal branch/PR policy is defined once in project-layout.md and
+  6. Codex plugin       — the Codex manifest and per-skill UI/invocation policies are complete.
+  7. Working norms      — the universal branch/PR policy is defined once in project-layout.md and
                           is not restated in operational prompts or skill bodies.
-  7. Invocation paths   — active invocation examples use OS-neutral forward slashes.
-  8. Worklist example   — the canonical example in project-layout.md parses as the documented format.
-  9. Workspace preflight — deterministic clean/dirty/behind/topic/missing-evidence scenarios pass.
- 10. Handover pairs     — every root session-notes Markdown handover has its HTML companion
+  8. Invocation paths   — active invocation examples use OS-neutral forward slashes.
+  9. Worklist example   — the canonical example in project-layout.md parses as the documented format.
+ 10. Workspace preflight — deterministic clean/dirty/behind/topic/missing-evidence scenarios pass.
+ 11. Handover pairs     — every root session-notes Markdown handover has its HTML companion
                           (P-09; skipped in a standalone clone with no sibling session-notes/).
 
 Usage (from the portfolio-prompts/ directory):
@@ -29,6 +30,7 @@ Requires PyYAML (`pip install pyyaml`). No other dependencies.
 """
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -235,6 +237,17 @@ def check_skills(fails: list[str]) -> None:
         for key in ("name", "description"):
             if not front_data.get(key):
                 fails.append(f"[skills] {skill.relative_to(HERE)} frontmatter missing '{key}'")
+        unexpected = set(front_data) - {"name", "description"}
+        if unexpected:
+            fails.append(
+                f"[skills] {skill.relative_to(HERE)} has non-portable frontmatter keys: "
+                + ", ".join(sorted(unexpected))
+            )
+        description = front_data.get("description") or ""
+        if "<" in description or ">" in description:
+            fails.append(
+                f"[skills] {skill.relative_to(HERE)} description contains angle brackets"
+            )
         if front_data.get("name") and front_data["name"] != skill.parent.name:
             fails.append(
                 f"[skills] {skill.relative_to(HERE)} name '{front_data['name']}' != folder "
@@ -245,6 +258,106 @@ def check_skills(fails: list[str]) -> None:
             if prompt.endswith(".prompt.md") or prompt == "github-repo-analysis-prompt.md":
                 if not (HERE / prompt).exists():
                     fails.append(f"[skills] {skill.relative_to(HERE)} delegates to missing '{prompt}'")
+
+
+def check_codex_plugin(fails: list[str]) -> None:
+    manifest_path = HERE / ".codex-plugin" / "plugin.json"
+    if not manifest_path.is_file():
+        fails.append("[codex-plugin] missing .codex-plugin/plugin.json")
+        return
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        fails.append(f"[codex-plugin] invalid plugin manifest: {exc}")
+        return
+
+    for key in ("name", "version", "description", "author", "skills", "interface"):
+        if not manifest.get(key):
+            fails.append(f"[codex-plugin] plugin.json missing '{key}'")
+    if manifest.get("name") != HERE.name:
+        fails.append("[codex-plugin] plugin name must match the repository folder")
+    if manifest.get("skills") != "./skills/":
+        fails.append("[codex-plugin] plugin skills path must be './skills/'")
+
+    interface = manifest.get("interface") or {}
+    for key in (
+        "displayName",
+        "shortDescription",
+        "longDescription",
+        "developerName",
+        "category",
+        "capabilities",
+        "defaultPrompt",
+    ):
+        if not interface.get(key):
+            fails.append(f"[codex-plugin] plugin interface missing '{key}'")
+
+    marketplace_path = HERE / ".agents" / "plugins" / "marketplace.json"
+    if not marketplace_path.is_file():
+        fails.append("[codex-plugin] missing .agents/plugins/marketplace.json")
+    else:
+        try:
+            marketplace = json.loads(marketplace_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            fails.append(f"[codex-plugin] invalid marketplace: {exc}")
+        else:
+            entries = marketplace.get("plugins") or []
+            entry = next(
+                (item for item in entries if item.get("name") == "portfolio-prompts"),
+                None,
+            )
+            if entry is None:
+                fails.append("[codex-plugin] marketplace has no portfolio-prompts entry")
+            else:
+                source = entry.get("source") or {}
+                if source != {"source": "local", "path": "./"}:
+                    fails.append("[codex-plugin] marketplace source must target the repository root")
+                policy = entry.get("policy") or {}
+                if policy.get("installation") != "AVAILABLE":
+                    fails.append("[codex-plugin] marketplace installation policy must be AVAILABLE")
+                if policy.get("authentication") != "ON_INSTALL":
+                    fails.append("[codex-plugin] marketplace authentication policy must be ON_INSTALL")
+                if not entry.get("category"):
+                    fails.append("[codex-plugin] marketplace entry must declare a category")
+
+    explicit_only = {
+        "close-project",
+        "loop-all-worklists",
+        "loop-worklist",
+        "onboard-project",
+        "review-all-projects",
+    }
+    for skill_dir in sorted((HERE / "skills").iterdir()):
+        if not skill_dir.is_dir():
+            continue
+        agent_path = skill_dir / "agents" / "openai.yaml"
+        if not agent_path.is_file():
+            fails.append(f"[codex-plugin] {skill_dir.name} missing agents/openai.yaml")
+            continue
+        try:
+            agent = yaml.safe_load(agent_path.read_text(encoding="utf-8")) or {}
+        except yaml.YAMLError as exc:
+            fails.append(f"[codex-plugin] {skill_dir.name} invalid agents/openai.yaml: {exc}")
+            continue
+        skill_interface = agent.get("interface") or {}
+        for key in ("display_name", "short_description", "default_prompt"):
+            if not skill_interface.get(key):
+                fails.append(f"[codex-plugin] {skill_dir.name} interface missing '{key}'")
+        invocation = f"$portfolio-prompts:{skill_dir.name}"
+        if invocation not in str(skill_interface.get("default_prompt") or ""):
+            fails.append(
+                f"[codex-plugin] {skill_dir.name} default_prompt must mention '{invocation}'"
+            )
+        policy = agent.get("policy") or {}
+        allow_implicit = policy.get("allow_implicit_invocation")
+        if not isinstance(allow_implicit, bool):
+            fails.append(
+                f"[codex-plugin] {skill_dir.name} must declare boolean allow_implicit_invocation"
+            )
+        if skill_dir.name in explicit_only and allow_implicit is not False:
+            fails.append(
+                f"[codex-plugin] high-impact skill {skill_dir.name} must be explicit-only"
+            )
 
 
 def check_working_norms(fails: list[str]) -> None:
@@ -314,7 +427,7 @@ def check_handover_pairs(fails: list[str]) -> None:
 
 
 def check_workspace_preflight(fails: list[str]) -> None:
-    command = "python portfolio-prompts/tools/workspace_preflight.py"
+    command = "tools/workspace_preflight.py"
     for name in (
         "derive-all-worklists.prompt.md",
         "review-all-projects.prompt.md",
@@ -357,6 +470,7 @@ def main() -> int:
         check_ci_workflow,
         check_internal_links,
         check_skills,
+        check_codex_plugin,
         check_working_norms,
         check_invocation_paths,
         check_worklist_example,
@@ -370,7 +484,7 @@ def main() -> int:
             print("  - " + f)
         return 1
     print("check-library: PASS (registry classification and lifecycle semantics, README generated, "
-          "least-privilege CI, internal links, skills, working norms, invocation paths, "
+          "least-privilege CI, internal links, skills, Codex plugin, working norms, invocation paths, "
           "worklist example, workspace preflight scenarios, handover pairs)")
     return 0
 

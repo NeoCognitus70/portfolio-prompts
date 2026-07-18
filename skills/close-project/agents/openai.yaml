@@ -1,0 +1,6 @@
+interface:
+  display_name: "Close Project"
+  short_description: "Verify and close a completed portfolio project"
+  default_prompt: "Use $portfolio-prompts:close-project to close <project-folder> after its backlog is complete."
+policy:
+  allow_implicit_invocation: false

@@ -14,13 +14,13 @@ root>` — if it did not, **ask which project**; never guess. Implementation log
 history of what was built, decided, broke, and learned in a development session — written for the
 engineer or agent who comes next.
 
-## Template and location (use exactly these, unless the project's registry row in
-`portfolio-prompts/README.md` records deviating paths — deviations override the defaults)
+## Template and location (use exactly these, unless the project's registry row in `README.md` at
+the resolved library root records deviating paths — deviations override the defaults)
 - **Template:** `{PROJECT}/docs/templates/implementation-log.template.md` — read it
   first and follow its structure section-for-section. **If the project does not have this template
   yet,** copy it in from the portfolio-level `templates/implementation-log.template.md` as part of
-  this change (it is part of the project's recommended layout — see
-  `portfolio-prompts/project-layout.md`).
+  this change (it is part of the project's recommended layout — see `project-layout.md` at the
+  resolved library root).
 - **Write to:** `{PROJECT}/docs/implementation-logs/YYYY-MM-DD_short-slug.md` (create the folder on
   first use)
   - `YYYY-MM-DD` = today's date.
@@ -54,7 +54,7 @@ engineer or agent who comes next.
 - **Lessons Learned** — reusable patterns, surprises, what you'd do differently. Promote anything
   durable and stack-wide into the relevant handover's "Durable lessons".
 - **Recommendations / Next Steps** — checkbox list linked to `docs/backlog.md` items, with priority.
-- **Footer** — `*Session logged: YYYY-MM-DD. Author: <Gary Brooks / Claude Code>*`.
+- **Footer** — `*Session logged: YYYY-MM-DD. Author: <Gary Brooks / Codex / Claude Code>*`.
 
 ## Rules
 - **Append-only / immutable:** create a new file; never rewrite a past log. Corrections to an old log go

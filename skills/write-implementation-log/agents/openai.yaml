@@ -1,0 +1,6 @@
+interface:
+  display_name: "Write Implementation Log"
+  short_description: "Record completed development work immutably"
+  default_prompt: "Use $portfolio-prompts:write-implementation-log to record completed work for <project-folder>."
+policy:
+  allow_implicit_invocation: true

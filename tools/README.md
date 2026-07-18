@@ -16,9 +16,9 @@ Python 3; `render-registry.py` and `check-library.py` additionally require PyYAM
 Run from the portfolio root before any orchestration fan-out:
 
 ```bash
-python portfolio-prompts/tools/workspace_preflight.py
-python portfolio-prompts/tools/workspace_preflight.py --projects=project-a,project-b
-python portfolio-prompts/tools/workspace_preflight.py --json
+python <LIBRARY_ROOT>/tools/workspace_preflight.py
+python <LIBRARY_ROOT>/tools/workspace_preflight.py --projects=project-a,project-b
+python <LIBRARY_ROOT>/tools/workspace_preflight.py --json
 ```
 
 The command reads `registry.yml` and selects only rows with `orchestration_target: true`; it never

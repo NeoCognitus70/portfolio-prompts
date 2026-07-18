@@ -1,0 +1,6 @@
+interface:
+  display_name: "Triage Review Findings"
+  short_description: "Turn one review into approved candidate work"
+  default_prompt: "Use $portfolio-prompts:triage-review-findings for <project-folder> with REVIEW=<review-path>."
+policy:
+  allow_implicit_invocation: true

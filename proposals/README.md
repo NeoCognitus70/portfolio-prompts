@@ -7,7 +7,7 @@ the real artefacts live at the repo root.
 | Proposal | Shipped as | Item |
 |---|---|---|
 | Structured registry (`registry.yml`) | [`../registry.yml`](../registry.yml) + generated README table ([`../tools/render-registry.py`](../tools/render-registry.py)) | PP-13, PP-23 |
-| Skills / plugin pack | [`../.claude-plugin/plugin.json`](../.claude-plugin/plugin.json) + [`../skills/`](../skills/README.md) (11 skills) | PP-24 |
+| Skills / plugin pack | [`../.claude-plugin/plugin.json`](../.claude-plugin/plugin.json) + [`../.codex-plugin/plugin.json`](../.codex-plugin/plugin.json) + [`../skills/`](../skills/README.md) (14 skills) | PP-24 + Codex compatibility |
 
 ---
 
@@ -36,10 +36,11 @@ human-readable and machine-readable copies cannot diverge. `tools/check-library.
 
 Each prompt became a **thin delegating skill** (`skills/<name>/SKILL.md`) that reads and follows its
 canonical `*.prompt.md`, so the prompt stays the single source of truth and the skill only adds a
-`description` (triggering) and an `argument-hint` (the `project`/`repo` argument). `analyze-repo` was
-the zero-config pilot — no `PROJECT`, registry, or contract — so it runs against any repo unchanged.
-See [`../skills/README.md`](../skills/README.md) for the full list, install steps, and the current
-portability caveat (the lifecycle prompts still resolve portfolio-relative paths against the CWD).
+portable `name`/`description` trigger. Codex UI metadata and implicit-invocation policy live in each
+skill's `agents/openai.yaml`. `analyze-repo` was the zero-config pilot — no `PROJECT`, registry, or
+contract — so it runs against any repo unchanged. See
+[`../skills/README.md`](../skills/README.md) for the full list, dual-platform install steps, and
+library/portfolio root resolution.
 
-**Not shipped here:** `onboard-project` (tracked as **PP-20**) and a separate `refresh-registry`
-skill (superseded by `tools/render-registry.py`).
+`onboard-project` subsequently shipped. A separate `refresh-registry` skill was superseded by
+`tools/render-registry.py`.

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Run All Worklists"
+  short_description: "Execute prepared work across the whole portfolio"
+  default_prompt: "Use $portfolio-prompts:loop-all-worklists to execute all prepared worklists."
+policy:
+  allow_implicit_invocation: false
