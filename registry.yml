@@ -51,14 +51,16 @@ defaults:
 projects:
   - project: magento-checkout-automation
     github: GBrooks1970/magento-checkout-automation
-    status: active
+    status: resting
     reference: true
     gates: ["npm run verify"]
     orchestration_target: true
     notes: >-
-      Reference project. Was closed 2026-06-19 (v16 FINAL) then reopened the same day to deliver
-      backlog item #12 (screenshots in reports, ADR-0007); latest handover v18 in `session-notes/`.
-      Backlog items #13 and #14 remain open; future-work proposals live in `docs/planning/`.
+      Reference project, resting with zero required backlog items after Items #1..#15 were delivered.
+      Chromium remains the required CI gate; Firefox and WebKit stay non-blocking until each records
+      three consecutive eligible 12/12 runs with zero recovery telemetry (v20 snapshot: Firefox 1/3,
+      WebKit 0/3). Latest handover v20 in `session-notes/`; optional proposals live in
+      `docs/planning/`.
 
   - project: hand-baked-screenplay-pattern
     github: NeoCognitus70/hand-baked-screenplay-pattern
