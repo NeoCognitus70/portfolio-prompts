@@ -119,7 +119,7 @@ projects:
 
   - project: orangehrm-pim-automation
     github: GBrooks1970/orangehrm-pim-automation
-    status: active
+    status: resting
     orchestration_target: true
     gates:
       type: ci
@@ -130,7 +130,8 @@ projects:
       notes: CI (Node 20) also builds Serenity living docs and deploys Pages
     notes: >-
       OrangeHRM PIM add-employee E2E (Serenity/JS + Playwright + Cucumber). Backlog is a simple
-      table (not the scored template). One open, deliberately non-blocking item (#4). Live docs:
+      table (not the scored template). All six backlog items are closed; Item #4 retains an
+      accepted demo-fixture caveat but no required follow-up. Live docs:
       gbrooks1970.github.io/orangehrm-pim-automation.
 
   - project: markdown-renderer
