@@ -161,7 +161,7 @@ projects:
 
   - project: parabank-bank-automation
     github: GBrooks1970/parabank-bank-automation
-    status: active
+    status: resting
     orchestration_target: true
     gates:
       type: ci
