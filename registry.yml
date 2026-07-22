@@ -159,6 +159,27 @@ projects:
       is complete with zero required backlog items. Live demo:
       gbrooks1970.github.io/mobile-forex-automation/.
 
+  - project: parabank-bank-automation
+    github: GBrooks1970/parabank-bank-automation
+    status: active
+    orchestration_target: true
+    gates:
+      type: ci
+      static: ["npm run typecheck"]
+      e2e:
+        bring_up: pwsh ./scripts/build-sut.ps1; docker compose up -d; pwsh ./scripts/gate.ps1
+        run: npm run verify
+      notes: >-
+        docs/project-contract.md is the first-hit gate source. npm run verify runs both lanes
+        + smoke-safety + the Serenity report content check (needs Playwright Chromium and a JDK,
+        both installed in CI); the boot gate precedes verify.
+    notes: >-
+      Ninth portfolio project. ParaBank (Parasoft, Apache-2.0) as a pinned, Docker-backed
+      banking SUT (never committed here; fetched at build). Two lanes: Serenity/JS + Playwright +
+      Cucumber UI journeys (A1-A5) and API-first stateful BDD with a portfolio-first REST-SOAP
+      parity check (B1-B4); 18 scenarios. Phased delivery PB-P0..P5 in docs/backlog.md; decisions
+      in docs/decision-register.md (DR-PB-01..07). Handover v1 in session-notes/.
+
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta
