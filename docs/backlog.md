@@ -1,10 +1,9 @@
 # portfolio-prompts — Backlog
 
-**Version:** 13 — PP-27 RESOLVED: gate verification PASSED
-([`pp27-gate-probe_2026-07-17.md`](pp27-gate-probe_2026-07-17.md)) — the confirmation gate held on
-a deliberate natural request (warning stated, confirmation requested, clean stop on "no", zero
-mutating actions). **No outstanding items** — PP-00..PP-29 all resolved.
-**Last Updated:** 2026-07-17
+**Version:** 14 — PP-30 delivered: a single-project **cycle conductor** (`run-project-cycle`)
+formalises the lifecycle the README previously named only as a prose arrow-chain. **No outstanding
+items** — PP-00..PP-30 all resolved.
+**Last Updated:** 2026-07-30
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills, and its update review
@@ -34,8 +33,8 @@ test-automation projects, not the prompt library.
 ## Outstanding Items
 
 **None.** This section holds open items only — resolved records live under
-[Resolved Items](#resolved-items). All 30 items (PP-00..PP-29) across three review cycles are
-resolved. A `WORKLIST_portfolio-prompts.md` can be derived from any future items with
+[Resolved Items](#resolved-items). All 31 items (PP-00..PP-30) are resolved. A
+`WORKLIST_portfolio-prompts.md` can be derived from any future items with
 `derive-worklist.prompt.md using PROJECT=portfolio-prompts`.
 
 ---
@@ -46,9 +45,9 @@ resolved. A `WORKLIST_portfolio-prompts.md` can be derived from any future items
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 11 | **11 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26) — 0 open |
-| LOW (0–9) | 19 | **19 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29) — 0 open |
+| LOW (0–9) | 20 | **20 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30) — 0 open |
 | **Total Outstanding** | **0** | — |
-| Resolved | 30 | PP-00..PP-29 |
+| Resolved | 31 | PP-00..PP-30 |
 
 **Outstanding, by suggested order:** None.
 
@@ -59,7 +58,39 @@ resolved. A `WORKLIST_portfolio-prompts.md` can be derived from any future items
 Resolved items are kept as a record that the gap existed, verbatim as last written, grouped by the
 review cycle that produced them (newest first) and in item order within each group.
 
-### From the 2026-07-15 update review (PP-27..PP-29)
+### From the 2026-07-30 lifecycle-formalisation cycle (PP-30)
+
+#### PP-30: Formalise the single-project lifecycle as a runnable conductor prompt — Score: 7 ✅ Resolved 2026-07-30
+**Score:** Security (0) + Drift (4) + Maintenance (3) = **7**
+**Status:** RESOLVED 2026-07-30 — `run-project-cycle.prompt.md` + `skills/run-project-cycle/SKILL.md`
+(+ `agents/openai.yaml`) added; README lifecycle prose and Prompts table updated; library gate
+(`tools/check-library.py`) green; dry-run-validated against the live magento cycle
+([`pp30-dry-run_2026-07-30.md`](pp30-dry-run_2026-07-30.md)).
+**Problem:** The individual lifecycle steps were each a documented, agent-agnostic prompt/skill, and
+the universal branch/PR/gate norms were canonical in `project-layout.md`, **but the end-to-end
+single-project *sequence* that chains them was not a runnable artefact** — the README named it only
+as a prose arrow-chain (`resume-session -> ... -> close-project`), and the ordering, entry/exit
+gates, owner checkpoints, reconcile-before-starting preflight, and the `review -> triage -> loop`
+coupling lived in an operator's memory/judgement. The library had **breadth** orchestrators
+(`*-all-*`, one step across many projects) but no **depth/lifecycle** orchestrator (many steps
+through one project). Surfaced during a live magento cycle whose sequence depended on the agent
+remembering it.
+**Decision:** Add a single-project **conductor** that *sequences* the existing prompts with gates and
+checkpoints and *delegates* each stage to its canonical prompt — deliberately **not** restating the
+universal norms (the gate forbids that; it cites `project-layout.md` instead), and **not** a fan-out.
+It is a checkpointed conductor, not an unattended runner.
+**Success Criteria:**
+- [x] `run-project-cycle.prompt.md` defines the stage sequence (0 reconcile -> 1 review -> 2 triage
+      -> 3 loop -> 4 log -> 5 handover+root-PR -> 6 optional close), each delegating to its prompt.
+- [x] Owner checkpoints named (triage candidate list, each merge, close) and the mandatory triage
+      stop honoured.
+- [x] `skills/run-project-cycle/SKILL.md` wraps it; README lifecycle line + Prompts table updated.
+- [x] No restatement of the universal branch/PR norm (cites `project-layout.md`); `check-library.py`
+      green; internal links resolve.
+- [x] Dry-run-validated by tracing the prompt against the 2026-07-30 magento cycle it was derived
+      from (reconcile PR #48 -> review PR #49 -> triage/loop pending), stage for stage.
+
+
 
 #### PP-27: Live auto-trigger smoke test of the installed plugin — Score: 5 ✅ Resolved 2026-07-17
 **Score:** Security (0) + Drift (2) + Maintenance (3) = **5**

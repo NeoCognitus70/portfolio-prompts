@@ -1,0 +1,6 @@
+interface:
+  display_name: "Run Project Cycle"
+  short_description: "Conduct one project through review, triage, loop, log, handover and optional close"
+  default_prompt: "Use $portfolio-prompts:run-project-cycle to run <project-folder> through a full improvement cycle."
+policy:
+  allow_implicit_invocation: false
