@@ -65,6 +65,10 @@ and is explicitly excluded from orchestration fan-outs.
 **Typical lifecycle** (single project):
 `resume-session` -> `derive-worklist` -> `loop-worklist` -> `write-implementation-log` ->
 `write-code-review` -> `write-handover` -> `close-project`.
+The `run-project-cycle` **conductor** sequences a review-driven cycle of these steps end to end for
+one project (`review -> triage -> loop -> log -> handover -> optional close`), with entry/exit gates
+and owner checkpoints between stages; it delegates each stage to that stage's prompt and never
+re-implements one.
 Before a project's first lifecycle, `onboard-project` establishes its backlog/scaffold and registry
 entry through staged PRs.
 The three `*-all-*` orchestrators (`derive-all-worklists`, `loop-all-worklists`,
@@ -88,6 +92,7 @@ next approved worklist.
 | [derive-worklist.prompt.md](derive-worklist.prompt.md) | Preparing work before a loop | Derivation only, **no actioning**: orients from handover + backlog, derives and cross-checks the items, writes root-tracked `WORKLIST_{PROJECT}.md` in exactly the format the loop consumes, and reports a detailed per-item breakdown in chat for review. |
 | [derive-all-worklists.prompt.md](derive-all-worklists.prompt.md) | Preparing work portfolio-wide | Orchestration fan-out, **no actioning**: one parallel sub-agent per registry project, each following derive-worklist for its project; collates all breakdowns, guard-stops, and user decisions into a single report. |
 | [loop-worklist.prompt.md](loop-worklist.prompt.md) | Working through an ordered list of steps | Completes one worklist item per invocation or scheduled iteration — implement → validate → verify → commit → record — with root-tracked `WORKLIST_{PROJECT}.md` as its control record, stop conditions, and a closing report. Claude Code may repeat it with `/loop`; Codex uses an explicit skill invocation or a separately requested automation. |
+| [run-project-cycle.prompt.md](run-project-cycle.prompt.md) | Running one project through a full improvement cycle | Single-project **conductor**, **mutating but checkpointed**: sequences `write-code-review → triage-review-findings → loop-worklist → write-implementation-log → write-handover → optional close-project` with entry/exit gates, a reconcile-before-starting preflight, and owner stops (triage candidate list, each merge, close). Delegates each stage to its canonical prompt; never re-implements a step and never a portfolio fan-out. |
 | [loop-all-worklists.prompt.md](loop-all-worklists.prompt.md) | Actioning all prepared worklists at once | Orchestration fan-out that **mutates**: one sub-agent per project with unchecked worklist items, each executing loop-worklist iterations consecutively (commit + PR per its rules, never merging); coupled projects (e.g. calculator → hand-baked sibling build) share one sequential agent; collated report of commits, PRs, and blocked questions. |
 | [portfolio-status.prompt.md](portfolio-status.prompt.md) | Checking the whole portfolio without changing it | Read-only aggregation across every registry project: local repo state, open backlog counts, latest handover, open PRs, and default-branch CI; reports unavailable evidence and registry-drift candidates instead of mutating or guessing. |
 | [close-project.prompt.md](close-project.prompt.md) | Final session of a project | Verifies every public-facing claim the README makes, reconciles the backlog one last time, retires `WORKLIST_{PROJECT}.md`, and writes a terminal handover marked FINAL. |
