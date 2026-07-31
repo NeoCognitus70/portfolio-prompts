@@ -161,7 +161,7 @@ projects:
 
   - project: parabank-bank-automation
     github: GBrooks1970/parabank-bank-automation
-    status: resting
+    status: active
     orchestration_target: true
     gates:
       type: ci
@@ -177,8 +177,10 @@ projects:
       Ninth portfolio project. ParaBank (Parasoft, Apache-2.0) as a pinned, Docker-backed
       banking SUT (never committed here; fetched at build). Two lanes: Serenity/JS + Playwright +
       Cucumber UI journeys (A1-A5) and API-first stateful BDD with a portfolio-first REST-SOAP
-      parity check (B1-B4); 18 scenarios. Phased delivery PB-P0..P5 in docs/backlog.md; decisions
-      in docs/decision-register.md (DR-PB-01..07). Handover v1 in session-notes/.
+      parity check (B1-B4); 18-scenario baseline. Phased delivery PB-P0..P5 is complete; the
+      project is active for PB-CODEX-01..10 review remediation in docs/backlog.md v7, with
+      PBR-01/PBR-02 retained as monitoring risks. Decisions are in docs/decision-register.md
+      (DR-PB-01..07); latest handover is v2 in session-notes/.
 
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
