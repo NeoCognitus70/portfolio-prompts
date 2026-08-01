@@ -54,12 +54,15 @@ the wrong concepts or duplicate membership again.
       public meaning and landing ownership boundary.
 - [x] `project-layout.md`, tool documentation and an ADR record the schema and independence rules.
 - [x] `python tools/check-library.py` passes locally.
-- [ ] PR CI passes; owner merges the PR; post-merge `main` CI is green.
+- [x] PR CI passes.
+- [ ] Owner merges the PR and post-merge `main` CI is green.
 
 Completion evidence: implementation commit
 [`d9ea5d0`](https://github.com/NeoCognitus70/portfolio-prompts/commit/d9ea5d02886bf518aaebd33f72f9e1cdbe31d1f5);
 draft PR [#50](https://github.com/NeoCognitus70/portfolio-prompts/pull/50); local self-gate PASS
-on 2026-08-01 (13 tests). PR CI, owner merge and post-merge `main` CI remain pending.
+on 2026-08-01 (13 tests); PR integrity
+[run 30710435372](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/30710435372)
+PASS. Owner merge and post-merge `main` CI remain pending.
 
 ---
 
