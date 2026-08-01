@@ -1,8 +1,8 @@
 # portfolio-prompts — Backlog
 
-**Version:** 16 — PP-31 delivered the registry-owned public-presentation role contract from the
-portfolio landing repository's accepted decision 001. **No outstanding items** — PP-00..PP-31 are
-resolved.
+**Version:** 17 — PP-31 delivered the registry-owned public-presentation role contract, and the
+repository is now publicly reachable after an approved disclosure review. **One outstanding item**
+— PP-32 is blocked on the owner's explicit licence choice; PP-00..PP-31 are resolved.
 **Last Updated:** 2026-08-01
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
@@ -32,10 +32,34 @@ test-automation projects, not the prompt library.
 
 ## Outstanding Items
 
-**None.** This section holds open items only — resolved records live under
-[Resolved Items](#resolved-items). All 32 items (PP-00..PP-31) are resolved. A
-`WORKLIST_portfolio-prompts.md` can be derived from any future open items with
-`derive-worklist.prompt.md` using `PROJECT=portfolio-prompts`.
+### PP-32: Choose and add an explicit repository licence — Score: 11
+
+**Score:** Security (0) + Drift (4) + Maintenance (7) = **11 (MEDIUM)**
+**Status:** BLOCKED — owner licence decision required.
+**Problem:** `portfolio-prompts` is now public and is described as a reusable prompt library, but it
+has no `LICENSE` file and GitHub reports no detected licence. Public visibility permits reading and
+forking through GitHub; it does not grant downstream users permission to reuse the work. Selecting
+MIT, Apache-2.0, another licence, or deliberately retaining all rights is an owner decision that an
+implementing agent must not infer.
+**Context:** The repository was changed from private to public on 2026-08-01 after a redacted
+full-history and GitHub-surface disclosure review found no high-confidence credential exposure.
+Secret scanning, push protection and validity checks were enabled after publication. See
+[ADR-002](adr/ADR-002-public-repository-visibility.md) and the immutable
+[visibility-review implementation log](implementation-logs/2026-08-01_public-visibility-review.md).
+
+**Success Criteria:**
+
+- [ ] The owner explicitly selects a licence, or explicitly chooses no licence and approves a clear
+      README warning that reuse is not licensed.
+- [ ] If a licence is selected, a canonical `LICENSE` file is added and GitHub detects the intended
+      SPDX licence.
+- [ ] The README states the licence scope without implying that separately licensed portfolio
+      projects inherit this repository's licence.
+- [ ] The repository self-gate, PR CI and post-merge `main` CI pass, with exact merge evidence
+      recorded.
+
+Completion evidence: blocked pending the owner's licence decision; no licence has been assumed or
+added.
 
 ---
 
@@ -44,12 +68,12 @@ test-automation projects, not the prompt library.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 12 | **12 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31) — 0 open |
+| MEDIUM (10–19) | 13 | **12 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31); **1 blocked** (PP-32) |
 | LOW (0–9) | 20 | **20 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30) — 0 open |
-| **Total Outstanding** | **0** | — |
+| **Total Outstanding** | **1** | PP-32 (blocked) |
 | Resolved | 32 | PP-00..PP-31 |
 
-**Outstanding, by suggested order:** None.
+**Outstanding, by suggested order:** PP-32 (owner decision required before implementation).
 
 ---
 
