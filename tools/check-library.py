@@ -8,8 +8,9 @@ example is caught before merge — the same discipline the library imposes on th
 Checks:
   1. Registry folders   — every `project` maps to a real folder, and every sibling repository is
                           either a project or an explicitly classified support repository.
-  2. Registry semantics — lifecycle labels are valid, resting projects remain orchestration
-                          targets, and support repositories cannot enter project fan-outs.
+  2. Registry semantics — lifecycle labels and presentation roles are valid, resting projects
+                          remain orchestration targets, and support repositories cannot enter
+                          project fan-outs.
   3. README generated   — the README registry table is up to date w.r.t. registry.yml
                           (delegates to `render-registry.py --check`).
   4. CI workflow        — the self-gate runs on PRs/main pushes with read-only permissions.
@@ -46,6 +47,8 @@ PORTFOLIO_ROOT = HERE.parent                            # test-automation-portfo
 REGISTRY = HERE / "registry.yml"
 
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+ALLOWED_STATUSES = {"active", "resting", "meta"}
+ALLOWED_PRESENTATION_ROLES = {"showcase", "methodology", "hidden"}
 
 # Markdown files that are the library's own docs (exclude node_modules and vendored trees).
 def library_docs() -> list[Path]:
@@ -91,18 +94,22 @@ def check_registry_folders(fails: list[str]) -> None:
             )
 
 
-def check_registry_semantics(fails: list[str]) -> None:
-    data = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))
-    projects = data["projects"]
-    project_names = {p["project"] for p in projects}
-    allowed_statuses = {"active", "resting", "meta"}
-
+def validate_project_registry_rows(projects: list[dict]) -> list[str]:
+    """Return semantic failures for project rows without reading repository state."""
+    fails: list[str] = []
     for project in projects:
         name = project["project"]
         status = project.get("status")
-        if status not in allowed_statuses:
+        if status not in ALLOWED_STATUSES:
             fails.append(
                 f"[registry-semantics] project '{name}' has unsupported status '{status}'"
+            )
+        role = project.get("presentation_role")
+        if not isinstance(role, str) or role not in ALLOWED_PRESENTATION_ROLES:
+            allowed = ", ".join(sorted(ALLOWED_PRESENTATION_ROLES))
+            fails.append(
+                f"[registry-semantics] project '{name}' must declare presentation_role as one "
+                f"of: {allowed}"
             )
         if not isinstance(project.get("orchestration_target"), bool):
             fails.append(
@@ -116,6 +123,14 @@ def check_registry_semantics(fails: list[str]) -> None:
             fails.append(
                 f"[registry-semantics] meta project '{name}' cannot be an orchestration target"
             )
+    return fails
+
+
+def check_registry_semantics(fails: list[str]) -> None:
+    data = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))
+    projects = data["projects"]
+    project_names = {p["project"] for p in projects}
+    fails.extend(validate_project_registry_rows(projects))
 
     readme = (HERE / "README.md").read_text(encoding="utf-8")
     support_folders: set[str] = set()
@@ -137,7 +152,7 @@ def check_registry_semantics(fails: list[str]) -> None:
             fails.append(
                 f"[registry-semantics] support repository '{folder}' cannot be an orchestration target"
             )
-        if support["status"] not in allowed_statuses:
+        if support["status"] not in ALLOWED_STATUSES:
             fails.append(
                 f"[registry-semantics] support repository '{folder}' has unsupported status "
                 f"'{support['status']}'"
@@ -483,7 +498,7 @@ def main() -> int:
         for f in fails:
             print("  - " + f)
         return 1
-    print("check-library: PASS (registry classification and lifecycle semantics, README generated, "
+    print("check-library: PASS (registry classification, lifecycle/presentation semantics, README generated, "
           "least-privilege CI, internal links, skills, Codex plugin, working norms, invocation paths, "
           "worklist example, workspace preflight scenarios, handover pairs)")
     return 0

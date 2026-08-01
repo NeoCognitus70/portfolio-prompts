@@ -95,6 +95,10 @@ def status_label(p: dict) -> str:
     return s.capitalize()
 
 
+def presentation_label(p: dict) -> str:
+    return p["presentation_role"].capitalize()
+
+
 def notes_cell(p: dict) -> str:
     parts = []
     if p.get("notes"):
@@ -111,10 +115,11 @@ def notes_cell(p: dict) -> str:
 
 def render_table(data: dict) -> str:
     rows = [
-        f"| `{p['project']}` | {p['github']} | {status_label(p)} | {notes_cell(p)} |"
+        f"| `{p['project']}` | {p['github']} | {status_label(p)} | "
+        f"{presentation_label(p)} | {notes_cell(p)} |"
         for p in data["projects"]
     ]
-    header = "| `PROJECT` | GitHub | Status | Notes |\n|---|---|---|---|"
+    header = "| `PROJECT` | GitHub | Status | Presentation | Notes |\n|---|---|---|---|---|"
     return header + "\n" + "\n".join(rows)
 
 

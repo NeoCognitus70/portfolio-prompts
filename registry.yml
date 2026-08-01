@@ -13,6 +13,8 @@
 #   `status` (`active`, `resting`, or `meta`; `product` adds the product qualifier).
 # - Lifecycle and orchestration eligibility are independent. `resting` means the canonical backlog
 #   has zero outstanding items; it does not remove a project from safe fan-outs.
+# - `presentation_role` is required on every project row and is independent of both lifecycle and
+#   orchestration. Allowed values: `showcase`, `methodology`, `hidden`.
 # - The Notes cell is composed as: `notes` prose, then a rendered "Gates:" clause, then
 #   "Deviations:" and "Depends on:" clauses. So keep `notes` free of gate/deviation/coupling text
 #   (those are structured below and rendered automatically) — put only framing, URLs, handover
@@ -52,6 +54,7 @@ projects:
   - project: magento-checkout-automation
     github: GBrooks1970/magento-checkout-automation
     status: resting
+    presentation_role: showcase
     reference: true
     gates: ["npm run verify"]
     orchestration_target: true
@@ -65,6 +68,7 @@ projects:
   - project: hand-baked-screenplay-pattern
     github: NeoCognitus70/hand-baked-screenplay-pattern
     status: resting
+    presentation_role: showcase
     gates: ["npm run verify"]
     orchestration_target: true
     notes: >-
@@ -74,6 +78,7 @@ projects:
   - project: calculator-screenplay-bdd
     github: NeoCognitus70/calculator-screenplay-bdd
     status: resting
+    presentation_role: showcase
     gates: ["npm run verify"]
     orchestration_target: true
     couples_with:
@@ -85,6 +90,7 @@ projects:
   - project: gb.automation.smoketests.sudoku.poc
     github: GBrooks1970/gb.automation.smoketests.sudoku.poc
     status: active
+    presentation_role: showcase
     multi_stack: true
     orchestration_target: true
     deviations:
@@ -106,6 +112,7 @@ projects:
   - project: bfx-ws-screenplay
     github: GBrooks1970/bfx-ws-screenplay
     status: active
+    presentation_role: showcase
     sdd: true
     orchestration_target: true
     gates: ["npm run typecheck", "npm run lint", "npm run test:smoke"]
@@ -122,6 +129,7 @@ projects:
   - project: orangehrm-pim-automation
     github: GBrooks1970/orangehrm-pim-automation
     status: resting
+    presentation_role: showcase
     orchestration_target: true
     gates:
       type: ci
@@ -139,6 +147,7 @@ projects:
   - project: markdown-renderer
     github: GBrooks1970/markdown-renderer
     status: resting
+    presentation_role: showcase
     product: true
     orchestration_target: true
     gates: ["npm run verify"]
@@ -151,6 +160,7 @@ projects:
   - project: mobile-forex-automation
     github: GBrooks1970/mobile-forex-automation
     status: resting
+    presentation_role: showcase
     orchestration_target: true
     gates: ["npm run verify"]
     notes: >-
@@ -162,6 +172,7 @@ projects:
   - project: parabank-bank-automation
     github: GBrooks1970/parabank-bank-automation
     status: active
+    presentation_role: showcase
     orchestration_target: true
     gates:
       type: ci
@@ -187,6 +198,7 @@ projects:
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta
+    presentation_role: methodology
     orchestration_target: false
     single_project_prompts_ok: true
     deviations:

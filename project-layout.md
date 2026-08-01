@@ -75,9 +75,10 @@ them through the absolute library root works from any CWD.
 The README's project-registry table has a structured twin: **`portfolio-prompts/registry.yml`**.
 It is the **machine-readable form** that tooling and skills load instead of parsing the README's
 prose cells — one `defaults:` block plus one row per project (`github`, `status`, `gates`,
-`deviations`, `couples_with`, `orchestration_target`, and `multi_stack`/`sdd`/`live_api`/`product`
-flags), plus explicit `support_repositories:` classifications for workspace repositories that are
-not valid `PROJECT=` values. The README table is the human-readable view of the project rows.
+`deviations`, `couples_with`, `orchestration_target`, `presentation_role`, and
+`multi_stack`/`sdd`/`live_api`/`product` flags), plus explicit `support_repositories:`
+classifications for workspace repositories that are not valid `PROJECT=` values. The README table
+is the human-readable view of the project rows.
 
 - **Resolution order is unchanged.** A project's `deviations:` override the `defaults:`, exactly as
   the prose rules in this contract describe.
@@ -85,6 +86,10 @@ not valid `PROJECT=` values. The README table is the human-readable view of the 
   work; `resting` means it has zero outstanding items; `meta` identifies control-plane tooling.
   Resting projects remain safe orchestration targets: only `orchestration_target: false` removes a
   project row from the `*-all-*` fan-outs.
+- **Presentation is separate from both.** Every project row declares exactly one
+  `presentation_role`: `showcase`, `methodology`, or `hidden`. Resting does not imply hidden, and
+  presentation role never grants orchestration eligibility. The role semantics and public-copy
+  boundary are recorded by the portfolio landing repository's decision 001.
 - **Support repositories are classified, not registered projects.** Entries under
   `support_repositories:` describe workspace support/presentation repositories such as
   `portfolio-landing`; they are not valid `PROJECT=` values and must declare
@@ -97,7 +102,8 @@ not valid `PROJECT=` values. The README table is the human-readable view of the 
 - A skill resolves a project by loading its row:
   `backlog = row.deviations.backlog ?? defaults.backlog`,
   `gates = first-hit(defaults.gate_cascade, row.gates)`,
-  `targets = projects where orchestration_target`.
+  `targets = projects where orchestration_target`,
+  `public_projects = projects grouped by presentation_role`.
 
 ## Required in-repo structure
 

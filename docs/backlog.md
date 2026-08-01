@@ -1,9 +1,9 @@
 # portfolio-prompts — Backlog
 
-**Version:** 14 — PP-30 delivered: a single-project **cycle conductor** (`run-project-cycle`)
-formalises the lifecycle the README previously named only as a prose arrow-chain. **No outstanding
-items** — PP-00..PP-30 all resolved.
-**Last Updated:** 2026-07-30
+**Version:** 15 — PP-31 implements the registry-owned public-presentation role contract from the
+portfolio landing repository's accepted decision 001. **One item in review** — PP-00..PP-30 are
+resolved; PP-31 awaits owner merge.
+**Last Updated:** 2026-08-01
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills, and its update review
@@ -32,10 +32,37 @@ test-automation projects, not the prompt library.
 
 ## Outstanding Items
 
-**None.** This section holds open items only — resolved records live under
-[Resolved Items](#resolved-items). All 31 items (PP-00..PP-30) are resolved. A
-`WORKLIST_portfolio-prompts.md` can be derived from any future items with
-`derive-worklist.prompt.md using PROJECT=portfolio-prompts`.
+#### PP-31: Add canonical portfolio presentation roles — Score: 12
+
+**Score:** Security (0) + Drift (7) + Maintenance (5) = **12 (MEDIUM)**
+**Status:** IN REVIEW 2026-08-01 — implementation branch `codex/presentation-role-registry`.
+**Problem:** The public landing page needs registry-owned `showcase`, `methodology`, and `hidden`
+roles, but `registry.yml` currently exposes only lifecycle and orchestration semantics. Without an
+explicit independent field, landing generation/parity tooling would have to infer visibility from
+the wrong concepts or duplicate membership again.
+**Parent contract:** landing backlog LAND-02R and accepted
+[`portfolio` decision 001](https://github.com/GBrooks1970/portfolio/blob/main/docs/decisions/001-presentation-ownership.md).
+
+**Success Criteria:**
+
+- [x] Every project row declares exactly one supported `presentation_role`; the nine non-meta
+      projects are `showcase` and `portfolio-prompts` is `methodology`.
+- [x] The self-gate rejects missing, non-scalar and unsupported roles without coupling them to
+      lifecycle status or orchestration eligibility.
+- [x] Deterministic unit tests cover valid showcase, methodology and hidden rows plus invalid roles.
+- [x] The generated README registry table exposes presentation role and its prose documents the
+      public meaning and landing ownership boundary.
+- [x] `project-layout.md`, tool documentation and an ADR record the schema and independence rules.
+- [x] `python tools/check-library.py` passes locally.
+- [x] PR CI passes.
+- [ ] Owner merges the PR and post-merge `main` CI is green.
+
+Completion evidence: implementation commit
+[`d9ea5d0`](https://github.com/NeoCognitus70/portfolio-prompts/commit/d9ea5d02886bf518aaebd33f72f9e1cdbe31d1f5);
+draft PR [#50](https://github.com/NeoCognitus70/portfolio-prompts/pull/50); local self-gate PASS
+on 2026-08-01 (13 tests); PR integrity
+[run 30710435372](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/30710435372)
+PASS. Owner merge and post-merge `main` CI remain pending.
 
 ---
 
@@ -44,12 +71,12 @@ test-automation projects, not the prompt library.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 11 | **11 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26) — 0 open |
+| MEDIUM (10–19) | 12 | **11 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26); PP-31 in review — 1 open |
 | LOW (0–9) | 20 | **20 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30) — 0 open |
-| **Total Outstanding** | **0** | — |
+| **Total Outstanding** | **1** | PP-31 |
 | Resolved | 31 | PP-00..PP-30 |
 
-**Outstanding, by suggested order:** None.
+**Outstanding, by suggested order:** PP-31.
 
 ---
 
