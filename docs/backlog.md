@@ -95,7 +95,8 @@ current-head PR integrity
 and post-merge `main` integrity
 [run 30710731714](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/30710731714)
 both passed. See the original immutable
-[implementation log](implementation-logs/2026-08-01_pp-31-presentation-role-registry.md).
+[implementation log](implementation-logs/2026-08-01_pp-31-presentation-role-registry.md) and the
+[merge closure log](implementation-logs/2026-08-01_pp-31-closure.md).
 
 ### From the 2026-07-30 lifecycle-formalisation cycle (PP-30)
 
