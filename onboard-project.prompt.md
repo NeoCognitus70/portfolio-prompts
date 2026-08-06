@@ -7,8 +7,10 @@ test-automation-portfolio project:
 `PROJECT` is the prospective folder at the portfolio root, not an existing registry value.
 `GITHUB` is optional when the checkout's `origin` unambiguously supplies it. This is a staged,
 mutating workflow: it first presents an evidence-backed onboarding proposal and stops for approval;
-it then prepares the project scaffold PR, waits for that to merge when required, and only afterward
-prepares the portfolio registry PR. It never merges either PR.
+it then prepares the project scaffold PR, waits for that to merge when required, prepares the
+portfolio registry PR, and — for a publicly-visible project — finally prepares the portfolio-landing
+evidence PR so the project cannot be registered yet absent from the public landing page. It never
+merges any of these PRs.
 
 ---
 
@@ -24,8 +26,8 @@ invocation names it as `PROJECT=<folder name at the portfolio root>` and may sup
   checkout is missing, stop and report what the user must provide.
 
 Follow `project-layout.md` at the resolved library root, including its working norm for branches
-and PRs. Work sequentially across the target and `portfolio-prompts` repositories; do not launch
-sub-agents and never merge a PR.
+and PRs. Work sequentially across the target, `portfolio-prompts`, and (for a publicly-visible
+project) `portfolio-landing` repositories; do not launch sub-agents and never merge a PR.
 
 ## Phase 0 — Guard and establish identity
 
@@ -101,8 +103,13 @@ Before writing anything, return an onboarding proposal containing:
 3. The proposed initial backlog items and scores, or an explicit zero-item backlog.
 4. Validation commands for the target scaffold and the registry change.
 5. The staged delivery plan: target scaffold PR (if changes are needed), its required merge point,
-   then the `portfolio-prompts` registry PR.
-6. Every unresolved choice — especially orchestration participation, gates, deviations, coupling,
+   then the `portfolio-prompts` registry PR, then — when the project's `presentation_role` is
+   `showcase` or `methodology` — the `portfolio-landing` evidence PR.
+6. For a publicly-visible project, the proposed landing presence: its `data/presentation.json` entry
+   (public title, discipline, summary, order, group/tags) and which evidence `actions` it will
+   carry (`demo`/`report`/`documentation`/`workflow`), or an explicit statement that no public
+   evidence link exists yet and the entry ships without one (recorded as a tracked follow-up).
+7. Every unresolved choice — especially orchestration participation, gates, deviations, coupling,
    backlog seed items, and any overwrite-like action.
 
 Then **stop for explicit user approval**. Do not create directories, files, branches, commits, or
@@ -153,6 +160,37 @@ reports the scaffold PR merged), verify that state from fresh local/remote evide
 Never update handovers, their manifest, or portfolio worklists as part of onboarding. Never merge
 the registry PR.
 
+## Phase 5 — Prepare the portfolio-landing evidence PR
+
+This phase exists so that registering a project and publishing it on the portfolio landing page can
+never drift apart: a public project must appear on the landing page, and onboarding is where that
+link is established. Apply it when the approved `presentation_role` is `showcase` or `methodology`;
+skip it only for a `hidden` role, and then say so explicitly in the final report.
+
+Begin only when the registry row is on the `portfolio-prompts` default branch (Phase 4 merged),
+because the landing snapshot is derived from that canonical commit. Then, following
+`portfolio-landing/docs/generation.md` (its schema is authoritative; never hand-edit generated
+output):
+
+1. Refresh `portfolio-landing` from its default branch and create a descriptive evidence branch.
+2. Refresh `data/registry-lock.json` from the exact canonical `portfolio-prompts` commit that carries
+   the new registry row — never hand-edit it.
+3. Add the project's `data/presentation.json` entry keyed by the canonical registry project id:
+   public title, discipline, evidence-backed summary, unique `order`, `group` (a showcase's known
+   group, or `null` for methodology), tags, and `actions`. Attach an evidence link only to a
+   **live, verified** artefact, using the correct action type — `demo` for a genuinely interactive
+   browser experience (the only type that gets the play cue), `report` for a static test/evidence
+   report, `documentation` for static reference docs, `workflow` for the CI file. If no public
+   artefact is live yet, ship the entry with those actions `null` and record the missing evidence
+   link as a tracked follow-up in the final report; never invent or point at an unverified URL.
+4. Regenerate with `tools/generate_site.py` and run the landing quality gate. Never hand-edit
+   `index.html` or other generated output. Confirm the generator's registry-lock ↔ presentation
+   parity check passes for the new row.
+5. Review the complete diff, commit only the landing evidence change, push the branch, and open a
+   draft PR. Link the merged registry PR and state the required merge order.
+
+Never merge the landing PR. Never touch handovers, their manifest, or worklists here either.
+
 ## Final report
 
 At each stopping point report:
@@ -164,4 +202,8 @@ At each stopping point report:
 - unresolved decisions or blockers and the precise resume condition.
 
 Use en-GB spelling. Never report a project as onboarded until its required backlog is on the target
-default branch **and** its registry row is on the `portfolio-prompts` default branch.
+default branch **and** its registry row is on the `portfolio-prompts` default branch. For a
+`showcase` or `methodology` project, also report whether its `portfolio-landing` evidence PR is
+prepared and, if the landing entry ships without a live evidence link, name that missing link as an
+explicit tracked follow-up with its resume condition — so a registered-but-unpublished project is
+never left silently drifting.
