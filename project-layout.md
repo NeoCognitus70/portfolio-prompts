@@ -202,6 +202,14 @@ npx tsc --noEmit
 - **Shared templates:** `templates/` at the portfolio root — project-agnostic scaffolding
   (backlog, implementation log, code review, ADR, etc.).
 - **Prompts:** this folder (`portfolio-prompts/`), its own git repository.
+- **Portfolio landing presence:** a registered project whose `presentation_role` is `showcase` or
+  `methodology` must also have a `portfolio-landing` `data/presentation.json` entry (and, once it has
+  a live public artefact, an evidence `action` linking it). The landing generator already fails when
+  a public registry-lock row has no presentation entry, but that guard only fires when the landing
+  snapshot is refreshed — so establishing the entry is part of **onboarding** (`onboard-project`
+  Phase 5), not a separate manual step, to keep registration and public publication from drifting
+  apart. The landing repo (`portfolio-landing`, a support repository) owns the presentation schema in
+  its `docs/generation.md`; never hand-edit its generated output.
 
 ### Worklist file format (canonical)
 
