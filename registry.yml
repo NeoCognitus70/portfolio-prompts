@@ -199,6 +199,34 @@ projects:
       Decisions are in docs/decision-register.md (DR-PB-01..10); latest handover is v4 in
       session-notes/.
 
+  - project: juice-shop-dast-automation
+    github: GBrooks1970/juice-shop-dast-automation
+    status: active
+    presentation_role: showcase
+    orchestration_target: true
+    gates:
+      type: ci
+      static: ["npm run verify"]
+      notes: >-
+        npm run verify (typecheck + 21 unit tests) is Docker-free and is the orchestration-safe
+        gate. The ZAP scan (npm run dast) and the BDD exploit confirmations (npm run bdd) are
+        self-contained -- each boots the pinned Juice Shop container and tears it down -- and run
+        in CI (.github/workflows/ci.yml), not in verify. The pass/fail signal is npm run
+        scan:verdict (which parses report.json), not zap-baseline.py's exit code, which is always
+        non-zero on this deliberately-vulnerable target.
+    notes: >-
+      Eleventh portfolio project, and the portfolio's first security lane. A DAST showcase: an
+      OWASP ZAP passive baseline scan plus BDD exploit-confirmation scenarios against a pinned,
+      intentionally-vulnerable OWASP Juice Shop 20.1.1 (MIT) training target -- not a real
+      product; its findings are expected and every surface is labelled as such. The
+      positive-detection gate asserts the expected security-misconfiguration and
+      information-disclosure classes (a passive baseline detects no injection classes), while the
+      three BDD scenarios (SQL-injection login bypass, sensitive-file exposure, and IDOR) supply
+      the active-exploitation proof a passive scan cannot. Design and decisions D2.1a-D2.7a are in
+      docs/dast-lane-design.md; images are digest-pinned (Juice Shop 20.1.1, OWASP ZAP 2.17.0) and
+      a pin bump re-triggers the Phase 0 probe (backlog DAST-M1). Phases 0-4 are complete and the
+      labelled report is published at https://gbrooks1970.github.io/juice-shop-dast-automation/.
+
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta
