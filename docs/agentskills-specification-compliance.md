@@ -1,6 +1,7 @@
 # Agent Skills Specification & Portfolio Compliance Report
 
 **Document Location:** `portfolio-prompts/docs/agentskills-specification-compliance.md`  
+**Reference Guide:** [`portfolio-prompts/references/guide.md`](../references/guide.md)  
 **Specification Source:** [https://agentskills.io/specification](https://agentskills.io/specification)  
 **Audit Target:** `portfolio-prompts/skills/` (15 skills)  
 **Audit Date:** 2026-08-07  
@@ -12,7 +13,7 @@
 
 This document records the audit findings for all skills packaged in `portfolio-prompts/skills/` against the official **Agent Skills format specification** ([https://agentskills.io/specification](https://agentskills.io/specification)).
 
-It also serves as the **authoritative compliance guide for future skills** added to `portfolio-prompts` or any other repository in this portfolio. Every future skill must strictly satisfy the mandatory rules detailed below.
+It also serves as the **authoritative compliance report for skills** in `portfolio-prompts`. The detailed Level 3 progressive disclosure reference guide is available at [`portfolio-prompts/references/guide.md`](../references/guide.md). Every future skill must strictly satisfy the mandatory rules detailed below and in the reference guide.
 
 ---
 
@@ -82,7 +83,7 @@ The `name` property defines the skill identifier and must conform strictly to th
    * **Level 1 (Startup):** Agent loads `name` and `description` (~100 tokens).
    * **Level 2 (Activation):** Agent loads full `SKILL.md` body when activated.
    * **Level 3 (Execution):** Agent reads `references/` or executes `scripts/` only as needed.
-3. **File Reference Paths:** Reference other files using relative paths from the skill root (e.g. `[Reference Guide](references/GUIDE.md)` or `scripts/run.py`).
+3. **File Reference Paths:** Reference other files using relative paths from the skill root (e.g. `[Reference Guide](path/to/references/GUIDE.md)` or `scripts/run.py`).
 
 ---
 
