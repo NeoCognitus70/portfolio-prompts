@@ -1,0 +1,6 @@
+interface:
+  display_name: "Portfolio Code Reviews Summary"
+  short_description: "Generate or refresh central point of reference for latest code reviews"
+  default_prompt: "Use $portfolio-prompts:portfolio-reviews-summary to view or refresh central project code review summaries."
+policy:
+  allow_implicit_invocation: true
