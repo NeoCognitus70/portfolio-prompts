@@ -203,6 +203,90 @@ def build_reviews_summary() -> tuple[list[dict], str]:
     return projects_info, markdown_output
 
 
+def render_markdown_content(md_text: str, proj_name: str, for_landing: bool = False) -> str:
+    lines = md_text.splitlines()
+    html_out = []
+    in_list = False
+
+    def format_inline(text: str) -> str:
+        # Escape raw HTML special characters
+        t = html.escape(text)
+        # Inline code: `code`
+        t = re.sub(r"`([^`]+)`", r"<code>\1</code>", t)
+        # Bold: **bold**
+        t = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", t)
+        # Italic: *italic*
+        t = re.sub(r"\*([^*]+)\*", r"<em>\1</em>", t)
+
+        # Links: [label](url)
+        def replace_link(match):
+            label = match.group(1)
+            url = match.group(2)
+            if for_landing and not (url.startswith("http://") or url.startswith("https://") or url.startswith("#")):
+                owner = "NeoCognitus70" if proj_name in ["hand-baked-screenplay-pattern", "calculator-screenplay-bdd", "portfolio-prompts"] else "GBrooks1970"
+                clean_url = url.replace("../", "")
+                if clean_url.startswith(proj_name):
+                    clean_url = clean_url[len(proj_name):].lstrip("/")
+                url = f"https://github.com/{owner}/{proj_name}/blob/main/{clean_url}"
+            return f'<a href="{url}">{label}</a>'
+
+        t = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", replace_link, t)
+        return t
+
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            if in_list:
+                html_out.append("</ul>")
+                in_list = False
+            continue
+
+        if stripped == "---":
+            if in_list:
+                html_out.append("</ul>")
+                in_list = False
+            html_out.append('<hr style="border: none; border-top: 1px solid var(--border); margin: 1rem 0;">')
+            continue
+
+        # Headings
+        if stripped.startswith("### "):
+            if in_list:
+                html_out.append("</ul>")
+                in_list = False
+            h_text = format_inline(stripped[4:])
+            html_out.append(f'<h4 style="color: var(--accent); margin-top: 1.2rem; margin-bottom: 0.5rem;">{h_text}</h4>')
+            continue
+        elif stripped.startswith("## "):
+            if in_list:
+                html_out.append("</ul>")
+                in_list = False
+            h_text = format_inline(stripped[3:])
+            html_out.append(f'<h3 style="color: #e2e8f0; margin-top: 1.2rem; margin-bottom: 0.5rem;">{h_text}</h3>')
+            continue
+
+        # Bullet list items
+        if stripped.startswith("- ") or stripped.startswith("* "):
+            if not in_list:
+                html_out.append('<ul style="padding-left: 1.2rem; margin: 0.5rem 0;">')
+                in_list = True
+            item_text = format_inline(stripped[2:])
+            html_out.append(f'<li style="margin-bottom: 0.4rem; color: #cbd5e1;">{item_text}</li>')
+            continue
+
+        # Regular paragraphs
+        if in_list:
+            html_out.append("</ul>")
+            in_list = False
+
+        p_text = format_inline(stripped)
+        html_out.append(f'<p style="margin: 0.5rem 0; color: #cbd5e1;">{p_text}</p>')
+
+    if in_list:
+        html_out.append("</ul>")
+
+    return "\n".join(html_out)
+
+
 def render_html(projects_info: list[dict], for_landing: bool = False) -> str:
     html_lines = [
         "<!DOCTYPE html>",
@@ -336,10 +420,10 @@ def render_html(projects_info: list[dict], for_landing: bool = False) -> str:
         html_lines.append(f"        <a href=\"{folder_url}\">Browse Review Folder</a>")
         html_lines.append(f"      </p>")
         
-        # Simple HTML conversion for executive summary text
+        rendered_summary_html = render_markdown_content(p['exec_summary'], p['project'], for_landing)
         html_lines.append(f"      <details>")
         html_lines.append(f"        <summary>Click to view Executive Summary text</summary>")
-        html_lines.append(f"        <div style=\"margin-top: 1rem; color: #cbd5e1; font-size: 0.95rem; white-space: pre-wrap;\">{html.escape(p['exec_summary'])}</div>")
+        html_lines.append(f"        <div style=\"margin-top: 1rem; font-size: 0.95rem;\">{rendered_summary_html}</div>")
         html_lines.append(f"      </details>")
         html_lines.append(f"    </div>")
 
