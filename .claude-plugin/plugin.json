@@ -1,6 +1,6 @@
 {
   "name": "portfolio-prompts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Session-lifecycle skills for the test-automation-portfolio: resume, derive/loop worklists, code reviews, implementation logs, handovers, project close-out, portfolio-wide fan-outs, and a zero-config repository analyser. Each skill delegates to the canonical prompt in this repo; the project is an argument.",
   "author": { "name": "Gary Brooks" },
   "homepage": "https://github.com/NeoCognitus70/portfolio-prompts",

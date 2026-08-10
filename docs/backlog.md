@@ -1,9 +1,11 @@
 # portfolio-prompts — Backlog
 
-**Version:** 18 — PP-32 resolved 2026-08-10: the owner selected **MIT**, unblocking the library's
-last outstanding item. `LICENSE` and a scoped README **Licence** section are in place. **Zero
-outstanding items** — PP-00..PP-32 are all resolved. v17 delivered PP-31 (registry-owned
-public-presentation role contract) and recorded the repository's public visibility.
+**Version:** 19 — PP-33 opened and resolved 2026-08-10: the installed plugin cache was serving a
+stale snapshot (10 registry rows vs 11, a missing prompt/skill/tool) while reporting the same
+version as source, because the version string was never bumped. Both manifests are now `0.2.0` and
+the bump-on-content-change convention is recorded; one criterion remains owner-side (reinstall the
+plugin). v18 resolved PP-32 — the owner selected **MIT**, `LICENSE` and a scoped README **Licence**
+section are in place. PP-00..PP-33 are otherwise all resolved.
 **Last Updated:** 2026-08-10
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
@@ -32,6 +34,52 @@ test-automation projects, not the prompt library.
 ---
 
 ## Outstanding Items
+
+### PP-33: Bump the plugin version whenever library content changes — Score: 12
+
+**Score:** Security (0) + Drift (8) + Maintenance (4) = **12 (MEDIUM)**
+**Status:** RESOLVED 2026-08-10 — version bumped 0.1.0 → 0.2.0; convention recorded below.
+**Problem:** the installed plugin cache served a **stale snapshot** of the library while reporting
+the same version as source. Both `.claude-plugin/plugin.json` and the cached copy read `0.1.0`, yet
+their contents had diverged materially — so an install has no signal that it is out of date and
+never refreshes.
+
+Measured drift at the point of discovery (cache `0.1.0` vs `main`):
+
+| Kind | Detail |
+|---|---|
+| Registry rows | **10 cached vs 11 in source** — `juice-shop-dast-automation` missing entirely |
+| Missing prompt | `portfolio-reviews-summary.prompt.md` |
+| Missing skill | `skills/portfolio-reviews-summary/` |
+| Missing tool | `tools/build-portfolio-reviews.py` |
+| Changed | `project-layout.md`, `onboard-project.prompt.md`, `README.md`, `docs/backlog.md` |
+| Missing | `LICENSE` (PP-32), two compliance docs, one implementation log |
+
+**Impact:** a skill invoked from the installed plugin resolves its library root to the cache, so any
+portfolio fan-out run that way silently **skips `juice-shop-dast-automation`** and applies a
+superseded `project-layout.md`. Discovered when a `portfolio-status` run reported 10 registry
+projects while the workspace registry held 11.
+
+**Convention (adopted 2026-08-10):** the plugin version in **both** `.claude-plugin/plugin.json` and
+`.codex-plugin/plugin.json` is bumped in the same PR as any change to library content — prompts,
+skills, `registry.yml`, `project-layout.md`, or `tools/`. Patch for fixes and wording, minor for a
+new/removed prompt, skill, tool, or registry row. Version is the only refresh signal an installed
+copy gets; leaving it unchanged is what created this drift.
+
+**Success Criteria:**
+
+- [x] Root cause identified: version string unchanged across content changes, so caches never refresh.
+- [x] Both plugin manifests bumped `0.1.0` → `0.2.0` (a minor bump — the interval added a prompt, a
+      skill, a tool and a registry row).
+- [x] The bump-on-content-change convention is recorded here for successors.
+- [ ] Owner reinstalls/updates the plugin so the cache picks up `0.2.0`, and a subsequent
+      `portfolio-status` reports **11** registry projects rather than 10.
+
+Completion evidence: version bumped and convention recorded; self-gate `python tools/check-library.py`
+PASS. The final criterion needs an owner-side plugin update — an agent cannot refresh the install
+from inside a session.
+
+---
 
 ### PP-32: Choose and add an explicit repository licence — Score: 11
 
