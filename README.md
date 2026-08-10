@@ -204,3 +204,13 @@ Use $portfolio-prompts:analyze-repo to analyse <repo-url-or-path> at standard de
 pilot (any repo, no registry). High-impact skills use platform-specific invocation policy plus
 workflow confirmation gates. See [`skills/README.md`](skills/README.md) for installation,
 invocation policy, and path-resolution details.
+
+## Licence
+
+This repository is licensed under the [MIT Licence](LICENSE) — © 2026 Gary Brooks.
+
+**Scope — this repository only.** The licence covers the prompts, `project-layout.md`,
+`registry.yml`, the `skills/` wrappers, and the tooling under `tools/`. The portfolio projects
+these prompts operate on are **separate repositories under their own, differing licences** (MIT,
+Apache-2.0, ISC and GPL-3.0 are all in use across them). Nothing here grants any right over them —
+check a project's own `LICENSE` before reusing its code.

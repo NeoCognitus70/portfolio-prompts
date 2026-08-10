@@ -1,9 +1,10 @@
 # portfolio-prompts — Backlog
 
-**Version:** 17 — PP-31 delivered the registry-owned public-presentation role contract, and the
-repository is now publicly reachable after an approved disclosure review. **One outstanding item**
-— PP-32 is blocked on the owner's explicit licence choice; PP-00..PP-31 are resolved.
-**Last Updated:** 2026-08-01
+**Version:** 18 — PP-32 resolved 2026-08-10: the owner selected **MIT**, unblocking the library's
+last outstanding item. `LICENSE` and a scoped README **Licence** section are in place. **Zero
+outstanding items** — PP-00..PP-32 are all resolved. v17 delivered PP-31 (registry-owned
+public-presentation role contract) and recorded the repository's public visibility.
+**Last Updated:** 2026-08-10
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills, and its update review
@@ -35,7 +36,16 @@ test-automation projects, not the prompt library.
 ### PP-32: Choose and add an explicit repository licence — Score: 11
 
 **Score:** Security (0) + Drift (4) + Maintenance (7) = **11 (MEDIUM)**
-**Status:** BLOCKED — owner licence decision required.
+**Status:** RESOLVED 2026-08-10 — **owner selected MIT.**
+**Decision (owner, 2026-08-10):** **MIT**, after a cross-portfolio licence survey: MIT is already
+the majority licence across the portfolio (6 of 11 project repos: magento, bfx-ws-screenplay,
+mobile-forex, parabank, juice-shop, portfolio-landing; Apache-2.0 x3, ISC x1, GPL-3.0 x1). It is
+the lowest-friction fit for a repository that is ~85% prose (57 `.md` against 8 `.py` / 5 `.js`),
+covers prompts and tooling under one grant, and preserves attribution through the retained
+copyright notice. Apache-2.0, a CC-BY-4.0/MIT split, and retaining all rights were considered and
+declined — the patent/trademark machinery is near-irrelevant for prompt text, a per-directory
+boundary adds governance cost for no practical gain, and withholding reuse rights would contradict
+the README's own "reusable" framing and the repository's `methodology` presentation role.
 **Problem:** `portfolio-prompts` is now public and is described as a reusable prompt library, but it
 has no `LICENSE` file and GitHub reports no detected licence. Public visibility permits reading and
 forking through GitHub; it does not grant downstream users permission to reuse the work. Selecting
@@ -49,17 +59,20 @@ Secret scanning, push protection and validity checks were enabled after publicat
 
 **Success Criteria:**
 
-- [ ] The owner explicitly selects a licence, or explicitly chooses no licence and approves a clear
-      README warning that reuse is not licensed.
-- [ ] If a licence is selected, a canonical `LICENSE` file is added and GitHub detects the intended
-      SPDX licence.
-- [ ] The README states the licence scope without implying that separately licensed portfolio
-      projects inherit this repository's licence.
+- [x] The owner explicitly selects a licence, or explicitly chooses no licence and approves a clear
+      README warning that reuse is not licensed. — **MIT selected by the owner, 2026-08-10.**
+- [x] If a licence is selected, a canonical `LICENSE` file is added and GitHub detects the intended
+      SPDX licence. — canonical MIT text added at `LICENSE`, © 2026 Gary Brooks (GitHub SPDX
+      detection to be confirmed on the merge commit).
+- [x] The README states the licence scope without implying that separately licensed portfolio
+      projects inherit this repository's licence. — new **Licence** section scopes the grant to this
+      repository and names the four differing licences in use across the projects.
 - [ ] The repository self-gate, PR CI and post-merge `main` CI pass, with exact merge evidence
       recorded.
 
-Completion evidence: blocked pending the owner's licence decision; no licence has been assumed or
-added.
+Completion evidence: owner decision recorded above; `LICENSE` + README **Licence** section added on
+`docs/pp-32-mit-licence`. Self-gate `python tools/check-library.py` green pre-commit. Merge evidence
+and GitHub SPDX confirmation to be appended when the PR merges.
 
 ---
 
@@ -68,7 +81,7 @@ added.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 13 | **12 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31); **1 blocked** (PP-32) |
+| MEDIUM (10–19) | 13 | **13 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32) — 0 open |
 | LOW (0–9) | 20 | **20 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30) — 0 open |
 | **Total Outstanding** | **1** | PP-32 (blocked) |
 | Resolved | 32 | PP-00..PP-31 |
