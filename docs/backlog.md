@@ -62,17 +62,21 @@ Secret scanning, push protection and validity checks were enabled after publicat
 - [x] The owner explicitly selects a licence, or explicitly chooses no licence and approves a clear
       README warning that reuse is not licensed. — **MIT selected by the owner, 2026-08-10.**
 - [x] If a licence is selected, a canonical `LICENSE` file is added and GitHub detects the intended
-      SPDX licence. — canonical MIT text added at `LICENSE`, © 2026 Gary Brooks (GitHub SPDX
-      detection to be confirmed on the merge commit).
+      SPDX licence. — canonical MIT text at `LICENSE`, © 2026 Gary Brooks; **GitHub reports
+      `spdx_id: MIT` ("MIT License") on the repository, confirmed 2026-08-10 post-merge.**
 - [x] The README states the licence scope without implying that separately licensed portfolio
       projects inherit this repository's licence. — new **Licence** section scopes the grant to this
       repository and names the four differing licences in use across the projects.
-- [ ] The repository self-gate, PR CI and post-merge `main` CI pass, with exact merge evidence
-      recorded.
+- [x] The repository self-gate, PR CI and post-merge `main` CI pass, with exact merge evidence
+      recorded. — self-gate `python tools/check-library.py` PASS pre-commit; PR
+      [#59](https://github.com/NeoCognitus70/portfolio-prompts/pull/59) `check-library` SUCCESS
+      (run 31434060043); merged to `main` as **`45900ff`** (implementation commit `8d43db0`);
+      post-merge `main` CI **success** (run 31434099051).
 
-Completion evidence: owner decision recorded above; `LICENSE` + README **Licence** section added on
-`docs/pp-32-mit-licence`. Self-gate `python tools/check-library.py` green pre-commit. Merge evidence
-and GitHub SPDX confirmation to be appended when the PR merges.
+Completion evidence: **PP-32 RESOLVED 2026-08-10.** Owner selected MIT; `LICENSE` (© 2026 Gary
+Brooks) and the scoped README **Licence** section merged via PR #59 as `45900ff`; GitHub SPDX
+detection confirms `MIT`; self-gate, PR CI and post-merge `main` CI all green. This was the
+library's last outstanding item — PP-00..PP-32 are now all resolved.
 
 ---
 
