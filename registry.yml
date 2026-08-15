@@ -227,6 +227,29 @@ projects:
       a pin bump re-triggers the Phase 0 probe (backlog DAST-M1). Phases 0-4 are complete and the
       labelled report is published at https://gbrooks1970.github.io/juice-shop-dast-automation/.
 
+  - project: auth-separation
+    github: GBrooks1970/auth-separation
+    status: active
+    presentation_role: methodology
+    sdd: true
+    orchestration_target: true
+    gates: ["npm run verify"]
+    notes: >-
+      Twelfth portfolio project and the portfolio's Specification Driven Development exemplar: a
+      complete, technology-agnostic spec set for separating authentication (AuthN, PCI scope),
+      authorisation (AuthZ, SOC 2 scope) and user information (GDPR scope) into three independent
+      services, with a separated decision audit store. Contracts only -- three OpenAPI 3.1 documents,
+      an AsyncAPI 3.0 event contract, Gherkin acceptance criteria in `features/`, three compliance
+      documents, a database spec and a deployment-topology design doc. **Nothing is implemented**, and
+      the first commit is the spec set alone, so the repository itself is the evidence that
+      specification preceded code. Read `auth-separation_architecture_v1.md` before the three API
+      specs; without it they read as three unrelated documents. Cross-service state travels only via
+      the AsyncAPI events and there is no shared database -- both are spec constraints, not
+      preferences, and generated stubs are never hand-edited. The plan of record is
+      `auth-separation_implementation-kanban_v1.html`, a phased board of 51 AUTH-nnn tickets that opens
+      offline; `docs/backlog.md` owns ticket status while the Kanban owns ticket content. Definition of
+      done is the README's 10-item production-readiness checklist.
+
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta
