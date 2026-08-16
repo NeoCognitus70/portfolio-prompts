@@ -71,13 +71,14 @@ projects:
 
   - project: hand-baked-screenplay-pattern
     github: NeoCognitus70/hand-baked-screenplay-pattern
-    status: resting
+    status: active
     presentation_role: showcase
     gates: ["npm run verify"]
     orchestration_target: true
     notes: >-
-      Stable teaching library with zero required backlog items. Material in `planning/` remains
-      optional until promoted into the backlog.
+      Active provider-first iteration. Provider-switching Phases 0-1 were promoted on 2026-08-16 as
+      six required MEDIUM backlog items, HBSP-28..33, executed in dependency order. Calculator Phase 2
+      and later portfolio migrations remain unpromoted in their owning projects.
 
   - project: calculator-screenplay-bdd
     github: NeoCognitus70/calculator-screenplay-bdd
