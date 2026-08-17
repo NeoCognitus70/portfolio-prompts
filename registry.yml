@@ -234,7 +234,7 @@ projects:
     presentation_role: methodology
     sdd: true
     orchestration_target: true
-    gates: ["npm run verify"]
+    gates: ["npm run verify", "dotnet test AuthSeparation.sln"]
     notes: >-
       Twelfth portfolio project and the portfolio's Specification Driven Development exemplar: a
       complete, technology-agnostic spec set for separating authentication (AuthN, PCI scope),
