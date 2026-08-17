@@ -239,11 +239,17 @@ projects:
       Twelfth portfolio project and the portfolio's Specification Driven Development exemplar: a
       complete, technology-agnostic spec set for separating authentication (AuthN, PCI scope),
       authorisation (AuthZ, SOC 2 scope) and user information (GDPR scope) into three independent
-      services, with a separated decision audit store. Contracts only -- three OpenAPI 3.1 documents,
-      an AsyncAPI 3.0 event contract, Gherkin acceptance criteria in `features/`, three compliance
-      documents, a database spec and a deployment-topology design doc. **Nothing is implemented**, and
-      the first commit is the spec set alone, so the repository itself is the evidence that
-      specification preceded code. Read `auth-separation_architecture_v1.md` before the three API
+      services, with a separated decision audit store. The reviewed deliverable is the contracts --
+      three OpenAPI 3.1 documents, an AsyncAPI 3.0 event contract, Gherkin acceptance criteria in
+      `features/`, three compliance documents, a database spec and a deployment-topology design doc --
+      and the first commit is the spec set alone, so the repository itself is the evidence that
+      specification preceded code. Since `ADR-0005` it also builds a **bounded slice**: one generated
+      501 server stub per contract, which is the one piece of evidence a contracts-only repository
+      cannot show. `AUTH-020` delivered AuthN's on 2026-08-17 -- generated in full and never
+      hand-edited, with CI regenerating and failing on any drift; `AUTH-021` and `AUTH-022` follow.
+      **Nothing behind the stubs is implemented** and the remaining 46 tickets are parked, so three
+      endpoints returning 501 must not be described as a working auth system. Read
+      `auth-separation_architecture_v1.md` before the three API
       specs; without it they read as three unrelated documents. Cross-service state travels only via
       the AsyncAPI events and there is no shared database -- both are spec constraints, not
       preferences, and generated stubs are never hand-edited. The plan of record is
