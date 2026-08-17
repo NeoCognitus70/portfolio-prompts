@@ -230,11 +230,12 @@ projects:
 
   - project: auth-separation
     github: GBrooks1970/auth-separation
-    status: active
+    status: resting
+    status_label: "Closed 2026-08-17"
     presentation_role: methodology
     sdd: true
     orchestration_target: true
-    gates: ["npm run verify", "dotnet test AuthSeparation.sln"]
+    gates: ["npm run verify", "dotnet test AuthSeparation.sln", "npm run lint:generated"]
     notes: >-
       Twelfth portfolio project and the portfolio's Specification Driven Development exemplar: a
       complete, technology-agnostic spec set for separating authentication (AuthN, PCI scope),
@@ -255,7 +256,7 @@ projects:
       preferences, and generated stubs are never hand-edited. The plan of record is
       `auth-separation_implementation-kanban_v1.html`, a phased board of 51 AUTH-nnn tickets that opens
       offline; `docs/backlog.md` owns ticket status while the Kanban owns ticket content. Definition of
-      done is the README's 10-item production-readiness checklist.
+      done is the README's 10-item production-readiness checklist, which `ADR-0005` explicitly does not pursue. Deviations: gates and standing norms are pinned in `auth-separation/docs/project-contract.md`, the first-checked gate source.
 
   - project: auth-separation-screenplay-poc
     github: GBrooks1970/auth-separation-screenplay-poc
