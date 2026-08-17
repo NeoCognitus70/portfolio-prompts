@@ -257,6 +257,23 @@ projects:
       offline; `docs/backlog.md` owns ticket status while the Kanban owns ticket content. Definition of
       done is the README's 10-item production-readiness checklist.
 
+  - project: auth-separation-screenplay-poc
+    github: GBrooks1970/auth-separation-screenplay-poc
+    status: active
+    presentation_role: showcase
+    sdd: true
+    multi_stack: true
+    orchestration_target: true
+    gates: ["npm run verify"]
+    notes: >-
+      Thirteenth portfolio project and the portfolio's pedagogical multi-stack showcase of
+      Specification-Driven Development (SDD) integrated with Behaviour-Driven Development (BDD) using
+      the Screenplay design pattern. Demonstrates clean separation across Authentication (AuthN),
+      Authorization (AuthZ), and User Profile APIs. A canonical set of human-readable BDD Gherkin
+      feature files in `features/` serves as the single source of truth for specifications and test
+      execution. SUT implementation follows Strategy 3 (Specification-First Monorepo with Phased
+      Multi-Stack Parity).
+
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta
