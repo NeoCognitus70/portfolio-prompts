@@ -71,18 +71,20 @@ projects:
 
   - project: hand-baked-screenplay-pattern
     github: NeoCognitus70/hand-baked-screenplay-pattern
-    status: active
+    status: resting
     presentation_role: showcase
     gates: ["npm run verify"]
     orchestration_target: true
     notes: >-
-      Active provider-first iteration. Provider-switching Phases 0-1 were promoted on 2026-08-16 as
-      six required MEDIUM backlog items, HBSP-28..33, executed in dependency order. Calculator Phase 2
-      and later portfolio migrations remain unpromoted in their owning projects.
+      Provider-switching Phases 0-1 completed 2026-08-17 as HBSP-28..33. The dependency-free v0.3.0
+      release supplies the compatibility baseline, portable Question/ability seams, extensible event
+      envelope, conformance kit, and immutable ESM/CommonJS distribution. Zero provider items remain;
+      Calculator Phase 2 was promoted in its owning backlog on 2026-08-18, while later portfolio
+      migrations remain unpromoted.
 
   - project: calculator-screenplay-bdd
     github: NeoCognitus70/calculator-screenplay-bdd
-    status: resting
+    status: active
     presentation_role: showcase
     gates: ["npm run verify"]
     orchestration_target: true
@@ -90,7 +92,12 @@ projects:
       project: hand-baked-screenplay-pattern
       reason: prepare:screenplay installs and builds inside the sibling checkout
       order: provider-first
-    notes: Stable consumer example with zero required backlog items.
+    notes: >-
+      Active provider-switching Phase 2 pilot, promoted 2026-08-18 as four dependency-ordered MEDIUM
+      items CAL-22..25: pin the v0.3.0 provider artefact, introduce one Calculator composition gateway,
+      prove a bounded alternate-provider REST profile, then gate and document the evidence. The full
+      suite remains hand-baked by default; runtime hot-switching and later portfolio migrations are out
+      of scope.
 
   - project: gb.automation.smoketests.sudoku.poc
     github: GBrooks1970/gb.automation.smoketests.sudoku.poc
@@ -219,8 +226,7 @@ projects:
       Eleventh portfolio project, and the portfolio's first security lane. A DAST showcase: an
       OWASP ZAP passive baseline scan plus BDD exploit-confirmation scenarios against a pinned,
       intentionally-vulnerable OWASP Juice Shop 20.1.1 (MIT) training target -- not a real
-      product; its findings are expected and every surface is labelled as such. The
-      positive-detection gate asserts the expected security-misconfiguration and
+      product; its findings are expected and every surface is labelled       positive-detection gate asserts the expected security-misconfiguration and
       information-disclosure classes (a passive baseline detects no injection classes), while the
       three BDD scenarios (SQL-injection login bypass, sensitive-file exposure, and IDOR) supply
       the active-exploitation proof a passive scan cannot. Design and decisions D2.1a-D2.7a are in
@@ -256,11 +262,12 @@ projects:
       preferences, and generated stubs are never hand-edited. The plan of record is
       `auth-separation_implementation-kanban_v1.html`, a phased board of 51 AUTH-nnn tickets that opens
       offline; `docs/backlog.md` owns ticket status while the Kanban owns ticket content. Definition of
-      done is the README's 10-item production-readiness checklist, which `ADR-0005` explicitly does not pursue. Deviations: gates and standing norms are pinned in `auth-separation/docs/project-contract.md`, the first-checked gate source.
+      done is the README's 10-item production-readiness checklist, which `ADR-0005` explicitly does not pursue. Deviations: gates and standing norms are pinned in `auth-separation/docs/project-contract.md`, the first-checked gate source.ked gate source.
 
   - project: auth-separation-screenplay-poc
     github: GBrooks1970/auth-separation-screenplay-poc
-    status: active
+    status: resting
+    status_label: "Delivered 2026-08-18"
     presentation_role: showcase
     sdd: true
     multi_stack: true
@@ -270,10 +277,15 @@ projects:
       Thirteenth portfolio project and the portfolio's pedagogical multi-stack showcase of
       Specification-Driven Development (SDD) integrated with Behaviour-Driven Development (BDD) using
       the Screenplay design pattern. Demonstrates clean separation across Authentication (AuthN),
-      Authorization (AuthZ), and User Profile APIs. A canonical set of human-readable BDD Gherkin
-      feature files in `features/` serves as the single source of truth for specifications and test
-      execution. SUT implementation follows Strategy 3 (Specification-First Monorepo with Phased
-      Multi-Stack Parity).
+      Authorisation (AuthZ), and User Profile APIs. A canonical set of human-readable BDD Gherkin
+      feature files in `features/` (30 scenarios across 9 files) serves as the single source of truth for
+      specifications and test execution. SUT implementation follows Strategy 3 (Specification-First
+      Monorepo with Phased Multi-Stack Parity). Phases 0-2 delivered: Phase 0 established OpenAPI 3.1 &
+      AsyncAPI 3.0 contract schemas and canonical BDD Gherkin suite; Phase 1 delivered the Node.js
+      reference SUT cluster with Swagger UI (/docs) and Promise-native TypeScript Screenplay test
+      harness (hand-baked-screenplay-pattern); Phase 2 delivered polyglot SUT expansion with Python
+      FastAPI AuthZ and C# .NET 9 ASP.NET Core User Profile services, verifying 100% contract
+      interchangeability with identical green test execution across both backend stacks.
 
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
