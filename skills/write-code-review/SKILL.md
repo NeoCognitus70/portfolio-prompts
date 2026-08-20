@@ -1,6 +1,6 @@
 ---
 name: write-code-review
-description: "Write a comprehensive, evidence-backed CODE REVIEW of one onboarded test-automation-portfolio project against its own backlog, into the repo's .review/ folder (architecture, SOLID, ISTQB test strategy, CI, dependency/security/licence). Use to review a named portfolio project. Takes the project folder name. For an EXTERNAL or unfamiliar repo with no PROJECT, use analyze-repo instead."
+description: "Write a comprehensive, evidence-backed CODE REVIEW of one onboarded test-automation-portfolio project against its own backlog, into the repo's .review/ folder (architecture, SOLID, ISTQB test strategy, CI, dependency/security/licence). Use for review findings and remediation evidence. For a descriptive historical project dossier use write-project-in-depth-report; for an external repo use analyze-repo."
 ---
 
 Write a comprehensive code review of a **test-automation-portfolio** project.

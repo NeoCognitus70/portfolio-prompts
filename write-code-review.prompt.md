@@ -11,7 +11,10 @@ Use **this** prompt for an **onboarded portfolio project** reviewed against its 
 `docs/backlog.md`, with the review committed into `.review/`. For an **external or unfamiliar
 repository** you want to understand or evaluate as a standalone report (no `PROJECT=`, not
 registry-bound), use [github-repo-analysis-prompt.md](github-repo-analysis-prompt.md) instead — the
-two overlap on architecture/SOLID/test-strategy, but that one is the external/learning read.
+two overlap on architecture/SOLID/test-strategy, but that one is the external/learning read. For a
+**descriptive, historical dossier** of an onboarded project — intention, current design and outputs,
+full implementation chronology, status, and future direction without review findings — use
+[write-project-in-depth-report.prompt.md](write-project-in-depth-report.prompt.md).
 
 ---
 

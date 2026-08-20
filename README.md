@@ -42,7 +42,7 @@ required, the agent must ask, never guess.
 | `juice-shop-dast-automation` | GBrooks1970/juice-shop-dast-automation | Active | Showcase | Eleventh portfolio project, and the portfolio's first security lane. A DAST showcase: an OWASP ZAP passive baseline scan plus BDD exploit-confirmation scenarios against a pinned, intentionally-vulnerable OWASP Juice Shop 20.1.1 (MIT) training target -- not a real product; its findings are expected and every surface is labelled       positive-detection gate asserts the expected security-misconfiguration and information-disclosure classes (a passive baseline detects no injection classes), while the three BDD scenarios (SQL-injection login bypass, sensitive-file exposure, and IDOR) supply the active-exploitation proof a passive scan cannot. Design and decisions D2.1a-D2.7a are in docs/dast-lane-design.md; images are digest-pinned (Juice Shop 20.1.1, OWASP ZAP 2.17.0) and a pin bump re-triggers the Phase 0 probe (backlog DAST-M1). Phases 0-4 are complete and the labelled report is published at https://gbrooks1970.github.io/juice-shop-dast-automation/. Gates: per `ci.yml` — static `npm run verify`. npm run verify (typecheck + 21 unit tests) is Docker-free and is the orchestration-safe gate. The ZAP scan (npm run dast) and the BDD exploit confirmations (npm run bdd) are self-contained -- each boots the pinned Juice Shop container and tears it down -- and run in CI (.github/workflows/ci.yml), not in verify. The pass/fail signal is npm run scan:verdict (which parses report.json), not zap-baseline.py's exit code, which is always non-zero on this deliberately-vulnerable target.. |
 | `auth-separation` | GBrooks1970/auth-separation | Closed 2026-08-17 | Methodology | Twelfth portfolio project and the portfolio's Specification Driven Development exemplar: a complete, technology-agnostic spec set for separating authentication (AuthN, PCI scope), authorisation (AuthZ, SOC 2 scope) and user information (GDPR scope) into three independent services, with a separated decision audit store. The reviewed deliverable is the contracts -- three OpenAPI 3.1 documents, an AsyncAPI 3.0 event contract, Gherkin acceptance criteria in `features/`, three compliance documents, a database spec and a deployment-topology design doc -- and the first commit is the spec set alone, so the repository itself is the evidence that specification preceded code. Since `ADR-0005` it also builds a **bounded slice**: one generated 501 server stub per contract, which is the one piece of evidence a contracts-only repository cannot show. `AUTH-020` delivered AuthN's on 2026-08-17 -- generated in full and never hand-edited, with CI regenerating and failing on any drift; `AUTH-021` and `AUTH-022` follow. **Nothing behind the stubs is implemented** and the remaining 46 tickets are parked, so three endpoints returning 501 must not be described as a working auth system. Read `auth-separation_architecture_v1.md` before the three API specs; without it they read as three unrelated documents. Cross-service state travels only via the AsyncAPI events and there is no shared database -- both are spec constraints, not preferences, and generated stubs are never hand-edited. The plan of record is `auth-separation_implementation-kanban_v1.html`, a phased board of 51 AUTH-nnn tickets that opens offline; `docs/backlog.md` owns ticket status while the Kanban owns ticket content. Definition of done is the README's 10-item production-readiness checklist, which `ADR-0005` explicitly does not pursue. Deviations: gates and standing norms are pinned in `auth-separation/docs/project-contract.md`, the first-checked gate source.ked gate source. Gates: `npm run verify`, `dotnet test AuthSeparation.sln`, `npm run lint:generated`. |
 | `auth-separation-screenplay-poc` | GBrooks1970/auth-separation-screenplay-poc | Delivered 2026-08-18 | Showcase | Thirteenth portfolio project and the portfolio's pedagogical multi-stack showcase of Specification-Driven Development (SDD) integrated with Behaviour-Driven Development (BDD) using the Screenplay design pattern. Demonstrates clean separation across Authentication (AuthN), Authorisation (AuthZ), and User Profile APIs. A canonical set of human-readable BDD Gherkin feature files in `features/` (30 scenarios across 9 files) serves as the single source of truth for specifications and test execution. SUT implementation follows Strategy 3 (Specification-First Monorepo with Phased Multi-Stack Parity). Phases 0-2 delivered: Phase 0 established OpenAPI 3.1 & AsyncAPI 3.0 contract schemas and canonical BDD Gherkin suite; Phase 1 delivered the Node.js reference SUT cluster with Swagger UI (/docs) and Promise-native TypeScript Screenplay test harness (hand-baked-screenplay-pattern); Phase 2 delivered polyglot SUT expansion with Python FastAPI AuthZ and C# .NET 9 ASP.NET Core User Profile services, verifying 100% contract interchangeability with identical green test execution across both backend stacks. Gates: `npm run verify`. |
-| `portfolio-prompts` | NeoCognitus70/portfolio-prompts | Meta (self-onboarded) | Methodology | The prompt library itself. Single-project prompts (`resume-session`, `derive-worklist`, `loop-worklist`, `write-implementation-log`, `write-code-review`) may target `PROJECT=portfolio-prompts`. Not a target of the orchestration fan-outs. Gates: `python tools/check-library.py`. Deviations: backlog `portfolio-prompts/docs/backlog.md`. |
+| `portfolio-prompts` | NeoCognitus70/portfolio-prompts | Meta (self-onboarded) | Methodology | The prompt library itself. Single-project prompts (`resume-session`, `derive-worklist`, `loop-worklist`, `write-implementation-log`, `write-code-review`, `write-project-in-depth-report`) may target `PROJECT=portfolio-prompts`. Not a target of the orchestration fan-outs. Gates: `python tools/check-library.py`. Deviations: backlog `portfolio-prompts/docs/backlog.md`. |
 <!-- REGISTRY:END -->
 
 > **Generated table — do not hand-edit.** The rows between the markers above are generated from
@@ -85,9 +85,10 @@ The three `*-all-*` orchestrators (`derive-all-worklists`, `loop-all-worklists`,
 pass. Each starts with the registry-driven read-only
 [`workspace_preflight.py`](tools/workspace_preflight.py) safety report before launching any agent.
 `portfolio-status` is a read-only portfolio snapshot outside the lifecycle, while
-`github-repo-analysis-prompt.md` is general-purpose and not registry-bound (see below). After a
-code review, `triage-review-findings` is the optional explicit route from one named review to the
-next approved worklist.
+`write-project-in-depth-report` creates a read-only historical/design dossier for one registered
+project, and `github-repo-analysis-prompt.md` is general-purpose and not registry-bound (see below).
+After a code review, `triage-review-findings` is the optional explicit route from one named review
+to the next approved worklist.
 
 | Prompt | When to use | What it does |
 |---|---|---|
@@ -96,6 +97,7 @@ next approved worklist.
 | [resume-session.prompt.md](resume-session.prompt.md) | Start of a session | Loads the project's latest handover from `session-notes/` (or bootstraps from the backlog if none exists), cross-checks it against the backlog and the live repo, and proposes the resume point — then waits for confirmation. |
 | [write-implementation-log.prompt.md](write-implementation-log.prompt.md) | After a dev task | Writes a new immutable implementation log into `{PROJECT}/docs/implementation-logs/` from the project's template. |
 | [write-code-review.prompt.md](write-code-review.prompt.md) | Code review | Uses `templates/code-review.template.md` and the project's `docs/backlog.md` to write a comprehensive review into the repo's `.review/` folder. |
+| [write-project-in-depth-report.prompt.md](write-project-in-depth-report.prompt.md) | Understanding one registered project in depth | Keeps the target repo read-only, analyses every meaningful tracked text file plus full Git history, and writes a versioned Markdown/HTML dossier under `portfolio-in-depth-reports/{PROJECT}/`: intention, current design/output, implementation chronology, reconciled status, and documented versus inferred future direction. |
 | [triage-review-findings.prompt.md](triage-review-findings.prompt.md) | Turning one named review into planned work | Reads the named review, deduplicates and backlog-checks its findings, presents prioritised candidates for explicit user approval, then writes the canonical root-tracked portfolio worklist without actioning the project. |
 | [review-all-projects.prompt.md](review-all-projects.prompt.md) | Reviewing the whole portfolio | Orchestration fan-out, **evidence-only**: one parallel sub-agent per registry project, each following write-code-review for its project (review artefacts committed on a branch + PR, never merged); collates top findings into a cross-portfolio synthesis of common themes and highest-severity issues. |
 | [derive-worklist.prompt.md](derive-worklist.prompt.md) | Preparing work before a loop | Derivation only, **no actioning**: orients from handover + backlog, derives and cross-checks the items, writes root-tracked `WORKLIST_{PROJECT}.md` in exactly the format the loop consumes, and reports a detailed per-item breakdown in chat for review. |
@@ -110,7 +112,7 @@ next approved worklist.
 
 | Prompt | When to use | What it does |
 |---|---|---|
-| [github-repo-analysis-prompt.md](github-repo-analysis-prompt.md) | Understanding or evaluating **any** repository (typically one outside this portfolio) | Standalone, evidence-based, pedagogical technical report on a repo by URL or path: purpose, architecture, data flow, SOLID, an ISTQB-aligned test-strategy review, a dependency/security/licence pass, risks, and an improvement roadmap. Takes **no `PROJECT=`** and is not bound to the registry. Depth-controlled (`summary`/`standard`/`deep-dive`). For an *onboarded* portfolio project reviewed against its own backlog into `.review/`, use `write-code-review.prompt.md` instead. |
+| [github-repo-analysis-prompt.md](github-repo-analysis-prompt.md) | Understanding or evaluating **any** repository (typically one outside this portfolio) | Standalone, evidence-based, pedagogical technical report on a repo by URL or path: purpose, architecture, data flow, SOLID, an ISTQB-aligned test-strategy review, a dependency/security/licence pass, risks, and an improvement roadmap. Takes **no `PROJECT=`** and is not bound to the registry. Depth-controlled (`summary`/`standard`/`deep-dive`). For an onboarded project use `write-code-review` for findings or `write-project-in-depth-report` for the descriptive historical dossier. |
 
 **Conventions the prompts rely on** (full detail in [project-layout.md](project-layout.md)):
 - Every orchestration fan-out first runs `python <LIBRARY_ROOT>/tools/workspace_preflight.py` after
@@ -120,6 +122,10 @@ next approved worklist.
 - Handovers live in the root support repository's `../session-notes/`, named
   `{PROJECT}_session-notes_v{N}_{YYYYMMDD}T{HHMM}Z.{md,html}`. The Markdown/HTML pairs are tracked
   there; only generated `session-notes/manifest.json` remains untracked.
+- In-depth reports live in the root support repository's
+  `../portfolio-in-depth-reports/{PROJECT}/`, named
+  `{PROJECT}_in-depth-report_v{N}_{YYYYMMDD}T{HHMM}Z.{md,html}`. Markdown is authoritative; HTML is
+  generated mechanically; the target project remains read-only.
 - Worklists live at the portfolio root as root-tracked `WORKLIST_{PROJECT}.md` control records;
   they never enter a target project's history.
 - Implementation logs live **inside each repo** at
@@ -160,6 +166,8 @@ Read and follow portfolio-prompts/write-implementation-log.prompt.md using PROJE
 
 Read and follow portfolio-prompts/write-code-review.prompt.md using PROJECT=gb.automation.smoketests.sudoku.poc
 
+Read and follow portfolio-prompts/write-project-in-depth-report.prompt.md using PROJECT=calculator-screenplay-bdd
+
 Read and follow portfolio-prompts/triage-review-findings.prompt.md using PROJECT=calculator-screenplay-bdd REVIEW=.review/CODE_REVIEW_<agent>_v<N>_<timestamp>
 
 Read and follow portfolio-prompts/derive-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
@@ -199,6 +207,7 @@ Claude Code uses slash-style namespaced invocations such as
 ```text
 Use $portfolio-prompts:resume-session for calculator-screenplay-bdd.
 Use $portfolio-prompts:triage-review-findings for calculator-screenplay-bdd with REVIEW=<path>.
+Use $portfolio-prompts:write-project-in-depth-report for calculator-screenplay-bdd.
 Use $portfolio-prompts:analyze-repo to analyse <repo-url-or-path> at standard depth.
 ```
 
