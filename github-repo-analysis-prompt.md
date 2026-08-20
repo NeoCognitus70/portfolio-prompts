@@ -11,8 +11,11 @@ takes **no `PROJECT=`** — its target is any repo by URL or local path. Use it 
 external codebase you want to understand or evaluate for adoption, and where the deliverable is a
 standalone report. For an *onboarded portfolio project* reviewed against its own `docs/backlog.md`
 and committed into `.review/`, use [write-code-review.prompt.md](write-code-review.prompt.md)
-instead — the two overlap on architecture/SOLID/test-strategy, but that one is the source-of-truth
-review, this one is the external/learning read.
+instead. For a descriptive, historical account of one onboarded project's intention, design,
+outputs, implementation chronology, current state, and future direction, use
+[write-project-in-depth-report.prompt.md](write-project-in-depth-report.prompt.md). The three
+workflows deliberately separate external learning/adoption analysis, portfolio code review, and
+portfolio project documentation.
 
 ---
 

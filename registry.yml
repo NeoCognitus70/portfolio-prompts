@@ -295,8 +295,9 @@ projects:
     gates: ["python tools/check-library.py"]   # PP-15 self-gate (docs-only; no build)
     notes: >-
       The prompt library itself. Single-project prompts (`resume-session`, `derive-worklist`,
-      `loop-worklist`, `write-implementation-log`, `write-code-review`) may target
-      `PROJECT=portfolio-prompts`. Not a target of the orchestration fan-outs.
+      `loop-worklist`, `write-implementation-log`, `write-code-review`,
+      `write-project-in-depth-report`) may target `PROJECT=portfolio-prompts`. Not a target of the
+      orchestration fan-outs.
 
 # ---------------------------------------------------------------------------
 # Support repositories are deliberately outside the PROJECT registry and orchestration fan-outs.

@@ -199,6 +199,12 @@ npx tsc --noEmit
   support repository, outside every target project's history. One worklist exists per project; a
   `loop-worklist` invocation or scheduled iteration binds to exactly one. A target-project commit
   must never absorb a root worklist change.
+- **In-depth project reports:**
+  `portfolio-in-depth-reports/{PROJECT}/{PROJECT}_in-depth-report_v{N}_{YYYYMMDD}T{HHMM}Z.{md,html}`
+  — paired, versioned descriptive records tracked by the portfolio root support repository, never by
+  the target project. The Markdown is the content source and the HTML is generated mechanically.
+  Version sequences are per project and compared numerically. The reporting workflow keeps the
+  target repository read-only and separates documented future direction from labelled inference.
 - **Shared templates:** `templates/` at the portfolio root — project-agnostic scaffolding
   (backlog, implementation log, code review, ADR, etc.).
 - **Prompts:** this folder (`portfolio-prompts/`), its own git repository.

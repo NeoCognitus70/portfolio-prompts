@@ -14,6 +14,7 @@ the skill adds triggering, input handling, UI metadata, and invocation policy.
 | `loop-worklist` | `loop-worklist.prompt.md` | project, optional worklist source | Explicit-only; execute one item per invocation or iteration |
 | `write-implementation-log` | `write-implementation-log.prompt.md` | project | After a development task |
 | `write-code-review` | `write-code-review.prompt.md` | project | Review an onboarded project |
+| `write-project-in-depth-report` | `write-project-in-depth-report.prompt.md` | project, optional output root/cut-off/audience | Versioned Markdown/HTML project dossier; target repo read-only |
 | `triage-review-findings` | `triage-review-findings.prompt.md` | project and review path | Review findings to approved worklist; no actioning |
 | `write-handover` | `write-handover.prompt.md` | project | End of a session |
 | `close-project` | `close-project.prompt.md` | project | Explicit-only; final session |
@@ -64,6 +65,7 @@ Invoke Codex skills with `$` mentions:
 ```text
 Use $portfolio-prompts:resume-session for calculator-screenplay-bdd.
 Use $portfolio-prompts:loop-worklist to execute the next item for calculator-screenplay-bdd.
+Use $portfolio-prompts:write-project-in-depth-report for calculator-screenplay-bdd.
 Use $portfolio-prompts:portfolio-status to report the current portfolio state.
 ```
 
