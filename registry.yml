@@ -79,25 +79,22 @@ projects:
       Provider-switching Phases 0-1 completed 2026-08-17 as HBSP-28..33. The dependency-free v0.3.0
       release supplies the compatibility baseline, portable Question/ability seams, extensible event
       envelope, conformance kit, and immutable ESM/CommonJS distribution. Zero provider items remain;
-      Calculator Phase 2 was promoted in its owning backlog on 2026-08-18, while later portfolio
-      migrations remain unpromoted.
+      Calculator Phase 2 completed on 2026-08-19, while later portfolio migrations remain unpromoted.
 
   - project: calculator-screenplay-bdd
     github: NeoCognitus70/calculator-screenplay-bdd
-    status: active
+    status: resting
+    status_label: "Closed 2026-08-19"
     presentation_role: showcase
     gates: ["npm run verify"]
     orchestration_target: true
-    couples_with:
-      project: hand-baked-screenplay-pattern
-      reason: prepare:screenplay installs and builds inside the sibling checkout
-      order: provider-first
     notes: >-
-      Active provider-switching Phase 2 pilot, promoted 2026-08-18 as four dependency-ordered MEDIUM
-      items CAL-22..25: pin the v0.3.0 provider artefact, introduce one Calculator composition gateway,
-      prove a bounded alternate-provider REST profile, then gate and document the evidence. The full
-      suite remains hand-baked by default; runtime hot-switching and later portfolio migrations are out
-      of scope.
+      Closed 2026-08-19 (terminal handover v5 FINAL) with zero outstanding backlog items.
+      Provider-switching Phase 2 CAL-22..25 is complete: the consumer pins immutable v0.3.0, owns one
+      static composition gateway and alternate provider, and permanently gates a bounded nine-check
+      dual-provider REST/conformance profile before the 42-test remainder. The project no longer
+      requires a sibling checkout. Runtime hot-switching, report parity, and later provider-switching
+      phases remain unpromoted. Static API docs: https://neocognitus70.github.io/calculator-screenplay-bdd/.
 
   - project: gb.automation.smoketests.sudoku.poc
     github: GBrooks1970/gb.automation.smoketests.sudoku.poc
