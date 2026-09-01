@@ -324,6 +324,19 @@ Specific requirements:
 - Explain why a design or historical change matters, not merely what a file contains.
 - Avoid generic recommendations, repeated evidence, and review-style ratings.
 
+## Step 9 — Update the master reports index
+
+After generating the project report pair (`.md` and `.html`), refresh the master documentation hub
+index at the root of the reports archive:
+
+1. Execute the index generator tool from the repository root:
+   ```bash
+   python portfolio-prompts/tools/generate_in_depth_reports_index.py
+   ```
+2. Confirm that `<PORTFOLIO_ROOT>/<OUTPUT_ROOT>/index.html` and `index.json` are regenerated and
+   include the newly generated report entry with matching title, slug, version, creation timestamp,
+   tags, and relative links.
+
 ## Validation
 
 Before finishing:
@@ -339,15 +352,19 @@ Before finishing:
    HTML body, every required Markdown heading rendered, the HTML is a complete standalone document,
    the pair contains the same information, generation left no temporary files, and no earlier report
    was overwritten.
+8. Confirm the master reports index (`portfolio-in-depth-reports/index.html` and `index.json`) was
+   regenerated and includes the new report pair.
 
 ## Finish by reporting
 
 Report:
 
-- full paths to both files;
+- full paths to both report files;
+- path and update confirmation for `portfolio-in-depth-reports/index.html` and `index.json`;
 - report version, source revision, and evidence cut-off;
 - meaningful file/content-area coverage and exclusions;
 - main historical phases identified;
 - authoritative future-work position and number of inferred opportunities;
 - any unavailable or contradictory evidence; and
 - confirmation that the target project repository was unchanged.
+
