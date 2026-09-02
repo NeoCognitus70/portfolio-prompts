@@ -153,15 +153,36 @@ def parse_report_file(html_file: Path, md_file: Path, project_dir_name: str, pre
     elif "hand-baked" in project_slug:
         meta["tags"] = ["TypeScript", "Zero-Dependency", "Screenplay Engine", "Architecture Reference", "ESM/CommonJS", "Teaching Reference"]
         meta["discipline"] = "Architecture Reference"
-    elif "auth-separation" in project_slug:
+    elif project_slug == "auth-separation-screenplay-poc":
         meta["tags"] = ["TypeScript", "Serenity/JS", "Playwright", "Cucumber", "WireMock", "Docker Compose", "Multi-Service"]
         meta["discipline"] = "Multi-Service Web E2E"
+    elif project_slug == "auth-separation":
+        meta["tags"] = ["SDD", "OpenAPI 3.1", "AsyncAPI 3.0", "Gherkin Specs", "Multi-Service", "Generated Stubs"]
+        meta["discipline"] = "Specification-Driven Architecture"
     elif "calculator" in project_slug:
         meta["tags"] = ["TypeScript", "Serenity/JS", "Cucumber", "Hand-Baked Provider", "Dual-Provider", "Zero-Browser"]
         meta["discipline"] = "Domain BDD Screenplay"
     elif "orangehrm" in project_slug:
         meta["tags"] = ["TypeScript", "Serenity/JS", "Playwright", "Cucumber", "Docker Compose", "MySQL", "Web UI E2E"]
         meta["discipline"] = "End-to-End Web UI"
+    elif "magento" in project_slug:
+        meta["tags"] = ["TypeScript", "Serenity/JS", "Playwright", "Cucumber", "Pre-Baked Docker", "Knockout.js", "Reference Project"]
+        meta["discipline"] = "E2E Web UI · Reference Project"
+    elif "bfx" in project_slug:
+        meta["tags"] = ["WebSocket", "TypeScript", "Cypress", "Cucumber BDD", "Screenplay", "CRC32 Checksum", "Real-Time Streaming"]
+        meta["discipline"] = "Real-Time Streaming & SDD"
+    elif "juice-shop" in project_slug:
+        meta["tags"] = ["DAST", "OWASP ZAP", "OWASP Juice Shop", "TypeScript", "Cucumber BDD", "Security Testing", "Docker"]
+        meta["discipline"] = "Security & DAST Automation"
+    elif "mobile-forex" in project_slug:
+        meta["tags"] = ["Mobile Web", "Playwright", "Device Emulation", "Screenplay", "Cucumber BDD", "TypeScript", "Vitest"]
+        meta["discipline"] = "Mobile Web & Visual Testing"
+    elif "markdown-renderer" in project_slug:
+        meta["tags"] = ["Vanilla JS", "Zero-Dependency", "Web Component", "Markdown", "Browser-Native", "HTML5"]
+        meta["discipline"] = "Browser Application & Tooling"
+    elif "portfolio-prompts" in project_slug:
+        meta["tags"] = ["Prompt Engineering", "Quality Governance", "Python Tooling", "Process Automation", "Documentation"]
+        meta["discipline"] = "Methodology & Meta Framework"
 
     # Set GitHub properly for NeoCognitus70 projects if needed
     if "hand-baked" in project_slug or "calculator" in project_slug:
