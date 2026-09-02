@@ -197,12 +197,17 @@ projects:
       Ninth portfolio project. ParaBank (Parasoft, Apache-2.0) as a pinned, Docker-backed
       banking SUT (never committed here; fetched at build). Two lanes: Serenity/JS + Playwright +
       Cucumber UI journeys (A1-A5) and API-first stateful BDD with a portfolio-first REST-SOAP
-      parity check (B1-B4); the current baseline is 14 API and 8 UI scenarios plus 17
-      SUT-independent unit tests. Phased delivery PB-P0..P5 and PB-CODEX-01..10 review remediation
-      are complete; the project remains active for LOW risk maintenance in docs/backlog.md v19.
-      PBR-03 is immediately actionable; PBR-01, PBR-02, PBR-04, and PBR-05 are trigger-gated.
-      Decisions are in docs/decision-register.md (DR-PB-01..10); latest handover is v4 in
-      session-notes/.
+      parity check (B1-B4); the current baseline is 14 API and 8 UI scenarios plus 36
+      SUT-independent unit tests. Phased delivery PB-P0..P5, the PB-CODEX-01..10 review
+      remediation and the PB-PIN-01..04 maintenance cycle are all complete (docs/backlog.md v28).
+      The project stays active because three trigger-gated LOW risks remain open: PBR-01, PBR-04
+      and PBR-05, each waiting on a future upstream SUT pin bump (DR-PB-02). PBR-02, PBR-03,
+      PBR-06 and PBR-07 are resolved. Two lane-behaviour facts a fan-out must not re-derive:
+      under DR-PB-11 container-image registry drift only WARNS during a build and is fatal only
+      in `build-sut.ps1 -ValidateImagePinsOnly` and the scheduled `pin-drift` workflow, which
+      raises a tracking issue; and stale or unprovenanced performance evidence is withheld from
+      the published /perf/ page rather than failing the deploy. Decisions are in
+      docs/decision-register.md (DR-PB-01..11); latest handover is v5 in session-notes/.
 
   - project: juice-shop-dast-automation
     github: GBrooks1970/juice-shop-dast-automation
