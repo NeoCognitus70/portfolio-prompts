@@ -1,11 +1,10 @@
 # portfolio-prompts — Backlog
 
-**Version:** 20 — PP-34 opened 2026-09-03 to reconcile source/install drift introduced after the
-`0.3.0` release. Source now contains a new report-index generator plus prompt, registry and README
-changes while the installed cache still identifies and serves `0.3.0`. The source manifests are
-bumped to `0.4.0`, release/backlog consistency is self-gated, and the unrelated PP-33 identifier
-collision is removed. PP-00..PP-33 are resolved; PP-34 remains open until the owner updates the
-installed plugin after merge and source/cache parity is verified.
+**Version:** 21 — PP-34 resolved 2026-09-03 after release `0.4.0` merged through PR #74, passed its
+post-merge gate, was reinstalled from merged `main`, and matched all 66 release-bearing source files
+in the installed cache. PP-35 records two fresh-session packaging warnings separately: the
+four-entry `defaultPrompt` exceeds Codex's maximum of three, while the emitting plugin for two icon
+path warnings is not yet identified. PP-00..PP-34 are resolved; PP-35 is the sole outstanding item.
 **Last Updated:** 2026-09-03
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
@@ -35,37 +34,36 @@ test-automation projects, not the prompt library.
 
 ## Outstanding Items
 
-### PP-34: Reconcile the `0.3.0` source/install release drift — Score: 15
+### PP-35: Make Codex presentation metadata runtime-valid — Score: 8
 
-**Score:** Security (0) + Drift (9) + Maintenance (6) = **15 (MEDIUM)**
-**Status:** IMPLEMENTED 2026-09-03 — owner cache refresh and parity verification pending after merge.
-**Problem:** source and the installed cache both identify themselves as `0.3.0`, but source changed
-after that release. The cache differs from source in four relevant paths: `README.md`,
-`registry.yml`, `write-project-in-depth-report.prompt.md`, and the source-only
-`tools/generate_in_depth_reports_index.py`. The new generator is a minor-version change under the
-PP-33 convention, while the unchanged release identifier prevents reliable drift detection.
+**Score:** Security (0) + Drift (5) + Maintenance (3) = **8 (LOW)**
+**Status:** OPEN 2026-09-03 — recorded from the first fresh session after the `0.4.0` reinstall.
+**Problem:** the fresh Codex process emitted one warning directly attributable to this plugin:
+`.codex-plugin/plugin.json` declares four `interface.defaultPrompt` entries, but Codex supports a
+maximum of three and ignores the field. The same process emitted `icon_small` and `icon_large`
+warnings because paths containing `..` did not resolve beneath plugin `assets/`, but those messages
+did not name their source. A repository search found no icon declarations under this plugin's
+`.codex-plugin/`, `.agents/`, or `skills/`, so assigning that warning here without attribution would
+risk changing the wrong plugin.
 
-**Decision:** publish these accumulated source changes as `0.4.0`. The Claude manifest carries the
-plain release version; the Codex manifest carries the same release plus one fresh Codex cachebuster.
-The installed cache remains evidence of the previous release and is not edited in place.
+**Impact:** the core skills load and run, but Codex may omit the plugin's suggested entry prompts.
+The icon warnings add startup noise and may suppress another plugin's presentation assets.
 
 **Success Criteria:**
 
-- [x] Record the measured source/cache drift and the `0.4.0` SemVer decision.
-- [x] Bump `.claude-plugin/plugin.json` to `0.4.0` and `.codex-plugin/plugin.json` to the same
-      release with a fresh `+codex.<cachebuster>` suffix.
-- [x] Move resolved PP-32 and PP-33 records out of Outstanding, correct the risk summary, and remove
-      the unrelated PP-33 identifier from `tools/build-portfolio-reviews.py`.
-- [x] Add deterministic self-gate coverage for backlog-status consistency and manifest-version
-      parity.
-- [x] Run `python tools/check-library.py` successfully on the reconciled source.
-- [ ] After merge, the owner updates/reinstalls `portfolio-prompts@portfolio-prompts`; a new session
-      confirms the installed cache has the `0.4.0` release identity, all 13 registry projects, and
-      source/cache content parity.
+- [ ] Reduce `portfolio-prompts` to no more than three useful `defaultPrompt` entries without
+      removing the corresponding documented skills or invocation routes.
+- [ ] Extend the self-gate so a future manifest with more than three defaults fails before release.
+- [ ] Attribute the icon warnings to an exact installed plugin and source file. If they belong to
+      `portfolio-prompts`, move the referenced assets beneath its own `assets/` tree and use valid
+      paths; otherwise record the correct owner and leave this repository unchanged.
+- [ ] Treat any runtime-bearing manifest or asset repair as a patch release with matching Claude
+      and Codex versions plus one fresh Codex cachebuster.
+- [ ] Pass the full self-gate and plugin validation, merge through PR, reinstall, and confirm a new
+      Codex session emits neither warning attributable to `portfolio-prompts`.
 
-Completion evidence: local implementation is complete on `codex/reconcile-portfolio-prompts` and
-`python -B tools/check-library.py` passed on 2026-09-03. Installation evidence is deliberately
-deferred until the release is merged; PP-34 remains open.
+**Non-goal for the PP-34 closure:** no warning fix, manifest change, or version bump is included in
+the evidence-only closure patch.
 
 ---
 
@@ -74,12 +72,12 @@ deferred until the release is merged; PP-34 remains open.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 15 | **14 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33); **1 open** (PP-34) |
-| LOW (0–9) | 20 | **20 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30) — 0 open |
-| **Total Outstanding** | **1** | PP-34 (owner cache refresh pending after merge) |
-| Resolved | 34 | PP-00..PP-33 |
+| MEDIUM (10–19) | 15 | **15 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34) — 0 open |
+| LOW (0–9) | 21 | **20 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30); **1 open** (PP-35) |
+| **Total Outstanding** | **1** | PP-35 (Codex presentation-metadata warnings) |
+| Resolved | 35 | PP-00..PP-34 |
 
-**Outstanding, by suggested order:** PP-34 (owner cache refresh and parity verification after merge).
+**Outstanding, by suggested order:** PP-35 (runtime-valid Codex presentation metadata).
 
 ---
 
@@ -87,6 +85,47 @@ deferred until the release is merged; PP-34 remains open.
 
 Resolved items are kept as a record that the gap existed, verbatim as last written, grouped by the
 review cycle that produced them (newest first) and in item order within each group.
+
+### From the 2026-09-03 release-reconciliation cycle (PP-34)
+
+#### PP-34: Reconcile the `0.3.0` source/install release drift — Score: 15 ✅ Resolved 2026-09-03
+
+**Score:** Security (0) + Drift (9) + Maintenance (6) = **15 (MEDIUM)**
+**Status:** RESOLVED 2026-09-03 — release `0.4.0` merged, reinstalled and verified from a fresh
+Codex process.
+**Problem:** source and the installed cache both identified themselves as `0.3.0`, but source had
+changed after that release. The cache differed from source in four relevant paths: `README.md`,
+`registry.yml`, `write-project-in-depth-report.prompt.md`, and the source-only
+`tools/generate_in_depth_reports_index.py`. The new generator was a minor-version change under the
+PP-33 convention, while the unchanged release identifier prevented reliable drift detection.
+
+**Decision:** publish the accumulated source changes as `0.4.0`. The Claude manifest carries the
+plain release version; the Codex manifest carries the same release plus one Codex cachebuster.
+The installed cache is generated through the marketplace update flow rather than edited in place.
+
+**Success Criteria:**
+
+- [x] Record the measured source/cache drift and the `0.4.0` SemVer decision.
+- [x] Bump `.claude-plugin/plugin.json` to `0.4.0` and `.codex-plugin/plugin.json` to
+      `0.4.0+codex.20260903165138`.
+- [x] Move resolved PP-32 and PP-33 records out of Outstanding, correct the risk summary, and remove
+      the unrelated PP-33 identifier from `tools/build-portfolio-reviews.py`.
+- [x] Add deterministic self-gate coverage for backlog-status consistency and manifest-version
+      parity.
+- [x] Run `python -B tools/check-library.py` successfully on the reconciled source.
+- [x] Merge [PR #74](https://github.com/NeoCognitus70/portfolio-prompts/pull/74) as
+      `75e5c9066937ed6518329e3db37f905f68dc758d`; pass PR run `33784960239` and exact-merge `main`
+      run [`33785332613`](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/33785332613).
+- [x] Reinstall `portfolio-prompts@portfolio-prompts`; a fresh read-only Codex process loads
+      `0.4.0+codex.20260903165138`, reports all 13 registry projects, and the installed cache matches
+      all 66 release-bearing source files with zero missing, extra, or SHA-256-mismatched paths.
+
+Completion evidence: implementation commit `fcb6c5ccada77818073eb654d833ae44271fe5a0` merged through
+PR #74 as `75e5c9066937ed6518329e3db37f905f68dc758d` at 2026-09-03T17:34:06Z. The post-merge gate
+completed successfully at 2026-09-03T17:34:22Z. The marketplace reinstall reported the expected
+cache root, and fresh session `01a06867-ec9c-7a71-a878-a5a39e80ed2b` loaded its `portfolio-status`
+skill from that root. The runtime warnings discovered by that session do not reopen the resolved
+source/cache drift; PP-35 records them separately.
 
 ### From the 2026-08-10 plugin-version and licensing cycle (PP-32–PP-33)
 
