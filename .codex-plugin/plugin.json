@@ -1,6 +1,6 @@
 {
   "name": "portfolio-prompts",
-  "version": "0.4.0+codex.20260903165138",
+  "version": "0.4.1+codex.20260903212342",
   "description": "Session-lifecycle skills for the test-automation portfolio: onboarding, status, worklists, reviews, in-depth project reports, implementation logs, handovers, close-out, portfolio fan-outs, and repository analysis.",
   "author": {
     "name": "Gary Brooks",
@@ -32,7 +32,6 @@
     "defaultPrompt": [
       "Use $portfolio-prompts:portfolio-status to report the current portfolio state.",
       "Use $portfolio-prompts:resume-session to resume work on a named project.",
-      "Use $portfolio-prompts:write-project-in-depth-report to document a named project in depth.",
       "Use $portfolio-prompts:analyze-repo to analyse an unfamiliar repository."
     ]
   }
