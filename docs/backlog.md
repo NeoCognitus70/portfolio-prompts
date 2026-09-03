@@ -1,10 +1,10 @@
 # portfolio-prompts — Backlog
 
-**Version:** 21 — PP-34 resolved 2026-09-03 after release `0.4.0` merged through PR #74, passed its
-post-merge gate, was reinstalled from merged `main`, and matched all 66 release-bearing source files
-in the installed cache. PP-35 records two fresh-session packaging warnings separately: the
-four-entry `defaultPrompt` exceeds Codex's maximum of three, while the emitting plugin for two icon
-path warnings is not yet identified. PP-00..PP-34 are resolved; PP-35 is the sole outstanding item.
+**Version:** 22 — PP-35 implemented 2026-09-03 as patch release `0.4.1`: the Codex manifest now has
+three suggested prompts and the self-gate enforces Codex's runtime maximum. Controlled fresh-process
+probes attribute the separate icon warnings to the bundled `spreadsheets` plugin's
+`excel-live-control` skill, not this repository. Merge, reinstall and final fresh-process evidence
+remain before closure. PP-00..PP-34 are resolved; PP-35 is the sole outstanding item.
 **Last Updated:** 2026-09-03
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
@@ -37,33 +37,41 @@ test-automation projects, not the prompt library.
 ### PP-35: Make Codex presentation metadata runtime-valid — Score: 8
 
 **Score:** Security (0) + Drift (5) + Maintenance (3) = **8 (LOW)**
-**Status:** OPEN 2026-09-03 — recorded from the first fresh session after the `0.4.0` reinstall.
+**Status:** IMPLEMENTED 2026-09-03 — merge, reinstall and final fresh-process verification pending.
 **Problem:** the fresh Codex process emitted one warning directly attributable to this plugin:
 `.codex-plugin/plugin.json` declares four `interface.defaultPrompt` entries, but Codex supports a
 maximum of three and ignores the field. The same process emitted `icon_small` and `icon_large`
 warnings because paths containing `..` did not resolve beneath plugin `assets/`, but those messages
 did not name their source. A repository search found no icon declarations under this plugin's
 `.codex-plugin/`, `.agents/`, or `skills/`, so assigning that warning here without attribution would
-risk changing the wrong plugin.
+risk changing the wrong plugin. Controlled one-process overrides subsequently proved ownership:
+disabling only `spreadsheets@openai-primary-runtime` removed both icon warnings while leaving this
+plugin's default-prompt warning; disabling only `portfolio-prompts@portfolio-prompts` removed the
+default-prompt warning while leaving both icon warnings. The external fields are in
+`spreadsheets/skills/excel-live-control/agents/openai.yaml` and both point to
+`../spreadsheets/assets/file-spreadsheet.png`, which resolves outside that plugin's root `assets/`
+directory. The external plugin is not changed here.
 
 **Impact:** the core skills load and run, but Codex may omit the plugin's suggested entry prompts.
 The icon warnings add startup noise and may suppress another plugin's presentation assets.
 
 **Success Criteria:**
 
-- [ ] Reduce `portfolio-prompts` to no more than three useful `defaultPrompt` entries without
+- [x] Reduce `portfolio-prompts` to no more than three useful `defaultPrompt` entries without
       removing the corresponding documented skills or invocation routes.
-- [ ] Extend the self-gate so a future manifest with more than three defaults fails before release.
-- [ ] Attribute the icon warnings to an exact installed plugin and source file. If they belong to
+- [x] Extend the self-gate so a future manifest with more than three defaults fails before release.
+- [x] Attribute the icon warnings to an exact installed plugin and source file. If they belong to
       `portfolio-prompts`, move the referenced assets beneath its own `assets/` tree and use valid
       paths; otherwise record the correct owner and leave this repository unchanged.
-- [ ] Treat any runtime-bearing manifest or asset repair as a patch release with matching Claude
+- [x] Treat any runtime-bearing manifest or asset repair as a patch release with matching Claude
       and Codex versions plus one fresh Codex cachebuster.
 - [ ] Pass the full self-gate and plugin validation, merge through PR, reinstall, and confirm a new
       Codex session emits neither warning attributable to `portfolio-prompts`.
 
-**Non-goal for the PP-34 closure:** no warning fix, manifest change, or version bump is included in
-the evidence-only closure patch.
+**Implementation boundary:** retain `portfolio-status`, `resume-session`, and `analyze-repo` as the
+three broad entry prompts. `write-project-in-depth-report` remains a documented, callable skill; it
+is removed only from the optional suggestion list. Do not modify the externally owned spreadsheet
+plugin in this repository.
 
 ---
 

@@ -86,5 +86,21 @@ class ManifestVersionTests(unittest.TestCase):
         self.assertTrue(any("<release>+codex.<cachebuster>" in failure for failure in failures))
 
 
+class CodexDefaultPromptTests(unittest.TestCase):
+    def test_accepts_three_suggested_prompts(self) -> None:
+        failures = CHECK_LIBRARY.validate_codex_default_prompts(
+            {"defaultPrompt": ["Status", "Resume", "Analyse"]}
+        )
+
+        self.assertEqual(failures, [])
+
+    def test_rejects_more_than_three_suggested_prompts(self) -> None:
+        failures = CHECK_LIBRARY.validate_codex_default_prompts(
+            {"defaultPrompt": ["Status", "Resume", "Report", "Analyse"]}
+        )
+
+        self.assertTrue(any("maximum of 3" in failure for failure in failures))
+
+
 if __name__ == "__main__":
     unittest.main()

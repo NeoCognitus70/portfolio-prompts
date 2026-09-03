@@ -17,7 +17,8 @@ Checks:
   5. Internal links     — every relative Markdown link in the library's own docs resolves.
   6. Release metadata   — backlog state is internally consistent and Claude/Codex manifest
                           versions identify the same release.
-  7. Codex plugin       — the Codex manifest and per-skill UI/invocation policies are complete.
+  7. Codex plugin       — the Codex manifest and per-skill UI/invocation policies are complete,
+                          including the runtime maximum of three suggested prompts.
   8. Working norms      — the universal branch/PR policy is defined once in project-layout.md and
                           is not restated in operational prompts or skill bodies.
   9. Invocation paths   — active invocation examples use OS-neutral forward slashes.
@@ -362,6 +363,21 @@ def validate_plugin_manifest_versions(claude: dict, codex: dict) -> list[str]:
     return fails
 
 
+def validate_codex_default_prompts(interface: dict) -> list[str]:
+    """Return failures when suggested prompts cannot be ingested by Codex."""
+    prompts = interface.get("defaultPrompt")
+    if not isinstance(prompts, list) or not prompts:
+        return ["[codex-plugin] interface.defaultPrompt must be a non-empty list"]
+    if len(prompts) > 3:
+        return [
+            "[codex-plugin] interface.defaultPrompt has "
+            f"{len(prompts)} entries; Codex supports a maximum of 3"
+        ]
+    if any(not isinstance(prompt, str) or not prompt.strip() for prompt in prompts):
+        return ["[codex-plugin] interface.defaultPrompt entries must be non-empty strings"]
+    return []
+
+
 def check_release_metadata(fails: list[str]) -> None:
     backlog = (HERE / "docs" / "backlog.md").read_text(encoding="utf-8")
     fails.extend(validate_backlog_consistency(backlog))
@@ -405,6 +421,7 @@ def check_codex_plugin(fails: list[str]) -> None:
     ):
         if not interface.get(key):
             fails.append(f"[codex-plugin] plugin interface missing '{key}'")
+    fails.extend(validate_codex_default_prompts(interface))
 
     marketplace_path = HERE / ".agents" / "plugins" / "marketplace.json"
     if not marketplace_path.is_file():
