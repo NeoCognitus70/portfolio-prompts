@@ -15,13 +15,15 @@ Checks:
                           (delegates to `render-registry.py --check`).
   4. CI workflow        — the self-gate runs on PRs/main pushes with read-only permissions.
   5. Internal links     — every relative Markdown link in the library's own docs resolves.
-  6. Codex plugin       — the Codex manifest and per-skill UI/invocation policies are complete.
-  7. Working norms      — the universal branch/PR policy is defined once in project-layout.md and
+  6. Release metadata   — backlog state is internally consistent and Claude/Codex manifest
+                          versions identify the same release.
+  7. Codex plugin       — the Codex manifest and per-skill UI/invocation policies are complete.
+  8. Working norms      — the universal branch/PR policy is defined once in project-layout.md and
                           is not restated in operational prompts or skill bodies.
-  8. Invocation paths   — active invocation examples use OS-neutral forward slashes.
-  9. Worklist example   — the canonical example in project-layout.md parses as the documented format.
- 10. Workspace preflight — deterministic clean/dirty/behind/topic/missing-evidence scenarios pass.
- 11. Handover pairs     — every root session-notes Markdown handover has its HTML companion
+  9. Invocation paths   — active invocation examples use OS-neutral forward slashes.
+ 10. Worklist example   — the canonical example in project-layout.md parses as the documented format.
+ 11. Workspace preflight — deterministic clean/dirty/behind/topic/missing-evidence scenarios pass.
+ 12. Handover pairs     — every root session-notes Markdown handover has its HTML companion
                           (P-09; skipped in a standalone clone with no sibling session-notes/).
 
 Usage (from the portfolio-prompts/ directory):
@@ -49,6 +51,8 @@ REGISTRY = HERE / "registry.yml"
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
 ALLOWED_STATUSES = {"active", "resting", "meta"}
 ALLOWED_PRESENTATION_ROLES = {"showcase", "methodology", "hidden"}
+BACKLOG_ITEM_RE = re.compile(r"^#{3,4} (PP-\d+):", re.MULTILINE)
+CODEX_VERSION_RE = re.compile(r"^(?P<base>[^+]+)\+codex\.(?P<cachebuster>[a-z0-9-]+)$")
 
 # Markdown files that are the library's own docs (exclude node_modules and vendored trees).
 def library_docs() -> list[Path]:
@@ -275,6 +279,101 @@ def check_skills(fails: list[str]) -> None:
                     fails.append(f"[skills] {skill.relative_to(HERE)} delegates to missing '{prompt}'")
 
 
+def validate_backlog_consistency(text: str) -> list[str]:
+    """Return failures when backlog sections, statuses, and summary counts disagree."""
+    fails: list[str] = []
+    outstanding_marker = "## Outstanding Items"
+    risk_marker = "## Risk Summary"
+    resolved_marker = "## Resolved Items"
+    if outstanding_marker not in text or risk_marker not in text or resolved_marker not in text:
+        return ["[release-metadata] backlog must contain Outstanding, Risk Summary, and Resolved sections"]
+
+    outstanding = text.split(outstanding_marker, 1)[1].split(risk_marker, 1)[0]
+    risk = text.split(risk_marker, 1)[1].split(resolved_marker, 1)[0]
+    resolved = text.split(resolved_marker, 1)[1]
+    outstanding_ids = re.findall(r"^### (PP-\d+):", outstanding, re.MULTILINE)
+    resolved_ids = re.findall(r"^#### (PP-\d+):", resolved, re.MULTILINE)
+
+    all_ids = BACKLOG_ITEM_RE.findall(text)
+    duplicates = sorted({item_id for item_id in all_ids if all_ids.count(item_id) > 1})
+    if duplicates:
+        fails.append(
+            "[release-metadata] backlog item IDs must be unique: " + ", ".join(duplicates)
+        )
+
+    blocks = re.split(r"(?=^### PP-\d+:)", outstanding, flags=re.MULTILINE)[1:]
+    for block in blocks:
+        item_id = re.match(r"^### (PP-\d+):", block).group(1)
+        status = re.search(r"^\*\*Status:\*\*\s*(.+)$", block, re.MULTILINE)
+        if status is None:
+            fails.append(f"[release-metadata] outstanding item {item_id} has no Status field")
+        elif re.search(r"\b(resolved|complete|closed)\b", status.group(1), re.IGNORECASE):
+            fails.append(
+                f"[release-metadata] outstanding item {item_id} has terminal status "
+                f"'{status.group(1).strip()}'"
+            )
+
+    total = re.search(
+        r"^\| \*\*Total Outstanding\*\* \| \*\*(\d+)\*\* \|", risk, re.MULTILINE
+    )
+    if total is None or int(total.group(1)) != len(outstanding_ids):
+        stated = total.group(1) if total else "missing"
+        fails.append(
+            f"[release-metadata] Total Outstanding is {stated}; found {len(outstanding_ids)} item(s)"
+        )
+
+    resolved_total = re.search(r"^\| Resolved \| (\d+) \|", risk, re.MULTILINE)
+    if resolved_total is None or int(resolved_total.group(1)) != len(resolved_ids):
+        stated = resolved_total.group(1) if resolved_total else "missing"
+        fails.append(
+            f"[release-metadata] Resolved is {stated}; found {len(resolved_ids)} resolved item(s)"
+        )
+
+    order = re.search(r"^\*\*Outstanding, by suggested order:\*\*\s*(.+)$", risk, re.MULTILINE)
+    ordered_ids = re.findall(r"PP-\d+", order.group(1)) if order else []
+    if ordered_ids != outstanding_ids:
+        fails.append(
+            "[release-metadata] suggested-order IDs must exactly match Outstanding Items"
+        )
+    return fails
+
+
+def validate_plugin_manifest_versions(claude: dict, codex: dict) -> list[str]:
+    """Return failures when the two plugin manifests identify different releases."""
+    fails: list[str] = []
+    claude_version = claude.get("version")
+    codex_version = codex.get("version")
+    if not isinstance(claude_version, str) or not claude_version:
+        fails.append("[release-metadata] Claude plugin manifest has no version")
+        return fails
+    if not isinstance(codex_version, str) or not codex_version:
+        fails.append("[release-metadata] Codex plugin manifest has no version")
+        return fails
+    match = CODEX_VERSION_RE.fullmatch(codex_version)
+    if match is None:
+        fails.append(
+            "[release-metadata] Codex version must be '<release>+codex.<cachebuster>'"
+        )
+    elif match.group("base") != claude_version:
+        fails.append(
+            f"[release-metadata] manifest release mismatch: Claude {claude_version}, "
+            f"Codex {match.group('base')}"
+        )
+    return fails
+
+
+def check_release_metadata(fails: list[str]) -> None:
+    backlog = (HERE / "docs" / "backlog.md").read_text(encoding="utf-8")
+    fails.extend(validate_backlog_consistency(backlog))
+    try:
+        claude = json.loads((HERE / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))
+        codex = json.loads((HERE / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        fails.append(f"[release-metadata] cannot read plugin manifests: {exc}")
+        return
+    fails.extend(validate_plugin_manifest_versions(claude, codex))
+
+
 def check_codex_plugin(fails: list[str]) -> None:
     manifest_path = HERE / ".codex-plugin" / "plugin.json"
     if not manifest_path.is_file():
@@ -485,6 +584,7 @@ def main() -> int:
         check_ci_workflow,
         check_internal_links,
         check_skills,
+        check_release_metadata,
         check_codex_plugin,
         check_working_norms,
         check_invocation_paths,
@@ -499,8 +599,8 @@ def main() -> int:
             print("  - " + f)
         return 1
     print("check-library: PASS (registry classification, lifecycle/presentation semantics, README generated, "
-          "least-privilege CI, internal links, skills, Codex plugin, working norms, invocation paths, "
-          "worklist example, workspace preflight scenarios, handover pairs)")
+          "least-privilege CI, internal links, skills, release metadata, Codex plugin, working norms, "
+          "invocation paths, worklist example, workspace preflight scenarios, handover pairs)")
     return 0
 
 
