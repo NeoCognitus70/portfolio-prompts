@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generator script for portfolio-reviews (PP-33).
+"""Generator script for portfolio-reviews.
 
 Discovers the latest code review bundle for each showcase project registered in registry.yml,
 extracts metadata and executive summaries, and renders:

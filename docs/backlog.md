@@ -1,12 +1,12 @@
 # portfolio-prompts — Backlog
 
-**Version:** 19 — PP-33 opened and resolved 2026-08-10: the installed plugin cache was serving a
-stale snapshot (10 registry rows vs 11, a missing prompt/skill/tool) while reporting the same
-version as source, because the version string was never bumped. Both manifests are now `0.2.0` and
-the bump-on-content-change convention is recorded; one criterion remains owner-side (reinstall the
-plugin). v18 resolved PP-32 — the owner selected **MIT**, `LICENSE` and a scoped README **Licence**
-section are in place. PP-00..PP-33 are otherwise all resolved.
-**Last Updated:** 2026-08-10
+**Version:** 20 — PP-34 opened 2026-09-03 to reconcile source/install drift introduced after the
+`0.3.0` release. Source now contains a new report-index generator plus prompt, registry and README
+changes while the installed cache still identifies and serves `0.3.0`. The source manifests are
+bumped to `0.4.0`, release/backlog consistency is self-gated, and the unrelated PP-33 identifier
+collision is removed. PP-00..PP-33 are resolved; PP-34 remains open until the owner updates the
+installed plugin after merge and source/cache parity is verified.
+**Last Updated:** 2026-09-03
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills, and its update review
@@ -35,14 +35,69 @@ test-automation projects, not the prompt library.
 
 ## Outstanding Items
 
-### PP-33: Bump the plugin version whenever library content changes — Score: 12
+### PP-34: Reconcile the `0.3.0` source/install release drift — Score: 15
+
+**Score:** Security (0) + Drift (9) + Maintenance (6) = **15 (MEDIUM)**
+**Status:** IMPLEMENTED 2026-09-03 — owner cache refresh and parity verification pending after merge.
+**Problem:** source and the installed cache both identify themselves as `0.3.0`, but source changed
+after that release. The cache differs from source in four relevant paths: `README.md`,
+`registry.yml`, `write-project-in-depth-report.prompt.md`, and the source-only
+`tools/generate_in_depth_reports_index.py`. The new generator is a minor-version change under the
+PP-33 convention, while the unchanged release identifier prevents reliable drift detection.
+
+**Decision:** publish these accumulated source changes as `0.4.0`. The Claude manifest carries the
+plain release version; the Codex manifest carries the same release plus one fresh Codex cachebuster.
+The installed cache remains evidence of the previous release and is not edited in place.
+
+**Success Criteria:**
+
+- [x] Record the measured source/cache drift and the `0.4.0` SemVer decision.
+- [x] Bump `.claude-plugin/plugin.json` to `0.4.0` and `.codex-plugin/plugin.json` to the same
+      release with a fresh `+codex.<cachebuster>` suffix.
+- [x] Move resolved PP-32 and PP-33 records out of Outstanding, correct the risk summary, and remove
+      the unrelated PP-33 identifier from `tools/build-portfolio-reviews.py`.
+- [x] Add deterministic self-gate coverage for backlog-status consistency and manifest-version
+      parity.
+- [x] Run `python tools/check-library.py` successfully on the reconciled source.
+- [ ] After merge, the owner updates/reinstalls `portfolio-prompts@portfolio-prompts`; a new session
+      confirms the installed cache has the `0.4.0` release identity, all 13 registry projects, and
+      source/cache content parity.
+
+Completion evidence: local implementation is complete on `codex/reconcile-portfolio-prompts` and
+`python -B tools/check-library.py` passed on 2026-09-03. Installation evidence is deliberately
+deferred until the release is merged; PP-34 remains open.
+
+---
+
+## Risk Summary
+
+| Priority | Count | Status Distribution |
+|---|---|---|
+| HIGH (20–30) | 0 | — |
+| MEDIUM (10–19) | 15 | **14 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33); **1 open** (PP-34) |
+| LOW (0–9) | 20 | **20 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30) — 0 open |
+| **Total Outstanding** | **1** | PP-34 (owner cache refresh pending after merge) |
+| Resolved | 34 | PP-00..PP-33 |
+
+**Outstanding, by suggested order:** PP-34 (owner cache refresh and parity verification after merge).
+
+---
+
+## Resolved Items
+
+Resolved items are kept as a record that the gap existed, verbatim as last written, grouped by the
+review cycle that produced them (newest first) and in item order within each group.
+
+### From the 2026-08-10 plugin-version and licensing cycle (PP-32–PP-33)
+
+#### PP-33: Bump the plugin version whenever library content changes — Score: 12 ✅ Resolved 2026-08-10
 
 **Score:** Security (0) + Drift (8) + Maintenance (4) = **12 (MEDIUM)**
 **Status:** RESOLVED 2026-08-10 — version bumped 0.1.0 → 0.2.0; convention recorded below.
 **Problem:** the installed plugin cache served a **stale snapshot** of the library while reporting
 the same version as source. Both `.claude-plugin/plugin.json` and the cached copy read `0.1.0`, yet
-their contents had diverged materially — so an install has no signal that it is out of date and
-never refreshes.
+their contents had diverged materially — so an install had no signal that it was out of date and
+never refreshed.
 
 Measured drift at the point of discovery (cache `0.1.0` vs `main`):
 
@@ -56,15 +111,15 @@ Measured drift at the point of discovery (cache `0.1.0` vs `main`):
 | Missing | `LICENSE` (PP-32), two compliance docs, one implementation log |
 
 **Impact:** a skill invoked from the installed plugin resolves its library root to the cache, so any
-portfolio fan-out run that way silently **skips `juice-shop-dast-automation`** and applies a
-superseded `project-layout.md`. Discovered when a `portfolio-status` run reported 10 registry
-projects while the workspace registry held 11.
+portfolio fan-out run that way silently **skipped `juice-shop-dast-automation`** and applied a
+superseded `project-layout.md`. The drift was discovered when a `portfolio-status` run reported 10
+registry projects while the workspace registry held 11.
 
 **Convention (adopted 2026-08-10):** the plugin version in **both** `.claude-plugin/plugin.json` and
 `.codex-plugin/plugin.json` is bumped in the same PR as any change to library content — prompts,
 skills, `registry.yml`, `project-layout.md`, or `tools/`. Patch for fixes and wording, minor for a
-new/removed prompt, skill, tool, or registry row. Version is the only refresh signal an installed
-copy gets; leaving it unchanged is what created this drift.
+new/removed prompt, skill, tool, or registry row. Version is the refresh signal for an installed
+copy; leaving it unchanged is what created this drift.
 
 **Success Criteria:**
 
@@ -72,80 +127,39 @@ copy gets; leaving it unchanged is what created this drift.
 - [x] Both plugin manifests bumped `0.1.0` → `0.2.0` (a minor bump — the interval added a prompt, a
       skill, a tool and a registry row).
 - [x] The bump-on-content-change convention is recorded here for successors.
-- [ ] Owner reinstalls/updates the plugin so the cache picks up `0.2.0`, and a subsequent
-      `portfolio-status` reports **11** registry projects rather than 10.
+- [x] Owner updated the plugin; the installed `0.3.0+codex.20260820111743` cache observed on
+      2026-09-03 contains all **13** current registry projects. Later source drift is tracked
+      separately as PP-34.
 
-Completion evidence: version bumped and convention recorded; self-gate `python tools/check-library.py`
-PASS. The final criterion needs an owner-side plugin update — an agent cannot refresh the install
-from inside a session.
+Completion evidence: the version convention and manifest bump passed the self-gate on 2026-08-10;
+the later installed `0.3.0` cache confirms the owner-side refresh occurred. PP-34 prevents later
+source changes from being misreported as unfinished PP-33 work.
 
----
-
-### PP-32: Choose and add an explicit repository licence — Score: 11
+#### PP-32: Choose and add an explicit repository licence — Score: 11 ✅ Resolved 2026-08-10
 
 **Score:** Security (0) + Drift (4) + Maintenance (7) = **11 (MEDIUM)**
 **Status:** RESOLVED 2026-08-10 — **owner selected MIT.**
-**Decision (owner, 2026-08-10):** **MIT**, after a cross-portfolio licence survey: MIT is already
+**Decision (owner, 2026-08-10):** **MIT**, after a cross-portfolio licence survey: MIT was already
 the majority licence across the portfolio (6 of 11 project repos: magento, bfx-ws-screenplay,
-mobile-forex, parabank, juice-shop, portfolio-landing; Apache-2.0 x3, ISC x1, GPL-3.0 x1). It is
-the lowest-friction fit for a repository that is ~85% prose (57 `.md` against 8 `.py` / 5 `.js`),
-covers prompts and tooling under one grant, and preserves attribution through the retained
-copyright notice. Apache-2.0, a CC-BY-4.0/MIT split, and retaining all rights were considered and
-declined — the patent/trademark machinery is near-irrelevant for prompt text, a per-directory
-boundary adds governance cost for no practical gain, and withholding reuse rights would contradict
-the README's own "reusable" framing and the repository's `methodology` presentation role.
-**Problem:** `portfolio-prompts` is now public and is described as a reusable prompt library, but it
-has no `LICENSE` file and GitHub reports no detected licence. Public visibility permits reading and
-forking through GitHub; it does not grant downstream users permission to reuse the work. Selecting
-MIT, Apache-2.0, another licence, or deliberately retaining all rights is an owner decision that an
-implementing agent must not infer.
-**Context:** The repository was changed from private to public on 2026-08-01 after a redacted
-full-history and GitHub-surface disclosure review found no high-confidence credential exposure.
-Secret scanning, push protection and validity checks were enabled after publication. See
-[ADR-002](adr/ADR-002-public-repository-visibility.md) and the immutable
-[visibility-review implementation log](implementation-logs/2026-08-01_public-visibility-review.md).
+mobile-forex, parabank, juice-shop, portfolio-landing). It is the lowest-friction fit for a
+repository that is primarily prose, covers prompts and tooling under one grant, and preserves
+attribution through the retained copyright notice.
+**Problem:** `portfolio-prompts` was public and described as reusable but had no `LICENSE` file.
+Public visibility permits reading and forking through GitHub; it does not grant downstream users
+permission to reuse the work.
 
 **Success Criteria:**
 
-- [x] The owner explicitly selects a licence, or explicitly chooses no licence and approves a clear
-      README warning that reuse is not licensed. — **MIT selected by the owner, 2026-08-10.**
-- [x] If a licence is selected, a canonical `LICENSE` file is added and GitHub detects the intended
-      SPDX licence. — canonical MIT text at `LICENSE`, © 2026 Gary Brooks; **GitHub reports
-      `spdx_id: MIT` ("MIT License") on the repository, confirmed 2026-08-10 post-merge.**
-- [x] The README states the licence scope without implying that separately licensed portfolio
-      projects inherit this repository's licence. — new **Licence** section scopes the grant to this
-      repository and names the four differing licences in use across the projects.
-- [x] The repository self-gate, PR CI and post-merge `main` CI pass, with exact merge evidence
-      recorded. — self-gate `python tools/check-library.py` PASS pre-commit; PR
-      [#59](https://github.com/NeoCognitus70/portfolio-prompts/pull/59) `check-library` SUCCESS
-      (run 31434060043); merged to `main` as **`45900ff`** (implementation commit `8d43db0`);
-      post-merge `main` CI **success** (run 31434099051).
+- [x] The owner explicitly selected MIT on 2026-08-10.
+- [x] Canonical MIT text was added at `LICENSE`, © 2026 Gary Brooks, and GitHub reported
+      `spdx_id: MIT`.
+- [x] The README Licence section scopes the grant to this repository without implying that
+      separately licensed portfolio projects inherit it.
+- [x] Self-gate, PR #59 CI, and post-merge `main` CI passed; the change merged as `45900ff`.
 
-Completion evidence: **PP-32 RESOLVED 2026-08-10.** Owner selected MIT; `LICENSE` (© 2026 Gary
-Brooks) and the scoped README **Licence** section merged via PR #59 as `45900ff`; GitHub SPDX
-detection confirms `MIT`; self-gate, PR CI and post-merge `main` CI all green. This was the
-library's last outstanding item — PP-00..PP-32 are now all resolved.
-
----
-
-## Risk Summary
-
-| Priority | Count | Status Distribution |
-|---|---|---|
-| HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 13 | **13 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32) — 0 open |
-| LOW (0–9) | 20 | **20 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30) — 0 open |
-| **Total Outstanding** | **1** | PP-32 (blocked) |
-| Resolved | 32 | PP-00..PP-31 |
-
-**Outstanding, by suggested order:** PP-32 (owner decision required before implementation).
-
----
-
-## Resolved Items
-
-Resolved items are kept as a record that the gap existed, verbatim as last written, grouped by the
-review cycle that produced them (newest first) and in item order within each group.
+Completion evidence: **PP-32 RESOLVED 2026-08-10.** See
+[ADR-002](adr/ADR-002-public-repository-visibility.md) and the immutable
+[visibility-review implementation log](implementation-logs/2026-08-01_public-visibility-review.md).
 
 ### From the 2026-08-01 presentation-ownership cycle (PP-31)
 
