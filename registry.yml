@@ -289,6 +289,20 @@ projects:
       FastAPI AuthZ and C# .NET 9 ASP.NET Core User Profile services, verifying 100% contract
       interchangeability with identical green test execution across both backend stacks.
 
+  - project: saleor-graphql-automation
+    github: GBrooks1970/saleor-graphql-automation
+    status: active
+    presentation_role: showcase
+    orchestration_target: true
+    gates: ["npm run verify"]
+    notes: >-
+      Fourteenth portfolio project (P-12). Production-grade GraphQL e-commerce automation showcase
+      built on Saleor 3.23 (BSD-3-Clause) using the Screenplay Pattern, Serenity/JS, Cucumber, and
+      TypeScript. Demonstrates contract testing via GraphQL Inspector schema diff gates, stateful BDD
+      journeys across catalogue browsing, customer authentication, multi-line checkout, and staff
+      fulfilment, with read-only smoke safety profiles, Docker Compose SUT orchestration, and comprehensive
+      living documentation.
+
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta
