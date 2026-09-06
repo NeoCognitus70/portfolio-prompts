@@ -106,6 +106,18 @@ test('a status change regenerates the board and --check then agrees', () => {
   }
 });
 
+test('--check is EOL-tolerant: a CRLF committed board is still in sync (no false drift)', () => {
+  const s = stage('auth-table');
+  try {
+    assert.equal(s.run(['--project', 'demo']), 0);
+    const board = s.board('demo');
+    writeFileSync(board, readFileSync(board, 'utf8').replace(/\n/g, '\r\n')); // simulate autocrlf checkout
+    assert.equal(s.run(['--check', '--project', 'demo']), 0);
+  } finally {
+    s.cleanup();
+  }
+});
+
 test('an override naming an unknown id fails the run (exit 1, nothing written)', () => {
   const s = stage('auth-table');
   try {

@@ -1,0 +1,8 @@
+# The generator always emits LF. Pin the whole tool tree to LF so committed
+# fixtures and boards match a fresh generation byte-for-byte regardless of a
+# contributor's core.autocrlf. The drift-gate is EOL-tolerant as well, but pinning
+# keeps the committed reference boards stable.
+* text=auto eol=lf
+*.html text eol=lf
+*.mjs text eol=lf
+*.json text eol=lf

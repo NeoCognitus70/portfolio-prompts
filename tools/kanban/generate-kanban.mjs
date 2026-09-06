@@ -54,6 +54,15 @@ function stamp() {
 }
 
 /**
+ * The board is always written with LF, but a committed board can arrive with CRLF
+ * (a repo with core.autocrlf, or an editor). The drift-gate compares CONTENT, not
+ * line-ending encoding, so both sides are normalised before comparison.
+ */
+function normalizeEol(s) {
+  return s.replace(/\r\n/g, '\n');
+}
+
+/**
  * Build the derived tickets and stats from the current inputs. Returns everything
  * the caller needs to render, plus any validation problems (empty = clean).
  */
@@ -161,7 +170,7 @@ export function run(argv, env = {}) {
     }
     const committedAt = extractPayload(committed, 'payload-stats').generatedAt;
     const fresh = render(paths, tickets, stats, committedAt); // reuse timestamp -> excluded from diff
-    if (fresh !== committed) {
+    if (normalizeEol(fresh) !== normalizeEol(committed)) {
       for (const line of describeDrift(committed, tickets, stats)) log(`  ${line}`);
       err(`\nkanban: FAILED — ${basename(paths.board)} is out of step with the backlog. Regenerate and commit.`);
       return 1;
@@ -174,7 +183,7 @@ export function run(argv, env = {}) {
   // leave the board untouched so re-running never churns the diff.
   if (committed !== null) {
     const committedAt = extractPayload(committed, 'payload-stats').generatedAt;
-    if (render(paths, tickets, stats, committedAt) === committed) {
+    if (normalizeEol(render(paths, tickets, stats, committedAt)) === normalizeEol(committed)) {
       log(`kanban: already in sync — nothing to write (${tickets.length} ticket(s)).`);
       return 0;
     }
