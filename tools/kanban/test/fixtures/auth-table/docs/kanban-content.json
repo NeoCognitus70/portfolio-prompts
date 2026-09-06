@@ -1,0 +1,17 @@
+{
+  "DEMO-001": {
+    "description": "Stand up the demo foundation so later tickets have something to build on.",
+    "acceptance": [
+      "Repository scaffolded",
+      "CI runs on every PR"
+    ],
+    "spec": "Reference: demo-spec section 1. Decision recorded in ADR-0001.",
+    "adr": ["ADR-0001"],
+    "assignee": "Platform"
+  },
+  "DEMO-003": {
+    "description": "Build the primary feature on the foundation.",
+    "acceptance": ["Feature endpoint returns 200"],
+    "adr": ["ADR-0002"]
+  }
+}
