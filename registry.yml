@@ -219,6 +219,7 @@ projects:
   - project: juice-shop-dast-automation
     github: GBrooks1970/juice-shop-dast-automation
     status: active
+    status_label: "Active; DAST-M3 open"
     presentation_role: showcase
     orchestration_target: true
     gates:
@@ -232,16 +233,22 @@ projects:
         scan:verdict (which parses report.json), not zap-baseline.py's exit code, which is always
         non-zero on this deliberately-vulnerable target.
     notes: >-
-      Eleventh portfolio project, and the portfolio's first security lane. A DAST showcase: an
-      OWASP ZAP passive baseline scan plus BDD exploit-confirmation scenarios against a pinned,
-      intentionally-vulnerable OWASP Juice Shop 20.1.1 (MIT) training target -- not a real
-      product; its findings are expected and every surface is labelled       positive-detection gate asserts the expected security-misconfiguration and
-      information-disclosure classes (a passive baseline detects no injection classes), while the
-      three BDD scenarios (SQL-injection login bypass, sensitive-file exposure, and IDOR) supply
-      the active-exploitation proof a passive scan cannot. Design and decisions D2.1a-D2.7a are in
-      docs/dast-lane-design.md; images are digest-pinned (Juice Shop 20.1.1, OWASP ZAP 2.17.0) and
-      a pin bump re-triggers the Phase 0 probe (backlog DAST-M1). Phases 0-4 are complete and the
-      labelled report is published at https://gbrooks1970.github.io/juice-shop-dast-automation/.
+      Eleventh portfolio project, and the portfolio's first security lane. A delivered DAST
+      showcase: an OWASP ZAP passive baseline scan plus BDD exploit-confirmation scenarios against
+      a pinned, intentionally-vulnerable OWASP Juice Shop 20.1.1 (MIT) training target -- not a real
+      product; its findings are expected and every surface is labelled. The positive-detection gate
+      asserts the expected security-misconfiguration and information-disclosure classes (a passive
+      baseline detects no injection classes), while the three BDD scenarios (SQL-injection login
+      bypass, sensitive-file exposure, and IDOR) supply the active-exploitation proof a passive scan
+      cannot. All phases DAST-P0..P5 and the Gemini review remediation are complete, but DAST-M3 is
+      one open MEDIUM maintenance item: the same PR merge ref failed and then passed its
+      positive-detection verdict because the passive crawl discovered different JavaScript
+      resources. Keep the lifecycle active until repeatable crawl coverage is proven without relying
+      on a rerun or weakening the fail-closed expected-class contract. R1/R2 are standing mitigations
+      and DAST-M1/M2 are dormant conditional triggers, not open work. Design and decisions
+      D2.1a-D2.7a are in docs/dast-lane-design.md; images are digest-pinned (Juice Shop 20.1.1, OWASP
+      ZAP 2.17.0), and a pin bump re-triggers the Phase 0 probe (backlog DAST-M1). The labelled report
+      is published at https://gbrooks1970.github.io/juice-shop-dast-automation/.
 
   - project: auth-separation
     github: GBrooks1970/auth-separation
