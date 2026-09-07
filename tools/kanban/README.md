@@ -9,7 +9,23 @@ with a per-repo drift-gate), decision **D5** (generator + optional per-project
 content override), and decision **D6** (render stack — see
 [DECISION-render-stack.md](DECISION-render-stack.md)).
 
+Published to the public npm registry as
+**[`portfolio-kanban-generator`](https://www.npmjs.com/package/portfolio-kanban-generator)**
+so any project repo can run the drift-gate in CI via `npx` without vendoring the tool.
+The npm package has **zero runtime dependencies** (vanilla Node). The prompt-library
+source repo that hosts this directory stays private; only the npm package is public.
+
 ## Usage
+
+```bash
+# run straight from npm — no install, pinned to an exact version (for CI)
+npx portfolio-kanban-generator@1.0.0 --check --dialect auth-table --project my-project
+
+# write / refresh the board (run from the project repo root)
+npx portfolio-kanban-generator@1.0.0 --project my-project
+```
+
+Or, from a checkout of this repo (development / the library's own gate):
 
 ```bash
 # write / refresh the board (run from the project repo root)
@@ -115,3 +131,32 @@ override validation, ADR resolution, and end-to-end generation / drift / determi
 over the fixtures. It also runs inside `python tools/check-library.py`
 (check `check_kanban`) and is guarded across the language boundary by
 `tools/tests/test_kanban_generator.py`.
+
+## Publishing (maintainers)
+
+This directory is its own npm package (`portfolio-kanban-generator`), independent of
+the private prompt-library root (which is `"private": true` and cannot publish). The
+published tarball is whitelisted to `generate-kanban.mjs`, `lib/`, `README.md`, and
+`LICENSE` — `test/` and its fixtures are excluded. Confirm the contents before a
+release with `npm pack --dry-run`.
+
+A release is cut by pushing a tag `kanban-v<version>` that matches the `version` in
+[package.json](package.json); the [`publish-kanban`](../../.github/workflows/publish-kanban.yml)
+workflow then runs the test suite and `npm publish --access public`. It needs a
+repository secret **`NPM_TOKEN`** (an npm automation token for an account that owns the
+package name).
+
+```bash
+# 1. bump tools/kanban/package.json "version", commit, merge to main
+# 2. cut the release
+git tag kanban-v1.0.0
+git push origin kanban-v1.0.0
+```
+
+To publish manually instead (from this directory, logged in to npm):
+
+```bash
+npm test
+npm pack --dry-run          # verify the file list
+npm publish --access public
+```
