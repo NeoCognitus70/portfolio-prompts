@@ -21,7 +21,9 @@ the skill adds triggering, input handling, UI metadata, and invocation policy.
 | `derive-all-worklists` | `derive-all-worklists.prompt.md` | optional project list | Fan-out, no actioning |
 | `review-all-projects` | `review-all-projects.prompt.md` | optional project list | Explicit-only; evidence artefacts + PRs |
 | `loop-all-worklists` | `loop-all-worklists.prompt.md` | optional projects and item cap | Explicit-only, mutating fan-out + confirmation gate |
+| `run-project-cycle` | `run-project-cycle.prompt.md` | project | Full improvement cycle conductor; checkpointed |
 | `portfolio-status` | `portfolio-status.prompt.md` | optional portfolio root | Whole-portfolio status, strictly read-only |
+| `portfolio-reviews-summary` | `portfolio-reviews-summary.prompt.md` | optional portfolio root | Inspect or refresh central portfolio review index |
 | `analyze-repo` | `github-repo-analysis-prompt.md` | repo and optional depth | Zero-config; any repo, no registry |
 
 ## Install with Claude Code

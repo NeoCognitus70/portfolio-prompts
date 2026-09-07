@@ -120,6 +120,7 @@ Created on first need if absent (scaffold from `templates/` where a template exi
 
 - `docs/implementation-logs/` + `docs/templates/implementation-log.template.md` — append-only
   session history (used by write-implementation-log).
+- `docs/walkthroughs/` — durable versioned walkthrough records (used by write-walkthrough).
 - `docs/adr/` — architecture decision records.
 - `CHANGELOG.md` — user-visible changes.
 - `.review/` — created by write-code-review on first review.
