@@ -73,10 +73,10 @@ and is explicitly excluded from orchestration fan-outs.
 ## Prompts
 
 **Typical lifecycle** (single project):
-`resume-session` -> `derive-worklist` -> `loop-worklist` -> `write-implementation-log` ->
+`resume-session` -> `derive-worklist` -> `loop-worklist` -> `write-implementation-log` / `write-walkthrough` ->
 `write-code-review` -> `write-handover` -> `close-project`.
 The `run-project-cycle` **conductor** sequences a review-driven cycle of these steps end to end for
-one project (`review -> triage -> loop -> log -> handover -> optional close`), with entry/exit gates
+one project (`review -> triage -> loop -> log -> walkthrough -> handover -> optional close`), with entry/exit gates
 and owner checkpoints between stages; it delegates each stage to that stage's prompt and never
 re-implements one.
 Before a project's first lifecycle, `onboard-project` establishes its backlog/scaffold and registry
@@ -85,7 +85,8 @@ The three `*-all-*` orchestrators (`derive-all-worklists`, `loop-all-worklists`,
 `review-all-projects`) fan the corresponding single-project step across the whole registry in one
 pass. Each starts with the registry-driven read-only
 [`workspace_preflight.py`](tools/workspace_preflight.py) safety report before launching any agent.
-`portfolio-status` is a read-only portfolio snapshot outside the lifecycle, while
+`portfolio-status` is a read-only portfolio snapshot outside the lifecycle,
+`portfolio-reviews-summary` compiles and refreshes the central cross-portfolio review index, while
 `write-project-in-depth-report` creates a read-only historical/design dossier for one registered
 project, and `github-repo-analysis-prompt.md` is general-purpose and not registry-bound (see below).
 After a code review, `triage-review-findings` is the optional explicit route from one named review
@@ -108,6 +109,7 @@ to the next approved worklist.
 | [run-project-cycle.prompt.md](run-project-cycle.prompt.md) | Running one project through a full improvement cycle | Single-project **conductor**, **mutating but checkpointed**: sequences `write-code-review → triage-review-findings → loop-worklist → write-implementation-log → write-handover → optional close-project` with entry/exit gates, a reconcile-before-starting preflight, and owner stops (triage candidate list, each merge, close). Delegates each stage to its canonical prompt; never re-implements a step and never a portfolio fan-out. |
 | [loop-all-worklists.prompt.md](loop-all-worklists.prompt.md) | Actioning all prepared worklists at once | Orchestration fan-out that **mutates**: one sub-agent per project with unchecked worklist items, each executing loop-worklist iterations consecutively (commit + PR per its rules, never merging); coupled projects (e.g. calculator → hand-baked sibling build) share one sequential agent; collated report of commits, PRs, and blocked questions. |
 | [portfolio-status.prompt.md](portfolio-status.prompt.md) | Checking the whole portfolio without changing it | Read-only aggregation across every registry project: local repo state, open backlog counts, latest handover, open PRs, and default-branch CI; reports unavailable evidence and registry-drift candidates instead of mutating or guessing. |
+| [portfolio-reviews-summary.prompt.md](portfolio-reviews-summary.prompt.md) | Generating or inspecting the portfolio code reviews index | Evaluates all registered showcase projects, inspects or regenerates the central `portfolio-reviews/` summary index and HTML view via `tools/build-portfolio-reviews.py`, and reports latest review status and links. |
 | [close-project.prompt.md](close-project.prompt.md) | Final session of a project | Verifies every public-facing claim the README makes, reconciles the backlog one last time, retires `WORKLIST_{PROJECT}.md`, and writes a terminal handover marked FINAL. |
 
 ### General-purpose (not registry-bound)
@@ -132,6 +134,8 @@ to the next approved worklist.
   they never enter a target project's history.
 - Implementation logs live **inside each repo** at
   `{PROJECT}/docs/implementation-logs/YYYY-MM-DD_short-slug.md` (tracked, append-only).
+- Walkthroughs live **inside each repo** at
+  `{PROJECT}/docs/walkthroughs/YYYY-MM-DD_short-slug.md` (and at `<portfolio root>/docs/walkthroughs/` for portfolio-level tasks; tracked, append-only).
 - Validation gates resolve: project contract → registry-row gates → `npm run verify` → stack
   defaults (run inside the touched stack's directory in multi-stack repos) → ask.
 
@@ -151,43 +155,87 @@ it via `/loop`; Codex may invoke its skill again or use a separately requested a
 `onboard-project` requires a prospective local `PROJECT` that is **not yet** a registry row and may
 take `GITHUB=<owner/repo>` when the checkout remote is not sufficient.
 The portfolio-scoped orchestrators (`derive-all-worklists`, `loop-all-worklists`,
-`review-all-projects`), the read-only `portfolio-status`, and the general-purpose
+`review-all-projects`), the read-only `portfolio-status`, the central `portfolio-reviews-summary`, and the general-purpose
 `github-repo-analysis-prompt.md` take **no `PROJECT=`** — the orchestrators and status prompt target
 the whole registry, while the analysis prompt targets an arbitrary repo supplied by URL or path.
 
-One example per prompt:
+### Quick Reference: One Example per Prompt
 
+> [!TIP]
+> **Ready-to-Use Invocation Examples:** Paste any line directly into your agent prompt.
+> For project-specific prompts, replace `PROJECT=<folder>` with your target directory from [`registry.yml`](registry.yml). All prompt paths use OS-neutral forward slashes.
+
+#### 1. Project Onboarding & Setup
 ```text
 Read and follow portfolio-prompts/onboard-project.prompt.md using PROJECT=mobile-forex-automation GITHUB=GBrooks1970/mobile-forex-automation
+```
 
+#### 2. Active Session & Iteration Flow
+```text
+# Start session: load latest handover and align resume point
 Read and follow portfolio-prompts/resume-session.prompt.md using PROJECT=calculator-screenplay-bdd
 
-Read and follow portfolio-prompts/write-handover.prompt.md using PROJECT=hand-baked-screenplay-pattern
-
-Read and follow portfolio-prompts/write-implementation-log.prompt.md using PROJECT=magento-checkout-automation
-
-Read and follow portfolio-prompts/write-code-review.prompt.md using PROJECT=gb.automation.smoketests.sudoku.poc
-
-Read and follow portfolio-prompts/write-project-in-depth-report.prompt.md using PROJECT=calculator-screenplay-bdd
-
-Read and follow portfolio-prompts/triage-review-findings.prompt.md using PROJECT=calculator-screenplay-bdd REVIEW=.review/CODE_REVIEW_<agent>_v<N>_<timestamp>
-
+# Plan worklist: derive actionable items from backlog/handover without mutating
 Read and follow portfolio-prompts/derive-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
-Read and follow portfolio-prompts/derive-all-worklists.prompt.md
-
-Read and follow portfolio-prompts/loop-all-worklists.prompt.md
-
-Read and follow portfolio-prompts/review-all-projects.prompt.md
-
-Read and follow portfolio-prompts/portfolio-status.prompt.md
-
+# Execute worklist: complete one item (implement -> test -> verify -> commit)
 Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
+# Continuous execution loop (Claude Code /loop feature)
 /loop Read and follow portfolio-prompts/loop-worklist.prompt.md using PROJECT=calculator-screenplay-bdd
 
+# Record development task: append an immutable implementation log entry
+Read and follow portfolio-prompts/write-implementation-log.prompt.md using PROJECT=magento-checkout-automation
+
+# Record batch walkthrough: dual-destination empirical evidence artifact
+Read and follow portfolio-prompts/write-walkthrough.prompt.md using PROJECT=saleor-graphql-automation
+
+# End of session: reconcile backlog and generate versioned handover pair
+Read and follow portfolio-prompts/write-handover.prompt.md using PROJECT=hand-baked-screenplay-pattern
+```
+
+#### 3. Single-Project End-to-End Conductor
+```text
+# Multi-stage conductor: sequence review -> triage -> loop -> log -> walkthrough -> handover
+Read and follow portfolio-prompts/run-project-cycle.prompt.md using PROJECT=orangehrm-pim-automation
+```
+
+#### 4. Quality Reviews, Triage & Deep Dossiers
+```text
+# Code review: write comprehensive review into project's .review/ folder
+Read and follow portfolio-prompts/write-code-review.prompt.md using PROJECT=gb.automation.smoketests.sudoku.poc
+
+# Triage findings: turn named review into approved root worklist
+Read and follow portfolio-prompts/triage-review-findings.prompt.md using PROJECT=calculator-screenplay-bdd REVIEW=.review/CODE_REVIEW_<agent>_v<N>_<timestamp>
+
+# Historical in-depth dossier: read-only full Git history and architecture analysis
+Read and follow portfolio-prompts/write-project-in-depth-report.prompt.md using PROJECT=calculator-screenplay-bdd
+```
+
+#### 5. Whole-Portfolio Orchestration & Status
+```text
+# Derive worklists across all registry projects in parallel
+Read and follow portfolio-prompts/derive-all-worklists.prompt.md
+
+# Review all registry projects in parallel with evidence branches/PRs
+Read and follow portfolio-prompts/review-all-projects.prompt.md
+
+# Action all open worklists across the portfolio consecutively
+Read and follow portfolio-prompts/loop-all-worklists.prompt.md
+
+# Whole-portfolio read-only snapshot: Git status, open items, CI, and drift
+Read and follow portfolio-prompts/portfolio-status.prompt.md
+
+# Generate, audit, or refresh central portfolio code reviews summary index
+Read and follow portfolio-prompts/portfolio-reviews-summary.prompt.md
+```
+
+#### 6. Project Retirement & External Analysis
+```text
+# Final session: verify claims, reconcile backlog, and mark handover FINAL
 Read and follow portfolio-prompts/close-project.prompt.md using PROJECT=magento-checkout-automation
 
+# Standalone repository analysis (external repo, URL or path, zero-config)
 Read and follow portfolio-prompts/github-repo-analysis-prompt.md
 ```
 
