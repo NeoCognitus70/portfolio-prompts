@@ -1,6 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { authTable, riskBlock, parseBacklog } from '../lib/adapters.mjs';
+
+const FIXTURES = join(import.meta.dirname, 'fixtures');
 
 const AUTH_TABLE = `
 ## Ignore me
@@ -53,6 +57,49 @@ test('authTable: maps title/type/priority; omits empty type/priority', () => {
   assert.equal(t.title, 'Bare');
   assert.ok(!('type' in t));
   assert.ok(!('priority' in t));
+});
+
+test('authTable (D7): phase is derived from the most recent "Phase N" heading', () => {
+  const text = readFileSync(join(FIXTURES, 'phases', 'docs', 'backlog.md'), 'utf8');
+  const phaseById = Object.fromEntries(authTable(text).map((t) => [t.id, t.phase]));
+  // A row before any Phase heading gets no phase.
+  assert.equal(phaseById['PRE-001'], undefined);
+  assert.ok(!('phase' in authTable(text).find((t) => t.id === 'PRE-001')));
+  // Rows inherit the number of the heading above them (non-contiguous, mixed depth).
+  assert.equal(phaseById['P0-001'], 0);
+  assert.equal(phaseById['P0-002'], 0);
+  assert.equal(phaseById['P3-001'], 3);
+  assert.equal(phaseById['P3-003'], 3);
+  assert.equal(phaseById['P7-001'], 7);
+});
+
+test('authTable (D7): a "Phase 0" heading yields integer 0, not a falsy drop', () => {
+  const [t] = authTable('### Phase 0 — Foundations\n\n' +
+    '| ID | Ticket | Type | Priority | Tier | Blocked by | Status |\n' +
+    '|---|---|---|---|---|---|---|\n' +
+    '| `X-1` | zeroth | Feature | P0 | HIGH | — | Backlog |');
+  assert.strictEqual(t.phase, 0);
+});
+
+test('authTable (D7): phase distribution matches the auth-separation anchor {0:6,1:7,2:4,3:15,4:4,5:4,6:6,7:5}', () => {
+  // Auth-shaped backlog reproduced with the real heading format and the exact
+  // per-phase ticket counts from auth-separation/docs/backlog.md (the source of the
+  // original hand-authored board's payload). The generator run against the live file
+  // yields this same distribution.
+  const counts = { 0: 6, 1: 7, 2: 4, 3: 15, 4: 4, 5: 4, 6: 6, 7: 5 };
+  const rowHeader = '| ID | Ticket | Type | Priority | Tier | Blocked by | Status |\n|---|---|---|---|---|---|---|\n';
+  let md = '# Implementation backlog\n\n';
+  let n = 0;
+  for (const [phase, count] of Object.entries(counts)) {
+    md += `### Phase ${phase} — Section ${phase} (${count} tickets)\n\n${rowHeader}`;
+    for (let i = 0; i < count; i++) {
+      md += `| \`AUTH-${String(++n).padStart(3, '0')}\` | Ticket ${n} | Feature | P0 | HIGH | — | Backlog |\n`;
+    }
+    md += '\n';
+  }
+  const dist = {};
+  for (const t of authTable(md)) dist[t.phase] = (dist[t.phase] ?? 0) + 1;
+  assert.deepEqual(dist, counts);
 });
 
 test('riskBlock: authored status maps straight to a final column (pre-classified)', () => {

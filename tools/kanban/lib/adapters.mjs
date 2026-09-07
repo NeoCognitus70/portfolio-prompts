@@ -43,10 +43,23 @@ function backtickedIds(cell) {
  * anything else; then Done, then Ready, else Backlog. blockedBy is read from the
  * "Blocked by" cell (cell 6). Tier (cell 5) is informational and not carried:
  * it duplicates Priority and is not a canonical ticket field.
+ *
+ * `phase` (D7) is derived structurally, not from a cell: the backlog groups its
+ * ticket tables under "Phase N" section headings (e.g. "### Phase 3 — Core
+ * implementation"). Scanning top-to-bottom, the most recent such heading sets the
+ * phase for every ticket row beneath it, until the next heading resets it. Rows
+ * before any Phase heading get no phase. `phase` is a backlog-owned header field,
+ * so it comes from here and never from the content override.
  */
 export function authTable(text) {
   const tickets = [];
+  let phase; // current phase from the most recent "Phase N" heading; unset before the first
   for (const line of text.split(/\r?\n/)) {
+    const phaseHeading = line.match(/^#{1,4}\s+Phase\s+(\d+)\b/);
+    if (phaseHeading) {
+      phase = Number(phaseHeading[1]);
+      continue;
+    }
     // Fast reject: first cell must open with a backticked id.
     if (!/^\|\s*`[^`]+`\s*\|/.test(line)) continue;
     const cells = line.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
@@ -71,6 +84,7 @@ export function authTable(text) {
       title: cells[1],
       ...(emptyish(cells[2]) ? {} : { type: cells[2] }),
       ...(emptyish(cells[3]) ? {} : { priority: cells[3] }),
+      ...(phase !== undefined ? { phase } : {}),
       blockedBy: emptyish(cells[5]) ? [] : backtickedIds(cells[5]),
       backlogStatus,
     });
