@@ -1,6 +1,6 @@
 {
   "name": "portfolio-prompts",
-  "version": "0.4.1+codex.20260903212342",
+  "version": "0.5.0+codex.20260907143538",
   "description": "Session-lifecycle skills for the test-automation portfolio: onboarding, status, worklists, reviews, in-depth project reports, implementation logs, handovers, close-out, portfolio fan-outs, and repository analysis.",
   "author": {
     "name": "Gary Brooks",
