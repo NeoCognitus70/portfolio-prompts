@@ -40,6 +40,13 @@ defaults:
   worklist: WORKLIST_{project}.md               # tracked control state in the portfolio root repo
   shared_templates: templates/
 
+  # Per-project Kanban board (Option B+ / D5): one shared generator
+  # (tools/kanban/generate-kanban.mjs) builds each repo's committed board from its
+  # backlog plus an optional content override; a per-repo CI drift-gate runs the
+  # generator with --check. A project overrides these in its `deviations:` block.
+  override_path: docs/kanban-content.json       # optional per-project ticket-body override
+  backlog_dialect: auth-table                   # backlog adapter: auth-table (default) | risk-block
+
   gate_cascade:                                 # first-hit-wins; mirrors project-layout.md
     - project_contract
     - registry_gates

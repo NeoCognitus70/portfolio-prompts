@@ -26,6 +26,9 @@ Checks:
  11. Workspace preflight — deterministic clean/dirty/behind/topic/missing-evidence scenarios pass.
  12. Handover pairs     — every root session-notes Markdown handover has its HTML companion
                           (P-09; skipped in a standalone clone with no sibling session-notes/).
+ 13. Kanban generator   — the shared tools/kanban generator's Node test suite passes: the
+                          derive-status truth table, backlog adapters, override validation, and
+                          the drift-gate over committed fixtures (skipped if Node is absent).
 
 Usage (from the portfolio-prompts/ directory):
     python tools/check-library.py            # exit 0 if all checks pass, 1 otherwise
@@ -36,6 +39,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -592,6 +596,35 @@ def check_workspace_preflight(fails: list[str]) -> None:
         fails.append("[workspace-preflight] deterministic tool tests failed:\n" + detail)
 
 
+def check_kanban(fails: list[str]) -> None:
+    """The shared Kanban generator (tools/kanban) carries its own Node test suite —
+    the derive-status truth table, the backlog adapters, override validation, and
+    the drift-gate over committed fixtures. Run it as part of the library self-gate
+    so a regression in the generator is caught here, exactly as the derivation logic
+    it carries over is gated in the auth-separation exemplar's `npm run verify`.
+
+    Skipped with a note when Node is unavailable (a Python-only environment); the
+    GitHub-hosted CI runners the library uses have Node preinstalled.
+    """
+    kanban_dir = HERE / "tools" / "kanban"
+    if not kanban_dir.is_dir():
+        return
+    if shutil.which("node") is None:
+        print("check-library: note — node not found; skipping tools/kanban Node test suite.")
+        return
+    # `node --test` auto-discovers test files under the working directory; a bare
+    # directory argument is misread as a script path, so pass none.
+    result = subprocess.run(
+        ["node", "--test"],
+        cwd=kanban_dir,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        detail = (result.stdout + "\n" + result.stderr).strip()
+        fails.append("[kanban] tools/kanban Node test suite failed:\n" + detail)
+
+
 def main() -> int:
     fails: list[str] = []
     for check in (
@@ -608,6 +641,7 @@ def main() -> int:
         check_worklist_example,
         check_workspace_preflight,
         check_handover_pairs,
+        check_kanban,
     ):
         check(fails)
     if fails:
@@ -617,7 +651,7 @@ def main() -> int:
         return 1
     print("check-library: PASS (registry classification, lifecycle/presentation semantics, README generated, "
           "least-privilege CI, internal links, skills, release metadata, Codex plugin, working norms, "
-          "invocation paths, worklist example, workspace preflight scenarios, handover pairs)")
+          "invocation paths, worklist example, workspace preflight scenarios, handover pairs, kanban generator)")
     return 0
 
 

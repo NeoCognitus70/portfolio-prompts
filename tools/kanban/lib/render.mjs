@@ -1,0 +1,277 @@
+/**
+ * Self-contained board renderer.
+ *
+ * D6 decision (recorded in tools/kanban/DECISION-render-stack.md): the board is a
+ * single HTML file with a vanilla-JS renderer reading two embedded JSON payloads.
+ * No framework, no build step, no CDN, no vendored files — the exemplar's
+ * React + ~2.8MB babel-standalone stack could not satisfy the "one self-contained
+ * board" contract without inlining megabytes of transpiler into every repo's
+ * committed board. The status logic ported to vanilla with no rewrite.
+ *
+ * The two payload script blocks (`payload-tickets`, `payload-stats`) are the
+ * board's data of record and the anchor the drift-gate reads back, so their
+ * shape and ids match the exemplar exactly.
+ */
+
+export const PAYLOAD_IDS = ['payload-tickets', 'payload-stats'];
+
+/** Extract and parse an embedded JSON payload. Throws if the block is absent. */
+export function extractPayload(html, id) {
+  const m = html.match(new RegExp(`id="${id}" type="application/json">([\\s\\S]*?)</script>`));
+  if (!m) throw new Error(`no <script id="${id}"> payload found in board`);
+  return JSON.parse(m[1]);
+}
+
+/**
+ * Serialise a payload for embedding. `<` is escaped to its JSON unicode form so a
+ * ticket body containing "</script>" cannot break out of the script block; the
+ * result is still valid JSON and still deterministic.
+ */
+function embed(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003c');
+}
+
+// The renderer that ships inside every board. Kept as a plain string so the
+// generator has no runtime dependency on a bundler. It reads the two payloads and
+// builds the DOM; every ticket field except id/title/status is treated as
+// optional so header-only cards (no override) render cleanly.
+const BOARD_SCRIPT = String.raw`
+(function () {
+  var TICKETS = JSON.parse(document.getElementById('payload-tickets').textContent);
+  var STATS = JSON.parse(document.getElementById('payload-stats').textContent);
+  var COLUMNS = ['Backlog', 'Ready', 'In Progress', 'In Review', 'Done', 'Parked'];
+  var PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  var byId = {};
+  TICKETS.forEach(function (t) { byId[t.id] = t; });
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function priClass(p) { return p ? 'tag-' + String(p).toLowerCase() : ''; }
+  function el(html) { var d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
+
+  var state = { phase: 'all', priority: 'all', type: 'all', search: '' };
+
+  function passes(t) {
+    if (state.phase !== 'all' && String(t.phase) !== state.phase) return false;
+    if (state.priority !== 'all' && t.priority !== state.priority) return false;
+    if (state.type !== 'all' && t.type !== state.type) return false;
+    var s = state.search.trim().toLowerCase();
+    if (s && [t.id, t.title, t.type, t.phase].join(' ').toLowerCase().indexOf(s) === -1) return false;
+    return true;
+  }
+
+  function cardHtml(t) {
+    var unmet = (t.blockedBy || []).filter(function (d) { return !(byId[d] && byId[d].status === 'Done'); });
+    var tags = '';
+    if (t.priority) tags += '<span class="tag ' + priClass(t.priority) + '">' + esc(t.priority) + '</span>';
+    if (t.type) tags += '<span class="tag tag-type">' + esc(t.type) + '</span>';
+    if (unmet.length) tags += '<span class="tag tag-blocked">Blocked: ' + unmet.length + '</span>';
+    var sub = [];
+    if (t.phase !== undefined) sub.push('Phase ' + esc(t.phase));
+    if (t.score !== undefined) sub.push('Score ' + esc(t.score));
+    return '<div class="card ' + (t.priority ? 'border-' + String(t.priority).toLowerCase() : '') + '" data-id="' + esc(t.id) + '">' +
+      '<div class="card-id">' + esc(t.id) + '</div>' +
+      '<div class="card-title">' + esc(t.title) + '</div>' +
+      (sub.length ? '<div class="card-feature">' + sub.join(' · ') + '</div>' : '') +
+      '<div class="card-tags">' + tags + '</div>' +
+      ((t.blockedBy && t.blockedBy.length) ? '<div class="card-deps">Blocked by: ' + esc(t.blockedBy.join(', ')) + '</div>' : '') +
+      '</div>';
+  }
+
+  function renderBoard() {
+    var shown = TICKETS.filter(passes);
+    var cols = document.getElementById('board');
+    cols.innerHTML = '';
+    COLUMNS.forEach(function (col) {
+      var items = shown.filter(function (t) { return t.status === col; }).sort(function (a, b) {
+        var p = (PRIORITY_ORDER[a.priority] == null ? 9 : PRIORITY_ORDER[a.priority]) -
+                (PRIORITY_ORDER[b.priority] == null ? 9 : PRIORITY_ORDER[b.priority]);
+        return p !== 0 ? p : a.id.localeCompare(b.id);
+      });
+      var body = items.map(cardHtml).join('');
+      cols.appendChild(el(
+        '<div class="column"><div class="column-head"><span class="name">' + esc(col) +
+        '</span><span class="count">' + items.length + '</span></div>' +
+        '<div class="column-body">' + body + '</div></div>'
+      ));
+    });
+    document.getElementById('shown-count').textContent = shown.length + ' of ' + TICKETS.length + ' shown';
+    Array.prototype.forEach.call(cols.querySelectorAll('.card'), function (c) {
+      c.addEventListener('click', function () { openModal(byId[c.getAttribute('data-id')]); });
+    });
+  }
+
+  function section(title, inner) { return inner ? '<h3>' + esc(title) + '</h3>' + inner : ''; }
+  function depPills(ids, met) {
+    if (!ids || !ids.length) return '<em>None</em>';
+    return ids.map(function (d) {
+      var dep = byId[d];
+      var cls = met === undefined ? 'dep-pill' : ('dep-pill ' + ((dep && dep.status === 'Done') ? 'dep-pill-met' : 'dep-pill-unmet'));
+      return '<span class="' + cls + '">' + esc(d) + (dep ? ' - ' + esc(dep.title) : '') + '</span>';
+    }).join('');
+  }
+
+  function openModal(t) {
+    if (!t) return;
+    var tags = '';
+    if (t.priority) tags += '<span class="tag ' + priClass(t.priority) + '">' + esc(t.priority) + '</span>';
+    if (t.type) tags += '<span class="tag tag-type">' + esc(t.type) + '</span>';
+    if (t.phase !== undefined) tags += '<span class="tag tag-phase">Phase ' + esc(t.phase) + '</span>';
+    var body =
+      section('Description', t.description ? '<p>' + esc(t.description) + '</p>' : '') +
+      section('Assignee', t.assignee ? '<p>' + esc(t.assignee) + '</p>' : '') +
+      '<h3>Status</h3><p>' + esc(t.status) + '</p>' +
+      section('Acceptance Criteria', (t.acceptance && t.acceptance.length) ? '<ul>' + t.acceptance.map(function (a) { return '<li>' + esc(a) + '</li>'; }).join('') + '</ul>' : '') +
+      section('Spec / Implementation Notes', t.spec ? '<p>' + esc(t.spec) + '</p>' : '') +
+      section('ADRs', (t.adr && t.adr.length) ? '<p>' + t.adr.map(esc).join(', ') + '</p>' : '') +
+      '<h3>Blocked By (' + ((t.blockedBy || []).length) + ')</h3><div>' + depPills(t.blockedBy, false) + '</div>' +
+      '<h3>Blocks (' + ((t.blocks || []).length) + ')</h3><div>' + depPills(t.blocks, undefined) + '</div>';
+    var modal = el(
+      '<div class="modal-bg"><div class="modal"><div class="modal-head"><div>' +
+      '<div class="card-id">' + esc(t.id) + (t.phase !== undefined ? ' · Phase ' + esc(t.phase) : '') + '</div>' +
+      '<div style="font-size:18px;font-weight:700;margin-top:4px">' + esc(t.title) + '</div>' +
+      '<div style="display:flex;gap:6px;margin-top:8px">' + tags + '</div></div>' +
+      '<button class="close-btn">Close</button></div>' +
+      '<div class="modal-body">' + body + '</div></div></div>'
+    );
+    function close() { document.body.removeChild(modal); }
+    modal.addEventListener('click', close);
+    modal.querySelector('.modal').addEventListener('click', function (e) { e.stopPropagation(); });
+    modal.querySelector('.close-btn').addEventListener('click', close);
+    document.body.appendChild(modal);
+  }
+
+  function optionList(sel, values, label) {
+    values.forEach(function (v) {
+      var o = document.createElement('option');
+      o.value = v; o.textContent = label ? label(v) : v; sel.appendChild(o);
+    });
+  }
+
+  var phases = Array.from(new Set(TICKETS.map(function (t) { return t.phase; }).filter(function (p) { return p !== undefined; }))).sort(function (a, b) { return a - b; });
+  var types = Array.from(new Set(TICKETS.map(function (t) { return t.type; }).filter(Boolean))).sort();
+  var priorities = Array.from(new Set(TICKETS.map(function (t) { return t.priority; }).filter(Boolean))).sort();
+
+  if (phases.length) { optionList(document.getElementById('f-phase'), phases, function (p) { return 'Phase ' + p; }); document.getElementById('w-phase').hidden = false; }
+  if (priorities.length) { optionList(document.getElementById('f-priority'), priorities); document.getElementById('w-priority').hidden = false; }
+  if (types.length) { optionList(document.getElementById('f-type'), types); document.getElementById('w-type').hidden = false; }
+
+  document.getElementById('f-phase').addEventListener('change', function (e) { state.phase = e.target.value; renderBoard(); });
+  document.getElementById('f-priority').addEventListener('change', function (e) { state.priority = e.target.value; renderBoard(); });
+  document.getElementById('f-type').addEventListener('change', function (e) { state.type = e.target.value; renderBoard(); });
+  document.getElementById('f-search').addEventListener('input', function (e) { state.search = e.target.value; renderBoard(); });
+
+  renderBoard();
+})();
+`;
+
+const STYLE = String.raw`
+    :root {
+      --bg:#f8fafc; --panel:#fff; --border:#e2e8f0; --text:#1e293b; --muted:#64748b; --accent:#1f3864;
+      --p0:#dc2626; --p0-bg:#fee2e2; --p1:#ea580c; --p1-bg:#ffedd5;
+      --p2:#2563eb; --p2-bg:#dbeafe; --p3:#6b7280; --p3-bg:#f3f4f6;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; background:var(--bg); color:var(--text); }
+    header { background:var(--accent); color:#fff; padding:14px 24px; }
+    header h1 { margin:0; font-size:20px; font-weight:600; }
+    header p { margin:4px 0 0; font-size:12px; opacity:.85; }
+    .stats { display:flex; gap:16px; padding:12px 24px; background:#fff; border-bottom:1px solid var(--border); flex-wrap:wrap; font-size:12px; }
+    .stat { display:flex; align-items:center; gap:6px; }
+    .stat .num { font-weight:700; font-size:16px; color:var(--accent); }
+    .stat .lbl { color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-size:10px; }
+    .filters { padding:10px 24px; background:#fff; border-bottom:1px solid var(--border); display:flex; gap:12px; align-items:center; flex-wrap:wrap; font-size:12px; }
+    .filters label { color:var(--muted); margin-right:4px; }
+    .filters select, .filters input { padding:4px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px; background:#fff; }
+    .board { display:flex; gap:12px; padding:16px 24px; overflow-x:auto; min-height:calc(100vh - 200px); }
+    .column { flex:1; min-width:240px; max-width:320px; background:#f1f5f9; border-radius:8px; border:1px solid var(--border); display:flex; flex-direction:column; }
+    .column-head { padding:10px 12px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+    .column-head .name { font-weight:600; font-size:13px; }
+    .column-head .count { background:var(--accent); color:#fff; font-size:11px; padding:1px 8px; border-radius:10px; font-weight:600; }
+    .column-body { padding:8px; flex:1; overflow-y:auto; }
+    .card { background:#fff; border:1px solid var(--border); border-radius:6px; padding:10px; margin-bottom:8px; cursor:pointer; transition:all .15s; border-left-width:4px; }
+    .card:hover { box-shadow:0 2px 6px rgba(0,0,0,.08); transform:translateY(-1px); }
+    .card-id { font-family:'SF Mono',Consolas,monospace; font-size:10px; color:var(--muted); font-weight:600; }
+    .card-title { font-size:13px; font-weight:600; margin:4px 0 6px; line-height:1.3; }
+    .card-feature { font-size:11px; color:var(--muted); margin-bottom:6px; }
+    .card-tags { display:flex; gap:4px; flex-wrap:wrap; }
+    .tag { font-size:9px; font-weight:700; padding:2px 6px; border-radius:3px; text-transform:uppercase; letter-spacing:.04em; }
+    .tag-p0 { background:var(--p0-bg); color:var(--p0); } .tag-p1 { background:var(--p1-bg); color:var(--p1); }
+    .tag-p2 { background:var(--p2-bg); color:var(--p2); } .tag-p3 { background:var(--p3-bg); color:var(--p3); }
+    .tag-type { background:#e0e7ff; color:#3730a3; } .tag-phase { background:#f0fdf4; color:#166534; }
+    .tag-blocked { background:#fef3c7; color:#92400e; }
+    .card-deps { font-size:10px; color:var(--muted); margin-top:6px; }
+    .border-p0 { border-left-color:var(--p0); } .border-p1 { border-left-color:var(--p1); }
+    .border-p2 { border-left-color:var(--p2); } .border-p3 { border-left-color:var(--p3); }
+    .modal-bg { position:fixed; inset:0; background:rgba(15,23,42,.5); display:flex; align-items:center; justify-content:center; z-index:100; padding:20px; }
+    .modal { background:#fff; border-radius:8px; max-width:800px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 20px 50px rgba(0,0,0,.3); }
+    .modal-head { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+    .modal-body { padding:20px; font-size:13px; line-height:1.6; }
+    .modal-body h3 { font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin:16px 0 6px; font-weight:600; }
+    .modal-body p { margin:4px 0 12px; } .modal-body ul { margin:4px 0 12px; padding-left:20px; } .modal-body li { margin:4px 0; }
+    .close-btn { background:transparent; border:1px solid var(--border); color:var(--muted); padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px; }
+    .close-btn:hover { background:#f1f5f9; }
+    .dep-pill { display:inline-block; background:#f1f5f9; border:1px solid var(--border); font-family:'SF Mono',Consolas,monospace; font-size:11px; padding:2px 6px; border-radius:3px; margin:2px 4px 2px 0; }
+    .dep-pill-met { background:#dcfce7; border-color:#86efac; color:#166534; }
+    .dep-pill-unmet { background:#fef3c7; border-color:#fcd34d; color:#92400e; }
+`;
+
+/**
+ * Render a complete, self-contained board document.
+ * @param {{project:string, title?:string, tickets:Array, stats:object, generatedAt:string}} opts
+ */
+export function renderBoard({ project, title, tickets, stats, generatedAt }) {
+  const heading = title || `${project} — Implementation Kanban v1`;
+  const statsPayload = { ...stats, generatedAt, version: '1' };
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escHtml(heading)}</title>
+  <!--
+    Generated by tools/kanban/generate-kanban.mjs from the project backlog and the
+    optional content override. Do NOT hand-edit: a per-repo drift-gate regenerates
+    this file and fails CI if a commit diverges from a fresh generation. To change
+    the board, change the backlog or docs/kanban-content.json and regenerate.
+    Self-contained by design (D6): no framework, no CDN, no vendored files.
+  -->
+  <style>${STYLE}  </style>
+</head>
+<body>
+  <header>
+    <h1>${escHtml(heading)}</h1>
+    <p>Generated from the project backlog. ${stats.total} ticket(s).</p>
+  </header>
+  <div class="stats" id="stats-bar">
+    <div class="stat"><span class="num">${stats.total}</span><span class="lbl">Total</span></div>
+${COLUMN_STAT_CELLS(stats)}    <div class="stat" style="margin-left:auto;color:var(--muted)"><span class="lbl">v${statsPayload.version} · ${escHtml(generatedAt)}</span></div>
+  </div>
+  <div class="filters">
+    <span id="w-phase" hidden><label>Phase:</label><select id="f-phase"><option value="all">All phases</option></select></span>
+    <span id="w-priority" hidden><label>Priority:</label><select id="f-priority"><option value="all">All priorities</option></select></span>
+    <span id="w-type" hidden><label>Type:</label><select id="f-type"><option value="all">All types</option></select></span>
+    <label>Search:</label><input id="f-search" type="text" placeholder="ID, title, type..." style="min-width:200px" />
+    <span id="shown-count" style="margin-left:auto;color:var(--muted)"></span>
+  </div>
+  <div class="board" id="board"></div>
+  <script id="payload-tickets" type="application/json">${embed(tickets)}</script>
+  <script id="payload-stats" type="application/json">${embed(statsPayload)}</script>
+  <script>${BOARD_SCRIPT}</script>
+</body>
+</html>
+`;
+}
+
+function COLUMN_STAT_CELLS(stats) {
+  return Object.entries(stats.byStatus)
+    .map(([c, n]) => `    <div class="stat"><span class="num">${n}</span><span class="lbl">${escHtml(c)}</span></div>\n`)
+    .join('');
+}
+
+function escHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
