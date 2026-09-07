@@ -105,7 +105,8 @@ projects:
 
   - project: gb.automation.smoketests.sudoku.poc
     github: GBrooks1970/gb.automation.smoketests.sudoku.poc
-    status: active
+    status: resting
+    status_label: "Resting; product cycle complete 2026-08-24"
     presentation_role: showcase
     multi_stack: true
     orchestration_target: true
@@ -122,8 +123,11 @@ projects:
         - { name: demoapp003, tool: specflow, language: csharp }
       parity_scripts: .batch/*.ps1
     notes: >-
-      Multi-stack POC with its own doc system; run stack defaults inside the touched stack's
-      directory, never at the repo root.
+      Multi-stack POC with its own doc system. All 93 backlog items are resolved: the three-Stack
+      deterministic solver includes Naked Pairs and X-Wing, while DEMOAPP001 also supplies the
+      interactive tutor and puzzle generator. Browser-only visualisation evidence is published at
+      https://gbrooks1970.github.io/gb.automation.smoketests.sudoku.poc/. Run stack defaults inside
+      the touched stack's directory, never at the repo root.
 
   - project: bfx-ws-screenplay
     github: GBrooks1970/bfx-ws-screenplay
