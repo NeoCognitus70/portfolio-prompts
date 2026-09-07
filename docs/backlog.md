@@ -1,11 +1,14 @@
 # portfolio-prompts — Backlog
 
-**Version:** 23 — PP-35 resolved 2026-09-04 after patch release `0.4.1` merged through PR #76,
-passed its exact-merge gate, was reinstalled from merged `main`, and produced no attributable
-warning in a fresh Codex process. The installed cache matches all 66 release-bearing source files.
-The remaining icon warnings belong to the external bundled `spreadsheets` plugin. PP-00..PP-35 are
-resolved; there are no outstanding items.
-**Last Updated:** 2026-09-04
+**Version:** 24 — PP-36 resolved 2026-09-07: the shared per-project Kanban generator + drift-gate
+(`tools/kanban/`, decisions D5–D8) is built, tested, wired into the self-gate, published as the public
+npm package `portfolio-kanban-generator@1.0.0`, and adopted by its first consumer (`auth-separation`).
+PP-00..PP-36 are resolved; there are no outstanding items. v23 — PP-35 resolved 2026-09-04 after patch
+release `0.4.1` merged through PR #76, passed its exact-merge gate, was reinstalled from merged `main`,
+and produced no attributable warning in a fresh Codex process. The installed cache matches all 66
+release-bearing source files. The remaining icon warnings belong to the external bundled `spreadsheets`
+plugin.
+**Last Updated:** 2026-09-07
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills, and its update review
@@ -43,10 +46,10 @@ No outstanding items.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 15 | **15 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34) — 0 open |
+| MEDIUM (10–19) | 16 | **16 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36) — 0 open |
 | LOW (0–9) | 21 | **21 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30, PP-35) — 0 open |
 | **Total Outstanding** | **0** | — |
-| Resolved | 36 | PP-00..PP-35 |
+| Resolved | 37 | PP-00..PP-36 |
 
 **Outstanding, by suggested order:** none.
 
@@ -56,6 +59,56 @@ No outstanding items.
 
 Resolved items are kept as a record that the gap existed, verbatim as last written, grouped by the
 review cycle that produced them (newest first) and in item order within each group.
+
+### From the 2026-09-06 to 2026-09-07 shared Kanban generator cycle (PP-36)
+
+#### PP-36: Build the shared per-project Kanban generator + drift-gate — Score: 18 ✅ Resolved 2026-09-07
+
+**Score:** Security (0) + Drift (10) + Maintenance (8) = **18 (MEDIUM)**
+**Status:** RESOLVED 2026-09-07 — generator, drift-gate and phase derivation merged to `main`;
+published as a public npm package; first consumer migrated onto it.
+**Problem:** the portfolio had no shared way to produce a project's implementation Kanban. The one
+worked example (`auth-separation`) hand-authored its board and maintained it with a per-repo bespoke
+script (`scripts/sync-kanban-status.mjs`) plus a ~2.9 MB vendored React/Babel runtime. Any second
+project wanting a board would have had to fork that logic, and nothing kept a committed board in step
+with its backlog across repos — the exact drift the exemplar's own gate warned about.
+
+**Impact:** without a shared tool, board tooling would be copy-pasted and diverge per repo, and the
+"published board" evidence class the README leans on would be unmaintainable at portfolio scale.
+
+**Success Criteria:**
+
+- [x] `tools/kanban/` generator: pluggable backlog adapters (`auth-table` required; `risk-block`
+      scaffold), an optional per-project content override, the derive-status rule carried over
+      **verbatim** from the exemplar (scope beats dependency-readiness; readiness never from `blocks`),
+      and a single self-contained board embedding `payload-tickets` + `payload-stats`.
+- [x] `--check` drift-gate (T5) with the run/gate validations: structural backlog↔board match,
+      override-id existence, ADR-citation resolution, adapter parsed ≥1 ticket, and determinism
+      (byte-identical on unchanged inputs, `generatedAt` excluded).
+- [x] Unit tests against the derive-status truth table, adapters, override and end-to-end generation;
+      wired into `tools/check-library.py` (`check_kanban`) and `tools/tests/`.
+- [x] D5 (generator + optional content override) and the registry additions `override_path` /
+      `backlog_dialect`.
+- [x] D6 render stack decided and recorded (vanilla single-file; no React/Babel) —
+      `tools/kanban/DECISION-render-stack.md`.
+- [x] D7 — `phase` derived from the backlog's `Phase N` section headings.
+- [x] D8 — published as the public npm package `portfolio-kanban-generator@1.0.0` (MIT), so consumers
+      run the drift-gate via `npx` without vendoring.
+- [x] First consumer proven: `auth-separation` migrated onto the shared generator (its content
+      extracted to `docs/kanban-content.json`, board regenerated self-contained, vendored runtime
+      removed, `npx … --check` wired into CI).
+
+**Implementation boundary:** the generator and its tests live in this repository under `tools/kanban/`;
+only the npm package is public (this source repo stays private). D8 (the npm publication and its
+`publish-kanban.yml` release workflow) was carried out by a parallel session. Consuming-repo changes
+(the `auth-separation` migration, T3/T4) are recorded in that repository's own backlog, not here.
+
+Completion evidence: T2/T5 in [PR #79](https://github.com/NeoCognitus70/portfolio-prompts/pull/79)
+(`9e45cde`); D7 in [PR #81](https://github.com/NeoCognitus70/portfolio-prompts/pull/81) (`744de3e`);
+D8 packaging in PR #83 (`afa6378`) — `portfolio-kanban-generator@1.0.0` verified live on the npm
+registry (`npm view` → `1.0.0`, dist-tag `latest`, MIT). First-consumer adoption merged as
+[GBrooks1970/auth-separation#22](https://github.com/GBrooks1970/auth-separation/pull/22) (`066e883`),
+CI green on both lanes. `check-library.py` passes with the new `check_kanban` gate.
 
 ### From the 2026-09-03 to 2026-09-04 Codex presentation-metadata cycle (PP-35)
 
