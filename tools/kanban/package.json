@@ -1,0 +1,51 @@
+{
+  "name": "portfolio-kanban-generator",
+  "version": "1.0.0",
+  "description": "Self-contained per-project implementation-Kanban board generator with a CI drift-gate (--check). Derives every ticket's status from the backlog + dependency graph; zero runtime dependencies (vanilla Node).",
+  "type": "module",
+  "bin": {
+    "generate-kanban": "generate-kanban.mjs"
+  },
+  "exports": {
+    ".": "./generate-kanban.mjs",
+    "./lib/*": "./lib/*"
+  },
+  "files": [
+    "generate-kanban.mjs",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "kanban",
+    "backlog",
+    "board-generator",
+    "drift-gate",
+    "ci",
+    "static-html",
+    "zero-dependency",
+    "test-automation-portfolio"
+  ],
+  "author": {
+    "name": "Gary Brooks"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NeoCognitus70/portfolio-prompts.git",
+    "directory": "tools/kanban"
+  },
+  "homepage": "https://github.com/NeoCognitus70/portfolio-prompts/tree/main/tools/kanban#readme",
+  "bugs": {
+    "url": "https://github.com/NeoCognitus70/portfolio-prompts/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
