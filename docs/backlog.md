@@ -1,11 +1,14 @@
 # portfolio-prompts — Backlog
 
-**Version:** 23 — PP-35 resolved 2026-09-04 after patch release `0.4.1` merged through PR #76,
-passed its exact-merge gate, was reinstalled from merged `main`, and produced no attributable
-warning in a fresh Codex process. The installed cache matches all 66 release-bearing source files.
-The remaining icon warnings belong to the external bundled `spreadsheets` plugin. PP-00..PP-35 are
-resolved; there are no outstanding items.
-**Last Updated:** 2026-09-04
+**Version:** 24 — PP-36 resolved 2026-09-07: the shared per-project Kanban generator + drift-gate
+(`tools/kanban/`, decisions D5–D8) is built, tested, wired into the self-gate, published as the public
+npm package `portfolio-kanban-generator@1.0.0`, and adopted by its first consumer (`auth-separation`).
+PP-00..PP-36 are resolved; there are no outstanding items. v23 — PP-35 resolved 2026-09-04 after patch
+release `0.4.1` merged through PR #76, passed its exact-merge gate, was reinstalled from merged `main`,
+and produced no attributable warning in a fresh Codex process. The installed cache matches all 66
+release-bearing source files. The remaining icon warnings belong to the external bundled `spreadsheets`
+plugin.
+**Last Updated:** 2026-09-07
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills, and its update review
