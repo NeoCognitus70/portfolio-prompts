@@ -144,3 +144,39 @@ test('risk-block scaffold: pre-classified statuses pass through and round-trip t
     s.cleanup();
   }
 });
+
+test('board layout stays viewport-bounded so every column is reachable (PP-37)', () => {
+  const s = stage('auth-table');
+  try {
+    assert.equal(s.run(['--project', 'demo']), 0);
+    const html = readFileSync(s.board('demo'), 'utf8');
+
+    // The page is a full-height app shell: the board occupies the space the chrome leaves
+    // rather than growing to its tallest column. Without this, the board's own overflow-x
+    // scrollbar renders at its bottom edge, thousands of pixels below the fold.
+    const body = html.match(/\bbody\s*\{([^}]*)\}/);
+    assert.ok(body, 'body rule present');
+    assert.match(body[1], /height:100vh/, 'body is viewport-height');
+    assert.match(body[1], /flex-direction:column/, 'body is a column flex shell');
+
+    const board = html.match(/\.board\s*\{([^}]*)\}/);
+    assert.ok(board, '.board rule present');
+    assert.match(board[1], /overflow-x:auto/, 'board scrolls horizontally');
+    assert.match(board[1], /flex:1/, 'board fills the remaining height');
+    assert.match(board[1], /min-height:0/, 'board may shrink below its content height');
+    assert.doesNotMatch(
+      board[1],
+      /min-height:calc\(100vh/,
+      'board must not be forced taller than the viewport (PP-37 regression)',
+    );
+
+    // A height-capped column is what lets its body scroll vertically instead of stretching
+    // the column - and with it the board - to fit every card.
+    const colBody = html.match(/\.column-body\s*\{([^}]*)\}/);
+    assert.ok(colBody, '.column-body rule present');
+    assert.match(colBody[1], /overflow-y:auto/, 'column body scrolls vertically');
+    assert.match(colBody[1], /min-height:0/, 'column body may shrink below its content height');
+  } finally {
+    s.cleanup();
+  }
+});
