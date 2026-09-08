@@ -382,6 +382,55 @@ def validate_codex_default_prompts(interface: dict) -> list[str]:
     return []
 
 
+# Prompts that deliberately ship without a skills/<name>/ wrapper, mapped to the reason.
+# Record an exception here rather than letting a missing wrapper pass silently: a lifecycle
+# prompt with no wrapper is *invisible* to a skill-driven agent, not merely undeclared, so the
+# stage it documents gets skipped rather than declined (PP-39).
+PROMPT_SKILL_EXCEPTIONS: dict[str, str] = {}
+
+
+def prompt_skill_coverage_failures(
+    prompt_stems: set[str], skill_names: set[str], exceptions: dict[str, str]
+) -> list[str]:
+    """Return a failure for every prompt with neither a skill wrapper nor a recorded exception.
+
+    Also flags stale bookkeeping in the exception map, so it cannot quietly outlive the gap it
+    was written for.
+    """
+    fails: list[str] = []
+    for stem in sorted(prompt_stems):
+        if stem in skill_names or stem in exceptions:
+            continue
+        fails.append(
+            f"[skills] '{stem}.prompt.md' has no skills/{stem}/ wrapper, so a skill-driven agent "
+            "cannot discover it; add the wrapper or record it in PROMPT_SKILL_EXCEPTIONS"
+        )
+    for stem in sorted(exceptions):
+        if stem in skill_names:
+            fails.append(
+                f"[skills] '{stem}' is recorded in PROMPT_SKILL_EXCEPTIONS but now has a skill "
+                "wrapper; remove the stale exception"
+            )
+        elif stem not in prompt_stems:
+            fails.append(
+                f"[skills] PROMPT_SKILL_EXCEPTIONS names '{stem}', which is not a prompt file"
+            )
+    return fails
+
+
+def check_prompt_skill_coverage(fails: list[str]) -> None:
+    """Every canonical prompt must be reachable as a skill (the reverse of check_skills)."""
+    suffix = ".prompt.md"
+    prompt_stems = {p.name[: -len(suffix)] for p in HERE.glob("*" + suffix)}
+    skills_dir = HERE / "skills"
+    skill_names = (
+        {s.parent.name for s in skills_dir.glob("*/SKILL.md")} if skills_dir.is_dir() else set()
+    )
+    fails.extend(
+        prompt_skill_coverage_failures(prompt_stems, skill_names, PROMPT_SKILL_EXCEPTIONS)
+    )
+
+
 def check_release_metadata(fails: list[str]) -> None:
     backlog = (HERE / "docs" / "backlog.md").read_text(encoding="utf-8")
     fails.extend(validate_backlog_consistency(backlog))
@@ -634,6 +683,7 @@ def main() -> int:
         check_ci_workflow,
         check_internal_links,
         check_skills,
+        check_prompt_skill_coverage,
         check_release_metadata,
         check_codex_plugin,
         check_working_norms,
@@ -650,7 +700,7 @@ def main() -> int:
             print("  - " + f)
         return 1
     print("check-library: PASS (registry classification, lifecycle/presentation semantics, README generated, "
-          "least-privilege CI, internal links, skills, release metadata, Codex plugin, working norms, "
+          "least-privilege CI, internal links, skills, prompt-skill coverage, release metadata, Codex plugin, working norms, "
           "invocation paths, worklist example, workspace preflight scenarios, handover pairs, kanban generator)")
     return 0
 
