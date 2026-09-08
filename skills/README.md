@@ -13,6 +13,7 @@ the skill adds triggering, input handling, UI metadata, and invocation policy.
 | `derive-worklist` | `derive-worklist.prompt.md` | project, optional worklist source | Plan a worklist; no actioning |
 | `loop-worklist` | `loop-worklist.prompt.md` | project, optional worklist source | Explicit-only; execute one item per invocation or iteration |
 | `write-implementation-log` | `write-implementation-log.prompt.md` | project | After a development task |
+| `write-walkthrough` | `write-walkthrough.prompt.md` | project, or root for a cross-portfolio batch | After a discrete batch; evidence-grounded, immutable per date/slug |
 | `write-code-review` | `write-code-review.prompt.md` | project | Review an onboarded project |
 | `write-project-in-depth-report` | `write-project-in-depth-report.prompt.md` | project, optional output root/cut-off/audience | Versioned Markdown/HTML project dossier; target repo read-only |
 | `triage-review-findings` | `triage-review-findings.prompt.md` | project and review path | Review findings to approved worklist; no actioning |

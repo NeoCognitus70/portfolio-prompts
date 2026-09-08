@@ -1,0 +1,6 @@
+interface:
+  display_name: "Write Walkthrough"
+  short_description: "Record an evidence-grounded walkthrough of a finished batch"
+  default_prompt: "Use $portfolio-prompts:write-walkthrough to record a walkthrough for <project-folder> (or root)."
+policy:
+  allow_implicit_invocation: true
