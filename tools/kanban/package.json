@@ -1,7 +1,7 @@
 {
   "name": "portfolio-kanban-generator",
-  "version": "1.0.0",
-  "description": "Self-contained per-project implementation-Kanban board generator with a CI drift-gate (--check). Derives every ticket's status from the backlog + dependency graph; zero runtime dependencies (vanilla Node).",
+  "version": "1.1.0",
+  "description": "Self-contained per-project implementation-Kanban board generator with a CI drift-gate (--check). Derives every ticket's status from the backlog - via the dependency graph (auth-table) or the authored status (risk-block); zero runtime dependencies (vanilla Node).",
   "type": "module",
   "bin": {
     "generate-kanban": "generate-kanban.mjs"
