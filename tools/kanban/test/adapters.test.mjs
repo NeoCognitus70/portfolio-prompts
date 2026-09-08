@@ -133,3 +133,95 @@ test('parseBacklog: fails loudly on an unknown dialect', () => {
 test('parseBacklog: fails loudly when the adapter parses zero tickets', () => {
   assert.throws(() => parseBacklog('# nothing here\n', 'auth-table'), /parsed zero tickets/);
 });
+
+// --- risk-block, shipping template dialect (PP-38) ---------------------------
+// One sample carrying everything the real portfolio backlogs throw at it: the
+// canonical heading, a review-qualified number, an explicit id, prose headings
+// that must never become cards, and a resolved section.
+const RISK_TEMPLATE = `
+### HIGH Priority (Score: 20-30)
+
+#### Risk #1: Creds in log — Score: 24
+**Status:** IN PROGRESS
+
+**Problem:**
+Passwords are serialised into the log sink.
+
+**Impact Analysis:**
+- **Security (10/10):** readable by anyone with log access.
+
+**Success Criteria:**
+- [ ] Fields are redacted.
+- [x] Regression test added.
+
+#### Risk #2 (review #1): No rate limit — Score: 21
+**Status:** READY TO START
+
+### MEDIUM Priority (Score: 10-19)
+
+#### Risk PBR-07: No restore drill — Score: 12
+**Status:** BLOCKED
+
+## Delivery notes
+
+#### Out of scope
+
+#### Implementation acceptance criteria
+
+#### Validation and closure criteria
+
+### Resolved Risks
+
+#### Secure cookie attribute ✅ Resolved 2026-08-07
+**Resolution:** done.
+`;
+
+test('riskBlock: parses the canonical heading and both real-world variants', () => {
+  assert.deepEqual(
+    riskBlock(RISK_TEMPLATE).map((x) => x.id),
+    ['RISK-1', 'RISK-2', 'PBR-07', 'RES-SECURE-COOKIE-ATTRIBUTE'],
+  );
+});
+
+test('riskBlock: prose #### headings never become cards (zero false positives)', () => {
+  const ids = riskBlock(RISK_TEMPLATE).map((x) => x.id).join(' ');
+  for (const phantom of ['OUT-OF-SCOPE', 'IMPLEMENTATION', 'VALIDATION']) {
+    assert.doesNotMatch(ids, new RegExp(phantom), `${phantom} must not become a ticket`);
+  }
+});
+
+test('riskBlock: template status vocabulary maps to columns; resolved section is Done', () => {
+  assert.deepEqual(
+    Object.fromEntries(riskBlock(RISK_TEMPLATE).map((x) => [x.id, x.status])),
+    {
+      'RISK-1': 'In Progress',
+      'RISK-2': 'Ready',
+      'PBR-07': 'Backlog',
+      'RES-SECURE-COOKIE-ATTRIBUTE': 'Done',
+    },
+  );
+});
+
+test('riskBlock: band comes from the enclosing heading, else from the score', () => {
+  const p = Object.fromEntries(riskBlock(RISK_TEMPLATE).map((x) => [x.id, x.priority]));
+  assert.equal(p['RISK-1'], 'HIGH');
+  assert.equal(p['RISK-2'], 'HIGH');
+  assert.equal(p['PBR-07'], 'MEDIUM');
+  // No enclosing band heading: the band is derived from the score instead.
+  assert.equal(riskBlock('#### Risk #9: x — Score: 4\n**Status:** BLOCKED')[0].priority, 'LOW');
+  assert.equal(riskBlock('#### Risk #9: x — Score: 25\n**Status:** BLOCKED')[0].priority, 'HIGH');
+});
+
+test('riskBlock: card body is read from the backlog, so no override is needed', () => {
+  const t = riskBlock(RISK_TEMPLATE)[0];
+  assert.match(t.description, /Passwords are serialised/, 'Problem becomes the description');
+  assert.match(t.description, /Impact analysis:/, 'Impact Analysis is carried too');
+  assert.deepEqual(t.acceptance, ['Fields are redacted.', 'Regression test added.']);
+});
+
+test('riskBlock: duplicate ids fail loudly rather than producing two cards', () => {
+  assert.throws(
+    () => riskBlock('#### Risk #1: a — Score: 5\n#### Risk #1: b — Score: 6'),
+    /duplicate ticket id/,
+  );
+});

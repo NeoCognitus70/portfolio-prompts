@@ -88,3 +88,17 @@ test('loadOverride: absent file yields {}; malformed JSON fails loudly', () => {
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('mergeContent: an override wins over adapter-supplied body, which wins over nothing (PP-38)', () => {
+  const header = [
+    // risk-block reads body straight out of the backlog; auth-table supplies none.
+    { id: 'R-1', title: 'from backlog', blockedBy: [], backlogStatus: 'Ready', status: 'Ready',
+      description: 'backlog text', acceptance: ['backlog criterion'] },
+    { id: 'R-2', title: 'no body anywhere', blockedBy: [], backlogStatus: 'Ready', status: 'Ready' },
+  ];
+  const merged = mergeContent(header, { 'R-1': { description: 'override text' } });
+  const byId = Object.fromEntries(merged.map((t) => [t.id, t]));
+  assert.equal(byId['R-1'].description, 'override text', 'override wins');
+  assert.deepEqual(byId['R-1'].acceptance, ['backlog criterion'], 'un-overridden backlog body survives');
+  assert.equal('description' in byId['R-2'], false, 'absent everywhere stays absent');
+});

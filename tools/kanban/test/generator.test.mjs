@@ -180,3 +180,41 @@ test('board layout stays viewport-bounded so every column is reachable (PP-37)',
     s.cleanup();
   }
 });
+
+test('risk-template: a template-shaped backlog generates a full board with no content override (PP-38)', () => {
+  const s = stage('risk-template');
+  try {
+    assert.equal(s.run(['--project', 'templatedemo', '--dialect', 'risk-block']), 0);
+    const html = readFileSync(s.board('templatedemo'), 'utf8');
+    const tickets = extractPayload(html, 'payload-tickets');
+
+    // Five real risks; the three prose #### headings produced no phantom cards.
+    assert.equal(tickets.length, 5);
+    assert.deepEqual(
+      Object.fromEntries(tickets.map((t) => [t.id, t.status])),
+      {
+        'RISK-1': 'In Progress',
+        'RISK-2': 'Ready',
+        'PBR-07': 'Backlog',
+        'RISK-4': 'Done',
+        'RES-SESSION-COOKIE-MISSING-THE-SECURE-ATTRIBUTE': 'Done',
+      },
+    );
+
+    // Body reached the card from the backlog alone - this fixture has no override file.
+    const one = tickets.find((t) => t.id === 'RISK-1');
+    assert.match(one.description, /request logger serialises/);
+    assert.equal(one.acceptance.length, 2);
+    assert.equal(one.priority, 'HIGH');
+    assert.equal(one.score, 24);
+
+    // Band badges need styling the auth-table P0-P3 palette does not cover.
+    assert.match(html, /\.tag-high\s*\{/, 'HIGH badge is styled');
+    assert.match(html, /\.border-medium\s*\{/, 'MEDIUM card border is styled');
+
+    // Deterministic: regenerating the committed board reports no drift.
+    assert.equal(s.run(['--check', '--project', 'templatedemo', '--dialect', 'risk-block']), 0);
+  } finally {
+    s.cleanup();
+  }
+});

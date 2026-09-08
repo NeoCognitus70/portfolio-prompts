@@ -27,6 +27,7 @@ FIXTURES = [
     # (fixture folder, project, extra args)
     ("auth-table", "demo", []),
     ("risk-block", "riskdemo", ["--dialect", "risk-block"]),
+    ("risk-template", "templatedemo", ["--dialect", "risk-block"]),
 ]
 
 
