@@ -40,7 +40,7 @@ const BOARD_SCRIPT = String.raw`
   var TICKETS = JSON.parse(document.getElementById('payload-tickets').textContent);
   var STATS = JSON.parse(document.getElementById('payload-stats').textContent);
   var COLUMNS = ['Backlog', 'Ready', 'In Progress', 'In Review', 'Done', 'Parked'];
-  var PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
+  var PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3, HIGH: 0, MEDIUM: 1, LOW: 2 };
   var byId = {};
   TICKETS.forEach(function (t) { byId[t.id] = t; });
 
@@ -201,11 +201,15 @@ const STYLE = String.raw`
     .tag { font-size:9px; font-weight:700; padding:2px 6px; border-radius:3px; text-transform:uppercase; letter-spacing:.04em; }
     .tag-p0 { background:var(--p0-bg); color:var(--p0); } .tag-p1 { background:var(--p1-bg); color:var(--p1); }
     .tag-p2 { background:var(--p2-bg); color:var(--p2); } .tag-p3 { background:var(--p3-bg); color:var(--p3); }
+    .tag-high { background:var(--p0-bg); color:var(--p0); } .tag-medium { background:var(--p1-bg); color:var(--p1); }
+    .tag-low { background:var(--p3-bg); color:var(--p3); }
     .tag-type { background:#e0e7ff; color:#3730a3; } .tag-phase { background:#f0fdf4; color:#166534; }
     .tag-blocked { background:#fef3c7; color:#92400e; }
     .card-deps { font-size:10px; color:var(--muted); margin-top:6px; }
     .border-p0 { border-left-color:var(--p0); } .border-p1 { border-left-color:var(--p1); }
     .border-p2 { border-left-color:var(--p2); } .border-p3 { border-left-color:var(--p3); }
+    .border-high { border-left-color:var(--p0); } .border-medium { border-left-color:var(--p1); }
+    .border-low { border-left-color:var(--p3); }
     .modal-bg { position:fixed; inset:0; background:rgba(15,23,42,.5); display:flex; align-items:center; justify-content:center; z-index:100; padding:20px; }
     .modal { background:#fff; border-radius:8px; max-width:800px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 20px 50px rgba(0,0,0,.3); }
     .modal-head { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }

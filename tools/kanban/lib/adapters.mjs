@@ -93,40 +93,184 @@ export function authTable(text) {
 }
 
 /**
- * risk-block (SCAFFOLD ONLY, PRE-CLASSIFIED — not the shipping path).
+ * risk-block (SHIPPING, PRE-CLASSIFIED).
  *
- * Reads a templated risk backlog of the shape:
- *   #### Risk #3: Some risk title — Score: 21
- *   **Status:** IN PROGRESS
- * Ids are synthesised as RISK-<N>. The authored status maps straight to a final
- * column (no graph recomputation — a risk has no dependency edges):
- *   COMPLETE    -> Done
- *   IN PROGRESS -> In Progress
- *   READY START -> Ready
- *   BLOCKED     -> Backlog
- * `backlogStatus` (the canonical four-value field) is set to the nearest of
- * Done | Ready | Backlog for schema completeness.
+ * Reads the portfolio's shared risk-scored backlog template. Unlike auth-table
+ * this dialect is PRE-CLASSIFIED: a risk carries no dependency edges, so the
+ * backlog author owns the whole status and derive-status never recomputes it.
  *
- * Scaffold status: parsing and mapping are implemented and unit-tested, but this
- * dialect carries no phase and no dependency edges, so its boards are header-only
- * queues. The drift-gate and every migrated repo use auth-table.
+ * Item headings (`####`), all requiring an explicit `Score:` so prose headings
+ * can never become cards:
+ *   #### Risk #3: Title — Score: 21              -> RISK-3   (canonical template)
+ *   #### Risk #2 (review #1): Title — Score: 12  -> RISK-2   (qualified variant)
+ *   #### Risk PBR-07: Title — Score: 10          -> PBR-07   (explicit-id variant)
+ * Inside a `Resolved Risks` section a scoreless closure heading is also an item:
+ *   #### Title ✅ Resolved 2026-08-07            -> RES-<slug of title>
+ * Every other `####` heading — "Problem", "Impact Analysis", "Out of scope",
+ * "Implementation acceptance criteria" — matches neither form and is ignored.
+ *
+ * Priority band comes from the enclosing `### HIGH|MEDIUM|LOW Priority` heading,
+ * falling back to the score (>=20 HIGH, >=10 MEDIUM, else LOW) so a band is
+ * always present to group and badge by. The renderer has no phase concept for
+ * this dialect; band + score take that role.
+ *
+ * Body content is read from the backlog itself — `**Problem:**` (plus any
+ * `**Impact Analysis:**`) becomes the description and `**Success Criteria:**`
+ * checkboxes become acceptance — so a risk-scored project needs no per-project
+ * content override. An override, where supplied, still wins (see mergeContent).
+ *
+ * Status vocabulary -> column (pre-classified pass-through):
+ *   COMPLETE -> Done | IN PROGRESS -> In Progress
+ *   READY TO START (or READY START) -> Ready | BLOCKED -> Backlog
+ * A resolved-section entry is Done. An item with no Status line is Backlog.
  */
+
+const BAND_RE = /^#{2,3}\s+(HIGH|MEDIUM|LOW)\s+Priority\b/i;
+const RESOLVED_SECTION_RE = /^#{2,3}\s+Resolved\s+Risks?\b/i;
+/** `Risk <ref>: <title> — Score: <n>`; ref is `#N`, `#N (qualifier)` or an id. */
+const ITEM_RE = /^####\s+Risk\s+(#\s*\d+(?:\s*\([^)]*\))?|[A-Za-z][\w.-]*)\s*:\s*(.+?)\s*[—–-]\s*Score:\s*(\d+)\s*$/;
+/** Scoreless closure heading, only meaningful inside a Resolved Risks section. */
+const RESOLVED_ITEM_RE = /^####\s+(.+?)\s*(?:✅\s*)?Resolved\b.*$/;
+
+/** Stable, readable id for a resolved entry that carries no explicit risk ref. */
+function slugId(title) {
+  const slug = title
+    .replace(/[`*_]/g, '')
+    .replace(/[^A-Za-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toUpperCase()
+    .split('-')
+    .filter(Boolean)
+    .slice(0, 6)
+    .join('-');
+  return `RES-${slug || 'ITEM'}`;
+}
+
+/** Band for a score, used when no band heading encloses the item. */
+function bandForScore(score) {
+  if (score === undefined) return undefined;
+  if (score >= 20) return 'HIGH';
+  if (score >= 10) return 'MEDIUM';
+  return 'LOW';
+}
+
+/** Collect the lines of a `**Label:**` block until the next label or heading. */
+function labelBlock(lines, label) {
+  const head = new RegExp(`^\\*\\*${label}:\\*\\*\\s*(.*)$`);
+  const out = [];
+  let active = false;
+  for (const line of lines) {
+    const m = line.match(head);
+    if (m) {
+      active = true;
+      if (m[1].trim()) out.push(m[1].trim());
+      continue;
+    }
+    if (!active) continue;
+    if (/^#{1,6}\s/.test(line) || /^\*\*[^*]+:\*\*/.test(line)) break;
+    out.push(line);
+  }
+  return out.join('\n').trim();
+}
+
 export function riskBlock(text) {
   const tickets = [];
-  const re = /^####\s+Risk\s+#(\d+):\s*(.+?)\s*[—-]\s*Score:\s*(\d+)\s*$/gm;
-  let m;
-  while ((m = re.exec(text)) !== null) {
-    const [, n, title, score] = m;
-    // The Status line is the first **Status:** after this heading.
-    const statusLine = text.slice(re.lastIndex).match(/^\s*\*\*Status:\*\*\s*(.+)$/m);
-    const word = statusLine ? statusLine[1].trim().toUpperCase() : '';
-    let status = 'Backlog';
-    let backlogStatus = 'Backlog';
+  const seen = new Set();
+  const lines = text.split(/\r?\n/);
+
+  // Index every item heading first, so a body is exactly the lines up to the next heading.
+  const marks = [];
+  let band;
+  let inResolved = false;
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    const bandMatch = line.match(BAND_RE);
+    if (bandMatch) {
+      band = bandMatch[1].toUpperCase();
+      inResolved = false;
+      continue;
+    }
+    if (RESOLVED_SECTION_RE.test(line)) {
+      inResolved = true;
+      band = undefined;
+      continue;
+    }
+    const item = line.match(ITEM_RE);
+    if (item) {
+      const ref = item[1].replace(/\s+/g, '');
+      const id = ref.startsWith('#') ? `RISK-${ref.slice(1).replace(/\(.*\)$/, '')}` : ref.toUpperCase();
+      marks.push({ i, id, title: item[2].trim(), score: Number(item[3]), band, resolved: inResolved });
+      continue;
+    }
+    if (inResolved && line.startsWith('#### ')) {
+      const res = line.match(RESOLVED_ITEM_RE);
+      if (res) {
+        const title = res[1].replace(/[—–-]\s*$/, '').trim();
+        marks.push({ i, id: slugId(title), title, score: undefined, band: undefined, resolved: true });
+      }
+    }
+  }
+
+  for (let n = 0; n < marks.length; n += 1) {
+    const m = marks[n];
+    // Body runs to the next heading of any level, or the next item, whichever comes first.
+    let stop = n + 1 < marks.length ? marks[n + 1].i : lines.length;
+    for (let j = m.i + 1; j < stop; j += 1) {
+      if (/^#{1,6}\s/.test(lines[j]) && !/^\*\*/.test(lines[j])) { stop = j; break; }
+    }
+    const body = lines.slice(m.i + 1, stop);
+
+    const statusLine = body.find((l) => /^\*\*Status:\*\*/.test(l));
+    const word = statusLine ? statusLine.replace(/^\*\*Status:\*\*\s*/, '').trim().toUpperCase() : '';
+    let status = m.resolved ? 'Done' : 'Backlog';
+    let backlogStatus = m.resolved ? 'Done' : 'Backlog';
     if (/\bCOMPLETE\b/.test(word)) (status = 'Done'), (backlogStatus = 'Done');
     else if (/\bIN\s+PROGRESS\b/.test(word)) (status = 'In Progress'), (backlogStatus = 'Ready');
-    else if (/\bREADY\s+START\b/.test(word)) (status = 'Ready'), (backlogStatus = 'Ready');
+    else if (/\bREADY(?:\s+TO)?\s+START\b/.test(word)) (status = 'Ready'), (backlogStatus = 'Ready');
     else if (/\bBLOCKED\b/.test(word)) (status = 'Backlog'), (backlogStatus = 'Backlog');
-    tickets.push({ id: `RISK-${n}`, title, score: Number(score), blockedBy: [], backlogStatus, status });
+
+    // Score may also be authored as "**Priority Score:** ... = **21 points**".
+    let score = m.score;
+    if (score === undefined) {
+      const ps = body.find((l) => /^\*\*Priority Score:\*\*/.test(l));
+      const num = ps && ps.match(/=\s*\*\*(\d+)/);
+      if (num) score = Number(num[1]);
+    }
+
+    const problem = labelBlock(body, 'Problem');
+    const impact = labelBlock(body, 'Impact Analysis');
+    const descriptionParts = [];
+    if (problem) descriptionParts.push(problem);
+    if (impact) descriptionParts.push(`Impact analysis:\n${impact}`);
+    const description = descriptionParts.join('\n\n');
+
+    const criteria = labelBlock(body, 'Success Criteria');
+    const acceptance = criteria
+      .split(/\r?\n/)
+      .map((l) => l.match(/^\s*[-*]\s*\[[ xX]\]\s*(.+?)\s*$/))
+      .filter(Boolean)
+      .map((x) => x[1]);
+
+    if (seen.has(m.id)) {
+      throw new Error(
+        `backlog dialect 'risk-block' produced a duplicate ticket id '${m.id}' — ids must be unique; ` +
+          'give the risks distinct numbers or explicit ids.',
+      );
+    }
+    seen.add(m.id);
+
+    const priority = m.band ?? bandForScore(score);
+    tickets.push({
+      id: m.id,
+      title: m.title,
+      ...(score !== undefined ? { score } : {}),
+      ...(priority !== undefined ? { priority } : {}),
+      blockedBy: [],
+      backlogStatus,
+      status,
+      ...(description ? { description } : {}),
+      ...(acceptance.length ? { acceptance } : {}),
+    });
   }
   return tickets;
 }

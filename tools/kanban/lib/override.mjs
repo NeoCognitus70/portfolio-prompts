@@ -93,6 +93,19 @@ export function validateOverride(override, backlogIds) {
  * so populating it cannot affect readiness. Output field order is fixed for
  * deterministic serialisation.
  */
+/**
+ * Body-field precedence. An explicit per-project override always wins; failing
+ * that, a value the adapter read out of the backlog itself is used. The
+ * auth-table dialect supplies no body (its cards need an override), whereas the
+ * risk-block dialect carries its own Problem / Impact Analysis / Success
+ * Criteria, so a risk-scored project needs no override file at all.
+ */
+function pickBody(field, body, ticket) {
+  if (body[field] !== undefined) return { [field]: body[field] };
+  if (ticket[field] !== undefined) return { [field]: ticket[field] };
+  return {};
+}
+
 export function mergeContent(headerTickets, override) {
   // Reverse edges: b in blocks[a] iff a in blockedBy[b].
   const blocks = new Map(headerTickets.map((t) => [t.id, []]));
@@ -114,11 +127,11 @@ export function mergeContent(headerTickets, override) {
       blocks: blocks.get(t.id),
       backlogStatus: t.backlogStatus,
       status: t.status,
-      ...(body.description !== undefined ? { description: body.description } : {}),
-      ...(body.acceptance !== undefined ? { acceptance: body.acceptance } : {}),
-      ...(body.spec !== undefined ? { spec: body.spec } : {}),
-      ...(body.adr !== undefined ? { adr: body.adr } : {}),
-      ...(body.assignee !== undefined ? { assignee: body.assignee } : {}),
+      ...pickBody('description', body, t),
+      ...pickBody('acceptance', body, t),
+      ...pickBody('spec', body, t),
+      ...pickBody('adr', body, t),
+      ...pickBody('assignee', body, t),
     };
     return out;
   });
