@@ -1,6 +1,10 @@
 # portfolio-prompts — Backlog
 
-**Version:** 26 — PP-39 opened 2026-09-08: `write-walkthrough.prompt.md` is the only prompt in
+**Version:** 27 — PP-37 and PP-38 resolved 2026-09-08: the shared Kanban renderer is bounded to the
+viewport so every column is reachable, and the `risk-block` dialect ships as a template adapter that
+reads card body from the backlog. P-13 Phases 0–1 are complete; the combined `kanban-v1.1.0` release
+is an owner npm gate. PP-39 is the only outstanding item.
+v26 — PP-39 opened 2026-09-08: `write-walkthrough.prompt.md` is the only prompt in
 the library with no `skills/` wrapper, so the lifecycle's walkthrough stage is undiscoverable to a
 skill-driven agent and was silently skipped in the PP-37/PP-38 cycle.
 v25 — PP-37 and PP-38 opened 2026-09-08 from portfolio backlog item **P-13**
@@ -44,82 +48,6 @@ test-automation projects, not the prompt library.
 
 ## Outstanding Items
 
-### PP-37: Fix the shared Kanban renderer's horizontal-scroll defect — Score: 13
-
-**Score:** Security (0) + Drift (9) + Maintenance (4) = **13 (MEDIUM)**
-**Status:** READY TO START — P-13 Phase 0. Gates the Kanban fan-out: every board the rollout
-generates inherits this defect until it is fixed.
-**Provenance:** portfolio backlog item **P-13** (per-project Kanban rollout), Phase 0, and the root
-decision note `portfolio-docs/PORTFOLIO_KANBAN_D9_ADAPTER_STRATEGY_2026-09-08.md` §11 — both at the
-portfolio root, outside this repository.
-**Problem:** a generated board clips its right-hand columns and offers no usable horizontal
-scrollbar, so `In Review`, `Done` and `Parked` cannot be reached. The cause is a height/overflow
-interaction, not a missing `overflow-x`, confirmed by browser repro against the published
-`auth-separation` board: `.board` (`tools/kanban/lib/render.mjs`) is internally scrollable
-(`scrollWidth` 1548 versus `clientWidth` 564) but carries `min-height:calc(100vh - 200px)` with no
-bounded height, so it grows to its tallest column — measured `offsetHeight` 6378px with 46 Parked
-cards. A block's `overflow-x` scrollbar renders at that element's own bottom edge, which then sits
-roughly 5845px below the fold, while `body` and `html` stay `overflow-x:visible` and never scroll
-horizontally because the board clips its own overflow.
-**Impact:** the board's primary affordance — reading work across columns — is unusable at any normal
-viewport, on a public evidence artefact. Because the renderer is shared, the defect replicates to
-every board produced by the P-13 fan-out.
-
-**Success Criteria:**
-
-- [ ] `.board` is bounded to the viewport (the unbounded `min-height` no longer lets it grow to the
-      tallest column) so its horizontal scrollbar renders in view.
-- [ ] Each `.column-body` scrolls vertically within its capped column (`overflow-y:auto` only
-      engages once the column height is bounded).
-- [ ] At a standard laptop viewport all six columns (Backlog, Ready, In Progress, In Review, Done,
-      Parked) are reachable.
-- [ ] A deterministic regression check asserts the board fits the viewport height and that
-      horizontal reach is available, so the defect cannot return silently.
-- [ ] `cd tools/kanban && node --test` and `python tools/check-library.py` both pass.
-
-**Depends on:** nothing. **Unblocks:** the P-13 Phase 3 board fan-out.
-**Release note:** consumers pin exact package versions, so no existing board changes until its
-repository upgrades; `auth-separation` (deferred by D9) is unaffected until then.
-
-### PP-38: Promote the `risk-block` scaffold to a shipping template adapter — Score: 13
-
-**Score:** Security (0) + Drift (7) + Maintenance (6) = **13 (MEDIUM)**
-**Status:** READY TO START — P-13 Phase 1. Sequenced after PP-37 so a single combined
-`kanban-v1.1.0` release covers both.
-**Provenance:** portfolio backlog item **P-13**, Phase 1, and the root decision note
-`portfolio-docs/PORTFOLIO_KANBAN_D9_ADAPTER_STRATEGY_2026-09-08.md` §9.2 (decision D9 — Option A,
-scoped) — both at the portfolio root, outside this repository.
-**Problem:** `tools/kanban/lib/adapters.mjs` ships `auth-table` (graph-derived) plus a `risk-block`
-**scaffold** that its own header describes as carrying "no phase and no dependency edges, so its
-boards are header-only queues". Its heading regex matches the exact `#### Risk #N: ... — Score: N`
-form only, so it misses real-world variants (`Risk #N (review #x):`, `Risk <ID>:`); and because the
-adapter contract fails loudly on zero parsed tickets, pointing the generator at a real project
-backlog errors out rather than degrading. No project outside `auth-separation` can therefore be
-given a board.
-**Impact:** the entire non-auth rollout (P-13 Phases 2–3) is blocked. D9 accepted standardising the
-conforming backlogs to the shared `templates/backlog.template.md` shape, which makes one hardened
-adapter sufficient — but only once that adapter exists.
-
-**Success Criteria:**
-
-- [ ] Parses the canonical shared backlog-template shape with zero false positives on non-item
-      `####` headings (Problem, Impact Analysis, Refactor Strategy, Success Criteria, Out of scope)
-      and zero misses on real items, including the `Risk #N (review #x):` and `Risk <ID>:` variants.
-- [ ] The `### Resolved Risks` section maps to the Done column.
-- [ ] Template status vocabulary (COMPLETE / IN PROGRESS / READY TO START / BLOCKED) maps to columns
-      as a pre-classified pass-through — a risk carries no dependency edges, so no graph
-      recomputation is applied.
-- [ ] Card body is extracted from the backlog's own Problem / Impact Analysis / Success Criteria, so
-      a risk-scored project needs no per-project content override.
-- [ ] Priority band and score drive grouping and the priority badge, in place of the phase filter the
-      `auth-table` dialect supplies.
-- [ ] The fail-loudly contract is preserved: zero parsed items remains an error, never an empty
-      board.
-- [ ] Fixtures cover each real variant; `cd tools/kanban && node --test` and
-      `python tools/check-library.py` both pass.
-
-**Depends on:** PP-37 (sequencing only, so one release covers both).
-
 ### PP-39: Package `write-walkthrough` as a skill and gate prompt->skill coverage — Score: 10
 
 **Score:** Security (0) + Drift (7) + Maintenance (3) = **10 (MEDIUM)**
@@ -162,12 +90,12 @@ reverse, so nothing fails when a prompt ships without a skill.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 19 | **16 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36) — **3 open** (PP-37, PP-38, PP-39) |
+| MEDIUM (10–19) | 19 | **18 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36, PP-37, PP-38) — **1 open** (PP-39) |
 | LOW (0–9) | 21 | **21 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30, PP-35) — 0 open |
-| **Total Outstanding** | **3** | PP-37, PP-38, PP-39 |
-| Resolved | 37 | PP-00..PP-36 |
+| **Total Outstanding** | **1** | PP-39 |
+| Resolved | 39 | PP-00..PP-38 |
 
-**Outstanding, by suggested order:** PP-37 (renderer horizontal-scroll fix — P-13 Phase 0, gates the fan-out), then PP-38 (template adapter — P-13 Phase 1), then PP-39 (walkthrough skill wrapper + prompt->skill coverage gate). The first two score equally; their execution order is set by P-13's phases, not by score.
+**Outstanding, by suggested order:** PP-39 (walkthrough skill wrapper + prompt->skill coverage gate) — the only open item. Separately, the combined `kanban-v1.1.0` release remains an owner npm-credential gate rather than a backlog item.
 
 ---
 
@@ -175,6 +103,107 @@ reverse, so nothing fails when a prompt ships without a skill.
 
 Resolved items are kept as a record that the gap existed, verbatim as last written, grouped by the
 review cycle that produced them (newest first) and in item order within each group.
+
+### From the 2026-09-08 Kanban rollout cycle (PP-37, PP-38)
+
+Opened by portfolio backlog item **P-13** after decision **D9 — Option A, scoped** was accepted.
+
+#### PP-37: Fix the shared Kanban renderer's horizontal-scroll defect — Score: 13 ✅ Resolved 2026-09-08
+
+**Score:** Security (0) + Drift (9) + Maintenance (4) = **13 (MEDIUM)**
+**Status:** RESOLVED 2026-09-08 — the board is bounded to the viewport; P-13 Phase 0 is cleared,
+so the fan-out is no longer gated on it.
+**Provenance:** portfolio backlog item **P-13** (per-project Kanban rollout), Phase 0, and the root
+decision note `portfolio-docs/PORTFOLIO_KANBAN_D9_ADAPTER_STRATEGY_2026-09-08.md` §11 — both at the
+portfolio root, outside this repository.
+**Problem:** a generated board clips its right-hand columns and offers no usable horizontal
+scrollbar, so `In Review`, `Done` and `Parked` cannot be reached. The cause is a height/overflow
+interaction, not a missing `overflow-x`, confirmed by browser repro against the published
+`auth-separation` board: `.board` (`tools/kanban/lib/render.mjs`) is internally scrollable
+(`scrollWidth` 1548 versus `clientWidth` 564) but carries `min-height:calc(100vh - 200px)` with no
+bounded height, so it grows to its tallest column — measured `offsetHeight` 6378px with 46 Parked
+cards. A block's `overflow-x` scrollbar renders at that element's own bottom edge, which then sits
+roughly 5845px below the fold, while `body` and `html` stay `overflow-x:visible` and never scroll
+horizontally because the board clips its own overflow.
+**Impact:** the board's primary affordance — reading work across columns — is unusable at any normal
+viewport, on a public evidence artefact. Because the renderer is shared, the defect replicates to
+every board produced by the P-13 fan-out.
+
+**Success Criteria:**
+
+- [x] `.board` is bounded to the viewport (the unbounded `min-height` no longer lets it grow to the
+      tallest column) so its horizontal scrollbar renders in view.
+- [x] Each `.column-body` scrolls vertically within its capped column (`overflow-y:auto` only
+      engages once the column height is bounded).
+- [x] At a standard laptop viewport all six columns (Backlog, Ready, In Progress, In Review, Done,
+      Parked) are reachable.
+- [x] A deterministic regression check asserts the board fits the viewport height and that
+      horizontal reach is available, so the defect cannot return silently.
+- [x] `cd tools/kanban && node --test` and `python tools/check-library.py` both pass.
+
+**Depends on:** nothing. **Unblocks:** the P-13 Phase 3 board fan-out.
+**Release note:** consumers pin exact package versions, so no existing board changes until its
+repository upgrades; `auth-separation` (deferred by D9) is unaffected until then.
+
+Completion evidence: implementation commit `9812cc5` merged through
+[PR #90](https://github.com/NeoCognitus70/portfolio-prompts/pull/90) as `217ee1b`. PR integrity run
+[`34267880543`](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/34267880543) and the
+post-merge `main` run
+[`34268297488`](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/34268297488) both passed.
+Measured in-browser against the same 51-ticket input: board `offsetHeight` 6378px -> 534px, board bottom
+flush with the viewport (735.196 against 735, a sub-pixel overshoot), the page no longer scrolls
+vertically, and all six columns are reachable by scrolling within the board. The regression check was
+run against the previous rule and observed to fail before being committed. Detail in the
+[implementation log](implementation-logs/2026-09-08_pp-37-pp-38-kanban-scroll-fix-and-template-adapter.md).
+
+#### PP-38: Promote the `risk-block` scaffold to a shipping template adapter — Score: 13 ✅ Resolved 2026-09-08
+
+**Score:** Security (0) + Drift (7) + Maintenance (6) = **13 (MEDIUM)**
+**Status:** RESOLVED 2026-09-08 — the dialect ships. The combined `kanban-v1.1.0` release is still
+outstanding and is an owner npm-credential gate, not adapter work.
+**Provenance:** portfolio backlog item **P-13**, Phase 1, and the root decision note
+`portfolio-docs/PORTFOLIO_KANBAN_D9_ADAPTER_STRATEGY_2026-09-08.md` §9.2 (decision D9 — Option A,
+scoped) — both at the portfolio root, outside this repository.
+**Problem:** `tools/kanban/lib/adapters.mjs` ships `auth-table` (graph-derived) plus a `risk-block`
+**scaffold** that its own header describes as carrying "no phase and no dependency edges, so its
+boards are header-only queues". Its heading regex matches the exact `#### Risk #N: ... — Score: N`
+form only, so it misses real-world variants (`Risk #N (review #x):`, `Risk <ID>:`); and because the
+adapter contract fails loudly on zero parsed tickets, pointing the generator at a real project
+backlog errors out rather than degrading. No project outside `auth-separation` can therefore be
+given a board.
+**Impact:** the entire non-auth rollout (P-13 Phases 2–3) is blocked. D9 accepted standardising the
+conforming backlogs to the shared `templates/backlog.template.md` shape, which makes one hardened
+adapter sufficient — but only once that adapter exists.
+
+**Success Criteria:**
+
+- [x] Parses the canonical shared backlog-template shape with zero false positives on non-item
+      `####` headings (Problem, Impact Analysis, Refactor Strategy, Success Criteria, Out of scope)
+      and zero misses on real items, including the `Risk #N (review #x):` and `Risk <ID>:` variants.
+- [x] The `### Resolved Risks` section maps to the Done column.
+- [x] Template status vocabulary (COMPLETE / IN PROGRESS / READY TO START / BLOCKED) maps to columns
+      as a pre-classified pass-through — a risk carries no dependency edges, so no graph
+      recomputation is applied.
+- [x] Card body is extracted from the backlog's own Problem / Impact Analysis / Success Criteria, so
+      a risk-scored project needs no per-project content override.
+- [x] Priority band and score drive grouping and the priority badge, in place of the phase filter the
+      `auth-table` dialect supplies.
+- [x] The fail-loudly contract is preserved: zero parsed items remains an error, never an empty
+      board.
+- [x] Fixtures cover each real variant; `cd tools/kanban && node --test` and
+      `python tools/check-library.py` both pass.
+
+**Depends on:** PP-37 (sequencing only, so one release covers both).
+
+Completion evidence: implementation commit `7477055` merged through
+[PR #91](https://github.com/NeoCognitus70/portfolio-prompts/pull/91) as `d044e99`; PR integrity run
+[`34269465688`](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/34269465688) passed.
+The new `risk-template` fixture carries the canonical heading, the `Risk #N (review #x):` and
+`Risk <ID>:` variants, body extraction, the resolved section and three prose-heading traps, and is
+registered in the cross-language drift guard; it parses five tickets and zero phantom cards. Band
+badges were verified in-browser to resolve to the intended palette. `node --test` 58 pass;
+`python tools/check-library.py` PASS. Detail in the
+[implementation log](implementation-logs/2026-09-08_pp-37-pp-38-kanban-scroll-fix-and-template-adapter.md).
 
 ### From the 2026-09-06 to 2026-09-07 shared Kanban generator cycle (PP-36)
 
