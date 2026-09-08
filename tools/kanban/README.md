@@ -19,10 +19,10 @@ source repo that hosts this directory stays private; only the npm package is pub
 
 ```bash
 # run straight from npm — no install, pinned to an exact version (for CI)
-npx portfolio-kanban-generator@1.0.0 --check --dialect auth-table --project my-project
+npx portfolio-kanban-generator@1.1.0 --check --dialect auth-table --project my-project
 
 # write / refresh the board (run from the project repo root)
-npx portfolio-kanban-generator@1.0.0 --project my-project
+npx portfolio-kanban-generator@1.1.0 --project my-project
 ```
 
 Or, from a checkout of this repo (development / the library's own gate):
@@ -83,15 +83,29 @@ override):
   Status is keyword-classified — **Parked** (tested first) > **Done** > **Ready** >
   else **Backlog** — and `blockedBy` is read from the "Blocked by" cell. Ready/Backlog
   are recomputed from the graph.
-- **risk-block** (scaffold only, pre-classified): templated
-  `#### Risk #N: title — Score: N` blocks with a `**Status:**` line mapping
-  COMPLETE → Done, IN PROGRESS → In Progress, READY START → Ready, BLOCKED → Backlog.
-  Risks have no dependency edges, so the authored status passes through unchanged.
+- **risk-block** (shipping, pre-classified): the portfolio's shared risk-scored
+  backlog template. Item headings are `#### Risk #N: title — Score: N` plus the
+  variants `Risk #N (qualifier): …` and `Risk <ID>: …`; inside a `Resolved Risks`
+  section a scoreless `#### Title ✅ Resolved <date>` heading is also an item. Every
+  form requires a `Score:` or the resolved section, so prose `####` headings such as
+  "Out of scope" never become cards. `**Status:**` maps COMPLETE → Done,
+  IN PROGRESS → In Progress, READY TO START (or READY START) → Ready,
+  BLOCKED → Backlog; risks have no dependency edges, so the authored status passes
+  through unchanged. Priority band comes from the enclosing
+  `### HIGH|MEDIUM|LOW Priority` heading, falling back to the score, and drives
+  grouping and the card badge in place of auth-table's phase filter. Card body is
+  read from the backlog itself — `**Problem:**` (plus `**Impact Analysis:**`) becomes
+  the description and `**Success Criteria:**` checkboxes become acceptance — so a
+  risk-scored project needs **no content override**.
 
 An adapter **fails loudly** on a backlog it cannot parse: parsing zero tickets is an
 error, never an empty success.
 
 ### Content override (`docs/kanban-content.json`)
+
+Optional. Required only where the backlog does not itself carry card body — the
+`auth-table` dialect. A `risk-block` project's body comes from its own backlog, and an
+override, if supplied, still takes precedence over it.
 
 A JSON object keyed by ticket id whose values carry **only** body fields. Rules,
 enforced (not merely documented):
@@ -113,10 +127,10 @@ non-deterministic render. `--check` additionally fails on a missing or stale boa
 tools/kanban/
   generate-kanban.mjs        CLI: default writes/refreshes; --check is the drift-gate
   lib/derive-status.mjs      status derivation (verbatim rule) + stats recompute
-  lib/adapters.mjs           auth-table (required) + risk-block (scaffold)
+  lib/adapters.mjs           auth-table (graph-derived) + risk-block (pre-classified)
   lib/override.mjs           override load/validation, content merge, ADR resolution
   lib/render.mjs             self-contained vanilla-JS board renderer + payload I/O
-  test/                      node:test suites + fixtures (auth-table, risk-block)
+  test/                      node:test suites + fixtures (auth-table, risk-block, risk-template)
   DECISION-render-stack.md   D6 measurement and decision
 ```
 
@@ -149,8 +163,8 @@ package name).
 ```bash
 # 1. bump tools/kanban/package.json "version", commit, merge to main
 # 2. cut the release
-git tag kanban-v1.0.0
-git push origin kanban-v1.0.0
+git tag kanban-v1.1.0
+git push origin kanban-v1.1.0
 ```
 
 To publish manually instead (from this directory, logged in to npm):
