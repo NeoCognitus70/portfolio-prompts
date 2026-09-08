@@ -1,6 +1,9 @@
 # portfolio-prompts — Backlog
 
-**Version:** 25 — PP-37 and PP-38 opened 2026-09-08 from portfolio backlog item **P-13**
+**Version:** 26 — PP-39 opened 2026-09-08: `write-walkthrough.prompt.md` is the only prompt in
+the library with no `skills/` wrapper, so the lifecycle's walkthrough stage is undiscoverable to a
+skill-driven agent and was silently skipped in the PP-37/PP-38 cycle.
+v25 — PP-37 and PP-38 opened 2026-09-08 from portfolio backlog item **P-13**
 (per-project Kanban rollout) following decision **D9 — Option A, scoped**: PP-37 fixes the shared
 Kanban renderer's horizontal-scroll defect (P-13 Phase 0, which gates the fan-out) and PP-38
 promotes the `risk-block` scaffold to a shipping template adapter (P-13 Phase 1).
@@ -117,6 +120,41 @@ adapter sufficient — but only once that adapter exists.
 
 **Depends on:** PP-37 (sequencing only, so one release covers both).
 
+### PP-39: Package `write-walkthrough` as a skill and gate prompt->skill coverage — Score: 10
+
+**Score:** Security (0) + Drift (7) + Maintenance (3) = **10 (MEDIUM)**
+**Status:** READY TO START.
+**Provenance:** found while checking this session's lifecycle against the README's "Typical
+lifecycle" — the walkthrough stage had been skipped.
+**Problem:** the README documents the single-project lifecycle as
+`resume-session -> derive-worklist -> loop-worklist -> write-implementation-log / write-walkthrough ->
+write-code-review -> write-handover -> close-project`, and `run-project-cycle` sequences the same
+`log -> walkthrough` pair. `write-walkthrough.prompt.md` exists and is listed in the README Prompts
+table, but it is the **only** prompt in the library with no `skills/<name>/` wrapper. A skill-driven
+agent therefore never sees it: it is absent from the available-skills list that every other lifecycle
+prompt appears in, so the stage is undiscoverable and gets skipped rather than declined.
+**Impact:** a documented lifecycle stage is silently omitted. This is not hypothetical — the
+PP-37/PP-38 cycle in this repository ran `resume-session -> derive-worklist -> loop-worklist` and then
+went straight towards `write-handover`, skipping the walkthrough entirely until the omission was
+caught by hand. `check-library.py` validates that each skill's delegated prompt exists, but not the
+reverse, so nothing fails when a prompt ships without a skill.
+
+**Success Criteria:**
+
+- [ ] `skills/write-walkthrough/SKILL.md` exists, follows the thin-wrapper pattern used by the other
+      skills (frontmatter `name` matching the folder; body reads and follows the canonical
+      `write-walkthrough.prompt.md` rather than restating it), and declares the `PROJECT=` argument
+      including the `PROJECT=root` form the prompt supports for portfolio-level work.
+- [ ] `tools/check-library.py` gains a **prompt->skill coverage check**: every `*.prompt.md` that the
+      README presents as a lifecycle/invocable prompt has a matching `skills/<name>/` wrapper, with
+      any deliberate exception recorded explicitly rather than passing silently.
+- [ ] A deterministic test covers the new check in both directions (a prompt missing its skill fails;
+      a recorded exception passes).
+- [ ] The plugin manifests are version-bumped per the PP-33 convention, since a new skill is added.
+- [ ] `python tools/check-library.py` passes and the change merges through PR.
+
+**Depends on:** nothing.
+
 ---
 
 ## Risk Summary
@@ -124,12 +162,12 @@ adapter sufficient — but only once that adapter exists.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 18 | **16 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36) — **2 open** (PP-37, PP-38) |
+| MEDIUM (10–19) | 19 | **16 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36) — **3 open** (PP-37, PP-38, PP-39) |
 | LOW (0–9) | 21 | **21 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30, PP-35) — 0 open |
-| **Total Outstanding** | **2** | PP-37, PP-38 |
+| **Total Outstanding** | **3** | PP-37, PP-38, PP-39 |
 | Resolved | 37 | PP-00..PP-36 |
 
-**Outstanding, by suggested order:** PP-37 (renderer horizontal-scroll fix — P-13 Phase 0, gates the fan-out), then PP-38 (template adapter — P-13 Phase 1). The two score equally; execution order is set by P-13's phases, not by score.
+**Outstanding, by suggested order:** PP-37 (renderer horizontal-scroll fix — P-13 Phase 0, gates the fan-out), then PP-38 (template adapter — P-13 Phase 1), then PP-39 (walkthrough skill wrapper + prompt->skill coverage gate). The first two score equally; their execution order is set by P-13's phases, not by score.
 
 ---
 
