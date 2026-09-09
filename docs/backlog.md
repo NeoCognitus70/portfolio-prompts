@@ -1,6 +1,12 @@
 # portfolio-prompts — Backlog
 
-**Version:** 27 — PP-37 and PP-38 resolved 2026-09-08: the shared Kanban renderer is bounded to the
+**Version:** 28 — PP-39 resolved 2026-09-08 and the combined release shipped: `write-walkthrough`
+is now a skill and `check-library.py` gates prompt->skill coverage in both directions, so a
+documented lifecycle stage can no longer be invisible to a skill-driven agent.
+`portfolio-kanban-generator@1.1.0` is published (MIT, dist-tag `latest`) carrying PP-37 and PP-38,
+verified end to end from a clean directory. There are no outstanding items; P-13 Phases 2-3 are
+unblocked.
+v27 — PP-37 and PP-38 resolved 2026-09-08: the shared Kanban renderer is bounded to the
 viewport so every column is reachable, and the `risk-block` dialect ships as a template adapter that
 reads card body from the backlog. P-13 Phases 0–1 are complete; the combined `kanban-v1.1.0` release
 is an owner npm gate. PP-39 is the only outstanding item.
@@ -48,40 +54,7 @@ test-automation projects, not the prompt library.
 
 ## Outstanding Items
 
-### PP-39: Package `write-walkthrough` as a skill and gate prompt->skill coverage — Score: 10
-
-**Score:** Security (0) + Drift (7) + Maintenance (3) = **10 (MEDIUM)**
-**Status:** READY TO START.
-**Provenance:** found while checking this session's lifecycle against the README's "Typical
-lifecycle" — the walkthrough stage had been skipped.
-**Problem:** the README documents the single-project lifecycle as
-`resume-session -> derive-worklist -> loop-worklist -> write-implementation-log / write-walkthrough ->
-write-code-review -> write-handover -> close-project`, and `run-project-cycle` sequences the same
-`log -> walkthrough` pair. `write-walkthrough.prompt.md` exists and is listed in the README Prompts
-table, but it is the **only** prompt in the library with no `skills/<name>/` wrapper. A skill-driven
-agent therefore never sees it: it is absent from the available-skills list that every other lifecycle
-prompt appears in, so the stage is undiscoverable and gets skipped rather than declined.
-**Impact:** a documented lifecycle stage is silently omitted. This is not hypothetical — the
-PP-37/PP-38 cycle in this repository ran `resume-session -> derive-worklist -> loop-worklist` and then
-went straight towards `write-handover`, skipping the walkthrough entirely until the omission was
-caught by hand. `check-library.py` validates that each skill's delegated prompt exists, but not the
-reverse, so nothing fails when a prompt ships without a skill.
-
-**Success Criteria:**
-
-- [ ] `skills/write-walkthrough/SKILL.md` exists, follows the thin-wrapper pattern used by the other
-      skills (frontmatter `name` matching the folder; body reads and follows the canonical
-      `write-walkthrough.prompt.md` rather than restating it), and declares the `PROJECT=` argument
-      including the `PROJECT=root` form the prompt supports for portfolio-level work.
-- [ ] `tools/check-library.py` gains a **prompt->skill coverage check**: every `*.prompt.md` that the
-      README presents as a lifecycle/invocable prompt has a matching `skills/<name>/` wrapper, with
-      any deliberate exception recorded explicitly rather than passing silently.
-- [ ] A deterministic test covers the new check in both directions (a prompt missing its skill fails;
-      a recorded exception passes).
-- [ ] The plugin manifests are version-bumped per the PP-33 convention, since a new skill is added.
-- [ ] `python tools/check-library.py` passes and the change merges through PR.
-
-**Depends on:** nothing.
+No outstanding items.
 
 ---
 
@@ -90,12 +63,12 @@ reverse, so nothing fails when a prompt ships without a skill.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 19 | **18 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36, PP-37, PP-38) — **1 open** (PP-39) |
+| MEDIUM (10–19) | 19 | **19 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36, PP-37, PP-38) — 0 open |
 | LOW (0–9) | 21 | **21 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30, PP-35) — 0 open |
-| **Total Outstanding** | **1** | PP-39 |
-| Resolved | 39 | PP-00..PP-38 |
+| **Total Outstanding** | **0** | — |
+| Resolved | 40 | PP-00..PP-39 |
 
-**Outstanding, by suggested order:** PP-39 (walkthrough skill wrapper + prompt->skill coverage gate) — the only open item. Separately, the combined `kanban-v1.1.0` release remains an owner npm-credential gate rather than a backlog item.
+**Outstanding, by suggested order:** none.
 
 ---
 
@@ -104,7 +77,7 @@ reverse, so nothing fails when a prompt ships without a skill.
 Resolved items are kept as a record that the gap existed, verbatim as last written, grouped by the
 review cycle that produced them (newest first) and in item order within each group.
 
-### From the 2026-09-08 Kanban rollout cycle (PP-37, PP-38)
+### From the 2026-09-08 Kanban rollout and lifecycle-coverage cycle (PP-37, PP-38, PP-39)
 
 Opened by portfolio backlog item **P-13** after decision **D9 — Option A, scoped** was accepted.
 
@@ -204,6 +177,53 @@ registered in the cross-language drift guard; it parses five tickets and zero ph
 badges were verified in-browser to resolve to the intended palette. `node --test` 58 pass;
 `python tools/check-library.py` PASS. Detail in the
 [implementation log](implementation-logs/2026-09-08_pp-37-pp-38-kanban-scroll-fix-and-template-adapter.md).
+
+#### PP-39: Package `write-walkthrough` as a skill and gate prompt->skill coverage — Score: 10 ✅ Resolved 2026-09-08
+
+**Score:** Security (0) + Drift (7) + Maintenance (3) = **10 (MEDIUM)**
+**Status:** RESOLVED 2026-09-08 — the wrapper ships and the reverse gate is in place, so a
+prompt can no longer reach `main` undiscoverable to a skill-driven agent.
+**Provenance:** found while checking this session's lifecycle against the README's "Typical
+lifecycle" — the walkthrough stage had been skipped.
+**Problem:** the README documents the single-project lifecycle as
+`resume-session -> derive-worklist -> loop-worklist -> write-implementation-log / write-walkthrough ->
+write-code-review -> write-handover -> close-project`, and `run-project-cycle` sequences the same
+`log -> walkthrough` pair. `write-walkthrough.prompt.md` exists and is listed in the README Prompts
+table, but it is the **only** prompt in the library with no `skills/<name>/` wrapper. A skill-driven
+agent therefore never sees it: it is absent from the available-skills list that every other lifecycle
+prompt appears in, so the stage is undiscoverable and gets skipped rather than declined.
+**Impact:** a documented lifecycle stage is silently omitted. This is not hypothetical — the
+PP-37/PP-38 cycle in this repository ran `resume-session -> derive-worklist -> loop-worklist` and then
+went straight towards `write-handover`, skipping the walkthrough entirely until the omission was
+caught by hand. `check-library.py` validates that each skill's delegated prompt exists, but not the
+reverse, so nothing fails when a prompt ships without a skill.
+
+**Success Criteria:**
+
+- [x] `skills/write-walkthrough/SKILL.md` exists, follows the thin-wrapper pattern used by the other
+      skills (frontmatter `name` matching the folder; body reads and follows the canonical
+      `write-walkthrough.prompt.md` rather than restating it), and declares the `PROJECT=` argument
+      including the `PROJECT=root` form the prompt supports for portfolio-level work.
+- [x] `tools/check-library.py` gains a **prompt->skill coverage check**: every `*.prompt.md` that the
+      README presents as a lifecycle/invocable prompt has a matching `skills/<name>/` wrapper, with
+      any deliberate exception recorded explicitly rather than passing silently.
+- [x] A deterministic test covers the new check in both directions (a prompt missing its skill fails;
+      a recorded exception passes).
+- [x] The plugin manifests are version-bumped per the PP-33 convention, since a new skill is added.
+- [x] `python tools/check-library.py` passes and the change merges through PR.
+
+**Depends on:** nothing.
+
+Completion evidence: implementation commit `ef0d0c7` merged through
+[PR #95](https://github.com/NeoCognitus70/portfolio-prompts/pull/95) as `091ca83`.
+`skills/write-walkthrough/` ships `SKILL.md` plus `agents/openai.yaml`;
+`check-library.py` gained `check_prompt_skill_coverage` with an empty, documented
+`PROMPT_SKILL_EXCEPTIONS` map that also fails on stale bookkeeping; six deterministic tests in
+`tools/tests/test_prompt_skill_coverage.py` cover both directions, the exception paths and the live
+repository. The gate was proven against the real gap — hiding the new wrapper reproduces the exact
+failure and restoring it passes. Plugin manifests bumped 0.5.2 -> 0.6.0 per PP-33, which also covers
+the PP-37/PP-38 `tools/kanban` changes that had landed without a bump. `python tools/check-library.py`
+PASS, now reporting `prompt-skill coverage`.
 
 ### From the 2026-09-06 to 2026-09-07 shared Kanban generator cycle (PP-36)
 
