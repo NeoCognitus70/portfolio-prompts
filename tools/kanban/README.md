@@ -90,7 +90,9 @@ override):
   form requires a `Score:` or the resolved section, so prose `####` headings such as
   "Out of scope" never become cards. `**Status:**` maps COMPLETE → Done,
   IN PROGRESS → In Progress, READY TO START (or READY START) → Ready,
-  BLOCKED → Backlog; risks have no dependency edges, so the authored status passes
+  BLOCKED → Backlog, RECORDED → Parked (the accepted-risk terminal state — asserted
+  and consciously not accommodated, so closed to work but not a delivery);
+  risks have no dependency edges, so the authored status passes
   through unchanged. Priority band comes from the enclosing
   `### HIGH|MEDIUM|LOW Priority` heading, falling back to the score, and drives
   grouping and the card badge in place of auth-table's phase filter. Card body is

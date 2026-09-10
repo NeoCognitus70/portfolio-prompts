@@ -122,7 +122,17 @@ export function authTable(text) {
  * Status vocabulary -> column (pre-classified pass-through):
  *   COMPLETE -> Done | IN PROGRESS -> In Progress
  *   READY TO START (or READY START) -> Ready | BLOCKED -> Backlog
+ *   RECORDED -> Parked
  * A resolved-section entry is Done. An item with no Status line is Backlog.
+ *
+ * RECORDED is the accepted-risk terminal state: the risk was asserted and
+ * consciously not accommodated, so it is closed to work but is not a delivery.
+ * It maps to Parked rather than Done because Parked sits outside the
+ * Backlog -> Done flow (see derive-status.mjs COLUMNS) and a parked ticket never
+ * becomes Ready again - exactly the semantics of an accepted risk. Filing such an
+ * item as Backlog (the pre-1.2.0 fallback) advertises open work nobody intends
+ * to do: parabank-bank-automation authors RECORDED for three risks, all of which
+ * landed in Backlog before this mapping existed.
  */
 
 const BAND_RE = /^#{2,3}\s+(HIGH|MEDIUM|LOW)\s+Priority\b/i;
@@ -228,6 +238,7 @@ export function riskBlock(text) {
     else if (/\bIN\s+PROGRESS\b/.test(word)) (status = 'In Progress'), (backlogStatus = 'Ready');
     else if (/\bREADY(?:\s+TO)?\s+START\b/.test(word)) (status = 'Ready'), (backlogStatus = 'Ready');
     else if (/\bBLOCKED\b/.test(word)) (status = 'Backlog'), (backlogStatus = 'Backlog');
+    else if (/\bRECORDED\b/.test(word)) (status = 'Parked'), (backlogStatus = 'Parked');
 
     // Score may also be authored as "**Priority Score:** ... = **21 points**".
     let score = m.score;

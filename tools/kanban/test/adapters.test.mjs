@@ -115,10 +115,42 @@ test('riskBlock: authored status maps straight to a final column (pre-classified
 
 #### Risk #4: Audit overdue — Score: 8
 **Status:** BLOCKED
+
+#### Risk #5: Spec mis-declares a field type — Score: 5
+**Status:** RECORDED — asserted, not accommodated
 `;
   const t = Object.fromEntries(riskBlock(text).map((x) => [x.id, x.status]));
-  assert.deepEqual(t, { 'RISK-1': 'Done', 'RISK-2': 'In Progress', 'RISK-3': 'Ready', 'RISK-4': 'Backlog' });
+  assert.deepEqual(t, {
+    'RISK-1': 'Done',
+    'RISK-2': 'In Progress',
+    'RISK-3': 'Ready',
+    'RISK-4': 'Backlog',
+    'RISK-5': 'Parked',
+  });
   assert.equal(riskBlock(text)[0].score, 27);
+});
+
+test('riskBlock: RECORDED is the accepted-risk terminal state, not open work', () => {
+  // Regression for the real gap: parabank-bank-automation authors RECORDED for a
+  // risk it asserted and consciously did not accommodate. Before 1.2.0 that fell
+  // through to the Backlog default, so a closed-out project advertised open cards.
+  const [t] = riskBlock(`#### Risk PBR-01: Spec mis-declares a field — Score: 5
+**Status:** RECORDED — asserted, not accommodated`);
+  assert.equal(t.status, 'Parked');
+  assert.equal(t.backlogStatus, 'Parked');
+
+  // Parked is outside the Backlog -> Done flow, so it must never be revived as Ready.
+  assert.notEqual(t.status, 'Ready');
+  assert.notEqual(t.status, 'Backlog');
+});
+
+test('riskBlock: RESOLVED does not collide with RECORDED', () => {
+  // "RESOLVED" shares no word boundary with "RECORDED"; an outstanding-section item
+  // marked RESOLVED is a bookkeeping error in that backlog (it belongs under
+  // Resolved Risks) and must NOT be silently reclassified as Parked here.
+  const [t] = riskBlock(`#### Risk PBR-07: Assertion raced the fetch — Score: 10
+**Status:** RESOLVED 2026-09-01 — the step now waits`);
+  assert.equal(t.status, 'Backlog');
 });
 
 test('parseBacklog: reports graphDerived per dialect', () => {
