@@ -1,6 +1,14 @@
 # portfolio-prompts — Backlog
 
-**Version:** 28 — PP-39 resolved 2026-09-08 and the combined release shipped: `write-walkthrough`
+**Version:** 29 — PP-40 resolved 2026-09-10: the `risk-block` adapter maps the **RECORDED**
+status to **Parked**, so an accepted risk — asserted and consciously not accommodated — is no
+longer filed as open work. Found by probing the P-13 Phase 2 projects with the shipped adapter
+before reshaping them: `parabank-bank-automation` authors RECORDED for three risks and every one
+of them landed in Backlog, so its board would have advertised open work nobody intends to do. The
+same probe showed **bfx-ws-screenplay and parabank both already parse cleanly** (17/17 and 9/9
+items, zero phantoms), so P-13 Phase 2 needs no heading reshape in either. `kanban-v1.2.0` is
+prepared and is an owner npm gate.
+v28 — PP-39 resolved 2026-09-08 and the combined release shipped: `write-walkthrough`
 is now a skill and `check-library.py` gates prompt->skill coverage in both directions, so a
 documented lifecycle stage can no longer be invisible to a skill-driven agent.
 `portfolio-kanban-generator@1.1.0` is published (MIT, dist-tag `latest`) carrying PP-37 and PP-38,
@@ -25,7 +33,7 @@ release `0.4.1` merged through PR #76, passed its exact-merge gate, was reinstal
 and produced no attributable warning in a fresh Codex process. The installed cache matches all 66
 release-bearing source files. The remaining icon warnings belong to the external bundled `spreadsheets`
 plugin.
-**Last Updated:** 2026-09-08
+**Last Updated:** 2026-09-10
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills, and its update review
@@ -63,10 +71,10 @@ No outstanding items.
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 19 | **19 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36, PP-37, PP-38) — 0 open |
+| MEDIUM (10–19) | 20 | **20 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36, PP-37, PP-38, PP-40) — 0 open |
 | LOW (0–9) | 21 | **21 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30, PP-35) — 0 open |
 | **Total Outstanding** | **0** | — |
-| Resolved | 40 | PP-00..PP-39 |
+| Resolved | 41 | PP-00..PP-40 |
 
 **Outstanding, by suggested order:** none.
 
@@ -76,6 +84,50 @@ No outstanding items.
 
 Resolved items are kept as a record that the gap existed, verbatim as last written, grouped by the
 review cycle that produced them (newest first) and in item order within each group.
+
+### From the 2026-09-10 P-13 Phase 2 adapter-probe cycle (PP-40)
+
+#### PP-40: Map the `RECORDED` status to Parked so an accepted risk is not shown as open work — Score: 10 ✅ Resolved 2026-09-10
+
+**Score:** Security (0) + Drift (7) + Maintenance (3) = **10 (MEDIUM)**
+**Status:** RESOLVED 2026-09-10 — `RECORDED` is a first-class terminal state in the `risk-block`
+dialect and maps to Parked.
+**Provenance:** P-13 Phase 2. Before reshaping the two conforming projects, both backlogs were run
+through the shipped 1.1.0 adapter to measure the real gap rather than assume it. The reshape turned
+out to be unnecessary — but the probe surfaced this defect instead.
+**Problem:** the `risk-block` status vocabulary was COMPLETE / IN PROGRESS / READY TO START /
+BLOCKED, with an unrecognised status falling through to the Backlog default.
+`parabank-bank-automation` authors **`**Status:** RECORDED — asserted, not accommodated`** for
+risks it has consciously accepted and closed rather than fixed (PBR-01, PBR-04, PBR-05). None of
+those words matched, so all three were classified Backlog.
+**Impact:** the generated board advertised a closed-out project as carrying open work. Parabank's
+probe produced **7 Backlog cards on a project with 0 genuinely open risks** — three RECORDED, four
+resolved-but-misfiled. Publishing that board as public evidence would have been actively worse than
+publishing none. The failure was silent: the adapter's fail-loudly contract covers *zero* parsed
+tickets, not tickets parsed into the wrong column.
+**Why Parked and not Done:** Parked sits outside the Backlog -> Done flow (`derive-status.mjs`
+`COLUMNS`) and a parked ticket never becomes Ready again — precisely the semantics of an accepted
+risk. Done would misreport it as a delivery.
+
+**Success Criteria:**
+
+- [x] The `risk-block` adapter maps `RECORDED` to Parked for both `status` and `backlogStatus`.
+- [x] A regression test proves the real gap: it fails with the mapping removed (`'Backlog'` vs
+      `'Parked'`) and passes with it in place.
+- [x] A guard test proves `RESOLVED` does not collide with `RECORDED` — an outstanding-section item
+      marked RESOLVED is a bookkeeping error in *that* backlog and must not be silently
+      reclassified.
+- [x] The pre-classified status test covers the full vocabulary including the new state.
+- [x] `tools/kanban/README.md` and the adapter docblock record the state and the reasoning.
+- [x] The plugin manifests are version-bumped per the PP-33 convention (library content changed).
+- [x] `cd tools/kanban && node --test` and `python tools/check-library.py` both pass.
+
+**Depends on:** PP-38 (the template adapter this extends).
+
+Completion evidence: `node --test` **60 pass** (was 58); the gap test was proven by removing the
+mapping and observing `AssertionError: + 'Backlog' - 'Parked'`, then restoring it.
+`check-library.py` PASS. `tools/kanban/package.json` is bumped to **1.2.0** and manifests to
+`0.7.0`; cutting `kanban-v1.2.0` is an **owner npm gate** and is deliberately not done here.
 
 ### From the 2026-09-08 Kanban rollout and lifecycle-coverage cycle (PP-37, PP-38, PP-39)
 
