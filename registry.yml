@@ -135,6 +135,7 @@ projects:
     presentation_role: showcase
     sdd: true
     orchestration_target: true
+    backlog_dialect: risk-block        # P-13 Phase 3; parses 17/17 unchanged
     gates: ["npm run typecheck", "npm run lint", "npm run test:smoke"]
     live_api:
       endpoint: Bitfinex public WebSocket API v2
