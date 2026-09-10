@@ -1,6 +1,11 @@
 # portfolio-prompts — Backlog
 
-**Version:** 29 — PP-40 resolved 2026-09-10: the `risk-block` adapter maps the **RECORDED**
+**Version:** 30 — **`portfolio-kanban-generator@1.2.0` is published** (2026-09-10, MIT, dist-tag
+`latest`) carrying PP-40, and verified from a neutral directory: the published artefact regenerates
+`parabank-bank-automation` as **6 Done / 3 Parked / 0 Backlog**. Publish run
+[`34520241847`](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/34520241847). The
+owner npm gate v29 recorded is discharged; P-13 Phase 3 can now pin `1.2.0`.
+v29 — PP-40 resolved 2026-09-10: the `risk-block` adapter maps the **RECORDED**
 status to **Parked**, so an accepted risk — asserted and consciously not accommodated — is no
 longer filed as open work. Found by probing the P-13 Phase 2 projects with the shipped adapter
 before reshaping them: `parabank-bank-automation` authors RECORDED for three risks and every one
@@ -127,7 +132,11 @@ risk. Done would misreport it as a delivery.
 Completion evidence: `node --test` **60 pass** (was 58); the gap test was proven by removing the
 mapping and observing `AssertionError: + 'Backlog' - 'Parked'`, then restoring it.
 `check-library.py` PASS. `tools/kanban/package.json` is bumped to **1.2.0** and manifests to
-`0.7.0`; cutting `kanban-v1.2.0` is an **owner npm gate** and is deliberately not done here.
+`0.7.0`. **Update (2026-09-10):** the owner authorised the release and `kanban-v1.2.0` was cut from
+`57dfe9b` — publish run
+[`34520241847`](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/34520241847)
+succeeded and `portfolio-kanban-generator@1.2.0` is live on npm (dist-tag `latest`, MIT), verified
+by running the **published** package from a directory outside the repository.
 
 ### From the 2026-09-08 Kanban rollout and lifecycle-coverage cycle (PP-37, PP-38, PP-39)
 
