@@ -145,7 +145,9 @@ projects:
       In-repo `SPECIFICATION.md` is normative (SDD) — one SPEC unit at a time; feature file reviewed
       before framework code; deviations need an ADR change note. `test:smoke` hits the live public
       API; `environment-blocked` outcomes are platform maintenance, not failures; `@extended` runs
-      nightly only.
+      nightly only. The implementation Kanban board, generated from `docs/backlog.md` and
+      drift-gated in CI by a pinned `portfolio-kanban-generator`, is published at
+      https://gbrooks1970.github.io/bfx-ws-screenplay/.
 
   - project: orangehrm-pim-automation
     github: GBrooks1970/orangehrm-pim-automation
@@ -223,8 +225,8 @@ projects:
 
   - project: juice-shop-dast-automation
     github: GBrooks1970/juice-shop-dast-automation
-    status: active
-    status_label: "Active; DAST-M4 open"
+    status: resting
+    status_label: "Closed 2026-09-10"
     presentation_role: showcase
     orchestration_target: true
     gates:
@@ -248,13 +250,13 @@ projects:
       active-exploitation proof a passive scan cannot. All phases DAST-P0..P5, the Gemini review
       remediation, and DAST-M3 are complete. DAST-M3 added bounded browser-backed SPA discovery and
       was accepted by three independent fresh-container scans with identical seven-class gating sets
-      (run 34200784522), with no rerun or weakening of the fail-closed contract. DAST-M4 is the one
-      open MEDIUM item: remediate the dev-only transitive nanoid advisory and obtain a zero-vulnerability
-      audit before moving to resting. R1/R2 are standing mitigations and DAST-M1/M2 are dormant
-      conditional triggers, not open work. Design and decisions
-      D2.1a-D2.7a are in docs/dast-lane-design.md; images are digest-pinned (Juice Shop 20.1.1, OWASP
-      ZAP 2.17.0), and a pin bump re-triggers the Phase 0 probe (backlog DAST-M1). The labelled report
-      is published at https://gbrooks1970.github.io/juice-shop-dast-automation/.
+      (run 34200784522), with no rerun or weakening of the fail-closed contract. DAST-M4 (zero-vulnerability
+      dependency remediation) is complete, bringing open backlog items to zero and transitioning the
+      lifecycle to resting. R1/R2 are standing mitigations and DAST-M1/M2 are dormant conditional triggers,
+      not open work. Design and decisions D2.1a-D2.7a are in docs/dast-lane-design.md; images are digest-pinned
+      (Juice Shop 20.1.1, OWASP ZAP 2.17.0), and a pin bump re-triggers the Phase 0 probe (backlog DAST-M1).
+      The labelled report is published at https://gbrooks1970.github.io/juice-shop-dast-automation/. Latest
+      handover is v4 in session-notes/.
 
   - project: auth-separation
     github: GBrooks1970/auth-separation
