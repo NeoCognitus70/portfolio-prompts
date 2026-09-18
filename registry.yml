@@ -327,6 +327,20 @@ projects:
       fulfilment, with read-only smoke safety profiles, Docker Compose SUT orchestration, and comprehensive
       living documentation.
 
+  - project: tradeblotter-wpf-screenplay
+    github: GBrooks1970/tradeblotter-wpf-screenplay
+    status: active
+    presentation_role: showcase
+    orchestration_target: true
+    backlog_dialect: risk-block
+    gates:
+      - dotnet build src/TradeBlotter.Sut/TradeBlotter.Sut.csproj --configuration Release
+      - dotnet build probes/TradeBlotter.Probe/TradeBlotter.Probe.csproj --configuration Release
+    notes: >-
+      C#/.NET 9 Windows desktop automation project. WPF trading blotter
+      and FlaUI.UIA3 feasibility probe implemented; driver abstraction,
+      Screenplay, Reqnroll scenarios and CI remain planned.
+
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta
