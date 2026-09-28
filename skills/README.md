@@ -16,6 +16,7 @@ the skill adds triggering, input handling, UI metadata, and invocation policy.
 | `write-walkthrough` | `write-walkthrough.prompt.md` | project, or root for a cross-portfolio batch | After a discrete batch; evidence-grounded, immutable per date/slug |
 | `write-code-review` | `write-code-review.prompt.md` | project | Review an onboarded project |
 | `write-project-in-depth-report` | `write-project-in-depth-report.prompt.md` | project, optional output root/cut-off/audience | Versioned Markdown/HTML project dossier; target repo read-only |
+| `write-sut-architecture-report` | `write-sut-architecture-report.prompt.md` | project, sut path, optional target | Author pedagogical SUT architecture and testability report |
 | `triage-review-findings` | `triage-review-findings.prompt.md` | project and review path | Review findings to approved worklist; no actioning |
 | `write-handover` | `write-handover.prompt.md` | project | End of a session |
 | `close-project` | `close-project.prompt.md` | project | Explicit-only; final session |
