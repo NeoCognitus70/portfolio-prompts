@@ -102,6 +102,7 @@ to the next approved worklist.
 | [write-walkthrough.prompt.md](write-walkthrough.prompt.md) | End of a discrete batch of work | Generates a structured, evidence-grounded walkthrough document into `{PROJECT}/docs/walkthroughs/` (and native `walkthrough.md` in Antigravity) recording changes, test evidence, operational state, and next actions. |
 | [write-code-review.prompt.md](write-code-review.prompt.md) | Code review | Uses `templates/code-review.template.md` and the project's `docs/backlog.md` to write a comprehensive review into the repo's `.review/` folder. |
 | [write-project-in-depth-report.prompt.md](write-project-in-depth-report.prompt.md) | Understanding one registered project in depth | Keeps the target repo read-only, analyses every meaningful tracked text file plus full Git history, and writes a versioned Markdown/HTML dossier under `portfolio-in-depth-reports/{PROJECT}/`: intention, current design/output, implementation chronology, reconciled status, and documented versus inferred future direction. |
+| [write-sut-architecture-report.prompt.md](write-sut-architecture-report.prompt.md) | Understanding a System Under Test (SUT) architecture in depth | Keeps the target repo read-only, analyses domain models, runtime state transitions, threading, UIA3/API automation seams, and Screenplay pattern integration, writing a pedagogical report under `portfolio-pedagogical-reports/`. |
 | [triage-review-findings.prompt.md](triage-review-findings.prompt.md) | Turning one named review into planned work | Reads the named review, deduplicates and backlog-checks its findings, presents prioritised candidates for explicit user approval, then writes the canonical root-tracked portfolio worklist without actioning the project. |
 | [review-all-projects.prompt.md](review-all-projects.prompt.md) | Reviewing the whole portfolio | Orchestration fan-out, **evidence-only**: one parallel sub-agent per registry project, each following write-code-review for its project (review artefacts committed on a branch + PR, never merged); collates top findings into a cross-portfolio synthesis of common themes and highest-severity issues. |
 | [derive-worklist.prompt.md](derive-worklist.prompt.md) | Preparing work before a loop | Derivation only, **no actioning**: orients from handover + backlog, derives and cross-checks the items, writes root-tracked `WORKLIST_{PROJECT}.md` in exactly the format the loop consumes, and reports a detailed per-item breakdown in chat for review. |
@@ -211,6 +212,9 @@ Read and follow portfolio-prompts/triage-review-findings.prompt.md using PROJECT
 
 # Historical in-depth dossier: read-only full Git history and architecture analysis
 Read and follow portfolio-prompts/write-project-in-depth-report.prompt.md using PROJECT=calculator-screenplay-bdd
+
+# Pedagogical SUT architecture report: read-only domain, threading, and accessibility evaluation
+Read and follow portfolio-prompts/write-sut-architecture-report.prompt.md using PROJECT=tradeblotter-wpf-screenplay SUT_PATH=src/TradeBlotter.Sut
 ```
 
 #### 5. Whole-Portfolio Orchestration & Status

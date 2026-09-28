@@ -1,0 +1,6 @@
+interface:
+  display_name: "Write SUT Architecture Report"
+  short_description: "Author a pedagogical SUT architecture and testability report"
+  default_prompt: "Use $portfolio-prompts:write-sut-architecture-report for <sut-path>."
+policy:
+  allow_implicit_invocation: true
