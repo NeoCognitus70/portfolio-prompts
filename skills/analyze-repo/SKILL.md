@@ -12,4 +12,4 @@ below its `---` divider exactly.
 - Supply the **repository** the user named (a Git URL or a local path). If none was given, ask for it.
 - Optional **depth**: `summary` | `standard` | `deep-dive` (default `standard`).
 - Acquire the code before writing any finding; if you cannot access it, stop and say so. Write the
-  report to `REPO_ANALYSIS_<repo-name>_<YYYYMMDD>.md` unless the user asks for a chat report.
+  report to `github-repo-analysis/REPO_ANALYSIS_<repo-name>_<YYYYMMDD>.md` (folder at the portfolio root, created if missing) unless the user asks for a chat report.
