@@ -254,8 +254,9 @@ genuinely useful to someone learning the repository.
 * **House style:** en-GB spelling (behaviour, prioritise, recognise...), ASCII only — consistent
   with the rest of the portfolio's written artefacts.
 * **Destination:** write the report to a file named
-  `REPO_ANALYSIS_<repo-name>_<YYYYMMDD>.md` in the working directory (or wherever the invocation
-  asks), and report the path; if the invocation asks only for a chat report, deliver it inline
+  `REPO_ANALYSIS_<repo-name>_<YYYYMMDD>.md` inside the dedicated `github-repo-analysis/` folder at the
+  portfolio root (create it if missing; outside a portfolio workspace, use `github-repo-analysis/` under the
+  working directory), unless the invocation names another location, and report the path; if the invocation asks only for a chat report, deliver it inline
   instead. Do not commit it into the analysed repo.
 
 If repository access is incomplete, state what could not be inspected and provide a partial
