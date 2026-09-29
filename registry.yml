@@ -341,6 +341,26 @@ projects:
       and FlaUI.UIA3 feasibility probe implemented; driver abstraction,
       Screenplay, Reqnroll scenarios and CI remain planned.
 
+  - project: loan-origination-parity
+    github: GBrooks1970/loan-origination-parity
+    status: active
+    status_label: "All 4 phases complete 2026-09-28"
+    presentation_role: showcase
+    sdd: true
+    multi_stack: true
+    orchestration_target: true
+    backlog_dialect: risk-block
+    gates: ["npm run verify"]
+    deviations:
+      adr: DOCS/decision-register.md
+    notes: >-
+      UK unsecured-loan origination workbench: one domain engine exercised through an in-memory core,
+      a Node.js REST API, an Angular SPA and a Next.js backend-for-frontend by a single Serenity/JS
+      Screenplay harness reading one Gherkin store (106 scenarios). The CI parity gate compares
+      scenario counts and step text per folder across surfaces; server-side authorisation is proven
+      by forced-command scenarios that bypass the UI. Phase 4 stability proof: 10/10 dispatched runs
+      green on first attempt (2026-09-28).
+
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta
