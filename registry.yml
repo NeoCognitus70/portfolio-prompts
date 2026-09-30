@@ -122,10 +122,11 @@ projects:
         - { name: demoapp003, tool: specflow, language: csharp }
       parity_scripts: .batch/*.ps1
     notes: >-
-      Multi-stack POC with its own doc system. Reopened 2026-09-30 for one scoped item, a three-stack parity evidence page (pending DR-044); all 96 prior backlog items are resolved. The three-Stack
+      Multi-stack POC with its own doc system. Reopened 2026-09-30 to deliver a three-stack parity evidence page (BACKLOG-075, DR-047), live the same day; one unscheduled test-quality item (BACKLOG-078) remains open. The three-Stack
       deterministic solver includes Naked Pairs and X-Wing, while DEMOAPP001 also supplies the
       interactive tutor and puzzle generator. Browser-only visualisation evidence is published at
-      https://gbrooks1970.github.io/gb.automation.smoketests.sudoku.poc/. Run stack defaults inside
+      https://gbrooks1970.github.io/gb.automation.smoketests.sudoku.poc/ and the three-stack parity evidence page, built by CI from each Stack's own results, at
+      https://gbrooks1970.github.io/gb.automation.smoketests.sudoku.poc/parity/. Run stack defaults inside
       the touched stack's directory, never at the repo root.
 
   - project: bfx-ws-screenplay
