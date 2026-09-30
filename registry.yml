@@ -105,8 +105,7 @@ projects:
 
   - project: gb.automation.smoketests.sudoku.poc
     github: GBrooks1970/gb.automation.smoketests.sudoku.poc
-    status: resting
-    status_label: "Resting; product cycle complete 2026-08-24"
+    status: active
     presentation_role: showcase
     multi_stack: true
     orchestration_target: true
@@ -123,7 +122,7 @@ projects:
         - { name: demoapp003, tool: specflow, language: csharp }
       parity_scripts: .batch/*.ps1
     notes: >-
-      Multi-stack POC with its own doc system. All 93 backlog items are resolved: the three-Stack
+      Multi-stack POC with its own doc system. Reopened 2026-09-30 for one scoped item, a three-stack parity evidence page (pending DR-044); all 96 prior backlog items are resolved. The three-Stack
       deterministic solver includes Naked Pairs and X-Wing, while DEMOAPP001 also supplies the
       interactive tutor and puzzle generator. Browser-only visualisation evidence is published at
       https://gbrooks1970.github.io/gb.automation.smoketests.sudoku.poc/. Run stack defaults inside
