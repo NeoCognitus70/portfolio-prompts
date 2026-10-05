@@ -361,6 +361,28 @@ projects:
       by forced-command scenarios that bypass the UI. Phase 4 stability proof: 10/10 dispatched runs
       green on first attempt (2026-09-28).
 
+  - project: credit-dashboard-sut
+    github: GBrooks1970/credit-dashboard-sut
+    status: active
+    status_label: "Phase 1 started 2026-10-05"
+    presentation_role: showcase
+    sdd: true
+    orchestration_target: false
+    gates:
+      - "npx --yes @redocly/cli@2.57.0 lint"
+      - "npm --prefix fixtures ci && npm --prefix fixtures run check"
+      - "python tools/check-gherkin.py"
+    deviations:
+      backlog: DOCS/backlog.md
+      adr: DOCS/decision-register.md
+      implementation_logs: DOCS/implementation-logs/
+    notes: >-
+      Fictional UK credit-health dashboard (ScoreHarbour) built as a system under test, specification
+      first: one OpenAPI contract drives a planned ASP.NET Core minimal API, React UI, Prism mock and
+      Serenity/JS harness from one Gherkin store (65 scenarios; every business rule tagged). Phase 0
+      accepted 2026-10-05 (DR-038) and lifted from the frozen project-specs/ pack; no service code yet.
+      Latest handover v9 in session-notes/.
+
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
     status: meta
