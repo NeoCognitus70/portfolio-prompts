@@ -69,6 +69,7 @@ def render_deviations(dev: dict) -> str:
         "backlog": "backlog",
         "reviews": "reviews",
         "implementation_logs": "implementation-logs",
+        "implementation_plans": "implementation-plans",
         "shared_templates": "templates",
         "adr": "adr",
         "project_contract": "project-contract",

@@ -32,6 +32,7 @@ portfolio_root: test-automation-portfolio   # folder that holds the individual p
 defaults:
   backlog: docs/backlog.md
   implementation_logs: docs/implementation-logs/
+  implementation_plans: docs/implementation-plans/   # written before implementation (project-layout.md Working norms)
   reviews: .review/
   adr: docs/adr/
   project_contract: docs/project-contract.md   # optional per project; first gate source if present
@@ -367,7 +368,7 @@ projects:
     status_label: "Phase 1 exit gate met 2026-10-06"
     presentation_role: showcase
     sdd: true
-    orchestration_target: false
+    orchestration_target: true
     # One command runs all six checks (CDS-15). Prerequisite for its Gherkin check: Python with
     # `pip install gherkin-official==29.0.0` (as the project's CI does before running it).
     gates:
@@ -376,6 +377,7 @@ projects:
       backlog: DOCS/backlog.md
       adr: DOCS/decision-register.md
       implementation_logs: DOCS/implementation-logs/
+      implementation_plans: DOCS/implementation-plans/
     notes: >-
       Fictional UK credit-health dashboard (ScoreHarbour) built as a system under test, specification
       first: one OpenAPI contract drives a planned ASP.NET Core minimal API, React UI, Prism mock and
