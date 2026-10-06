@@ -368,11 +368,10 @@ projects:
     presentation_role: showcase
     sdd: true
     orchestration_target: false
+    # One command runs all six checks (CDS-15). Prerequisite for its Gherkin check: Python with
+    # `pip install gherkin-official==29.0.0` (as the project's CI does before running it).
     gates:
-      - "npx --yes @redocly/cli@2.57.0 lint"
-      - "npm --prefix fixtures ci && npm --prefix fixtures run check"
-      - "python tools/check-gherkin.py"
-      - "npm ci && npm run check:mock"
+      - "npm ci && npm run verify"
     deviations:
       backlog: DOCS/backlog.md
       adr: DOCS/decision-register.md
@@ -382,8 +381,9 @@ projects:
       first: one OpenAPI contract drives a planned ASP.NET Core minimal API, React UI, Prism mock and
       Serenity/JS harness from one Gherkin store (65 scenarios; every business rule tagged). Phase 0
       accepted 2026-10-05 (DR-038) and lifted from the frozen project-specs/ pack. Phase 1 exit gate met
-      2026-10-06: a pinned Prism mock serves all 36 contract operations, smoke-tested in CI; no service
-      code yet. Latest handover v10 in session-notes/.
+      2026-10-06: a pinned Prism mock serves all 36 contract operations, smoke-tested in CI; a typed
+      TypeScript client is generated from the contract (CDS-15); no service code yet. Latest handover
+      v10 in session-notes/.
 
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
