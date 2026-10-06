@@ -120,6 +120,9 @@ Created on first need if absent (scaffold from `templates/` where a template exi
 
 - `docs/implementation-logs/` + `docs/templates/implementation-log.template.md` — append-only
   session history (used by write-implementation-log).
+- `docs/implementation-plans/` + `_index.md` + `docs/templates/implementation-plan.template.md`
+  (scaffold from `templates/implementation-plan.template.md`) — one file per plan,
+  `YYYY-MM-DD_<item>-<slug>.md`, written before implementation starts (see Working norms).
 - `docs/walkthroughs/` — durable versioned walkthrough records (used by write-walkthrough).
 - `docs/adr/` — architecture decision records.
 - `CHANGELOG.md` — user-visible changes.
@@ -324,4 +327,11 @@ conventions are common to all three — each orchestrator cites this section and
   including docs-only ones (confirmed 2026-06-10). The user authorises each merge.
 - Project-specific norms and gotchas live in the project's latest handover ("Durable lessons")
   and its `docs/project-contract.md` if present — prompts read them there, never hardcode them.
+- **Implementation plans are written to file before implementation starts** — in the project's
+  `implementation_plans` folder (registry default `docs/implementation-plans/`), from the shared
+  template, with a row in the folder's `_index.md`. The plan is presented in full before approval
+  is asked for. Once approved its body is not edited to match the outcome: an **Outcome** section
+  is appended after delivery (what was delivered, differences from the plan and why, PRs and
+  commits), and a changed plan is a new version. Adopted portfolio-wide 2026-10-06 from
+  credit-dashboard-sut (its DR-041).
 - en-GB spelling in all written artefacts.
