@@ -338,9 +338,12 @@ projects:
       - dotnet build src/TradeBlotter.Sut/TradeBlotter.Sut.csproj --configuration Release
       - dotnet build probes/TradeBlotter.Probe/TradeBlotter.Probe.csproj --configuration Release
     notes: >-
-      C#/.NET 9 Windows desktop automation project. WPF trading blotter
-      and FlaUI.UIA3 feasibility probe implemented; driver abstraction,
-      Screenplay, Reqnroll scenarios and CI remain planned.
+      C#/.NET 9 Windows desktop automation project. WPF trading blotter,
+      vendor-neutral driver contract with FlaUI.UIA3 and WinAppDriver adapters,
+      Screenplay core, Reqnroll scenarios and a Windows CI gate (TB-01 to TB-08A
+      complete). Parked by owner decision (21 September 2026) until a licensed
+      Ranorex SDK is available; TB-08B (native Ranorex adapter and three-driver
+      comparison) is open and blocked.
 
   - project: loan-origination-parity
     github: GBrooks1970/loan-origination-parity
