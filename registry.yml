@@ -383,7 +383,7 @@ projects:
       Serenity/JS harness from one Gherkin store (65 scenarios; every business rule tagged). Phase 0
       accepted 2026-10-05 (DR-038) and lifted from the frozen project-specs/ pack. Phase 1 exit gate met
       2026-10-06: a pinned Prism mock serves all 36 contract operations, smoke-tested in CI; no service
-      code yet. Latest handover v9 in session-notes/.
+      code yet. Latest handover v10 in session-notes/.
 
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
