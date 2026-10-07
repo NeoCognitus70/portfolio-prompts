@@ -372,8 +372,9 @@ projects:
     presentation_role: showcase
     sdd: true
     orchestration_target: true
-    # One command runs all seven checks (CDS-15, CDS-17). Prerequisite for its Gherkin check: Python with
-    # `pip install gherkin-official==29.0.0` (as the project's CI does before running it).
+    # One command runs all nine checks (CDS-15, CDS-17, CDS-19). Prerequisites: Python with
+    # `pip install gherkin-official==29.0.0` for the Gherkin check, and the .NET 10 SDK (10.0.401 or a later
+    # 10.0.4xx patch, per demo-apps/demoapp001-dotnet-api/global.json) for the service checks.
     gates:
       - "npm ci && npm run verify"
     deviations:
@@ -388,8 +389,9 @@ projects:
       accepted 2026-10-05 (DR-038) and lifted from the frozen project-specs/ pack. Phase 1 closed
       2026-10-07: a pinned Prism mock serves all 36 contract operations, a typed TypeScript client is
       generated from the contract, and a Kanban board is drift-checked, all in CI. Phase 2 exit gate met
-      2026-10-07 (DR-049) after three independent re-review passes; Phase 3 (the service) is next; no
-      service code yet. Latest handover v10 in session-notes/.
+      2026-10-07 (DR-049) after three independent re-review passes. Phase 3 started 2026-10-07: an ASP.NET
+      Core minimal API on .NET 10 validates every request against the contract at the edge, with generated
+      C# types (DR-050); no operation is served yet. Latest handover v11 in session-notes/.
 
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
