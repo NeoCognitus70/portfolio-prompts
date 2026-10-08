@@ -368,11 +368,11 @@ projects:
   - project: credit-dashboard-sut
     github: GBrooks1970/credit-dashboard-sut
     status: active
-    status_label: "Phases 1 and 2 complete 2026-10-07"
+    status_label: "Phase 3 in progress: all 36 operations served 2026-10-08"
     presentation_role: showcase
     sdd: true
     orchestration_target: true
-    # One command runs all nine checks (CDS-15, CDS-17, CDS-19). Prerequisites: Python with
+    # One command runs all eleven checks (CDS-15, CDS-17, CDS-19). Prerequisites: Python with
     # `pip install gherkin-official==29.0.0` for the Gherkin check, and the .NET 10 SDK (10.0.401 or a later
     # 10.0.4xx patch, per demo-apps/demoapp001-dotnet-api/global.json) for the service checks.
     gates:
@@ -389,9 +389,13 @@ projects:
       accepted 2026-10-05 (DR-038) and lifted from the frozen project-specs/ pack. Phase 1 closed
       2026-10-07: a pinned Prism mock serves all 36 contract operations, a typed TypeScript client is
       generated from the contract, and a Kanban board is drift-checked, all in CI. Phase 2 exit gate met
-      2026-10-07 (DR-049) after three independent re-review passes. Phase 3 started 2026-10-07: an ASP.NET
-      Core minimal API on .NET 10 validates every request against the contract at the edge, with generated
-      C# types (DR-050); no operation is served yet. Latest handover v11 in session-notes/.
+      2026-10-07 (DR-049) after three independent re-review passes. Phase 3 in progress: an ASP.NET Core
+      minimal API on .NET 10 serves all 36 contract operations from an in-memory store (7 test control,
+      29 business), validating every request against the contract at the edge (DR-050) and every served
+      response in its own tests; the business and profile rules are a pure C# library tagged by rule ID
+      (234 tests) and the service has 290 tests (2026-10-08, DR-051 to DR-055). The Serenity/JS harness
+      (CDS-22) and the Schemathesis run (CDS-23) remain for the Phase 3 gate. Latest handover v13 in
+      session-notes/.
 
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
