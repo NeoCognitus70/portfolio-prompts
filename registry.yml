@@ -368,13 +368,14 @@ projects:
   - project: credit-dashboard-sut
     github: GBrooks1970/credit-dashboard-sut
     status: active
-    status_label: "Phase 3 in progress: all 36 operations served 2026-10-08"
+    status_label: "Phase 3 exit conditions met 2026-10-10; gate record awaiting owner"
     presentation_role: showcase
     sdd: true
     orchestration_target: true
-    # One command runs all eleven checks (CDS-15, CDS-17, CDS-19). Prerequisites: Python with
-    # `pip install gherkin-official==29.0.0` for the Gherkin check, and the .NET 10 SDK (10.0.401 or a later
-    # 10.0.4xx patch, per demo-apps/demoapp001-dotnet-api/global.json) for the service checks.
+    # One command runs all fourteen steps (three installs and eleven checks; CDS-15 to CDS-23, CDS-22). Prerequisites:
+    # Python with `pip install -r tools/requirements.txt` (gherkin-official for the Gherkin check, Schemathesis for the
+    # property-based run), and the .NET 10 SDK (10.0.401 or a later 10.0.4xx patch, per
+    # demo-apps/demoapp001-dotnet-api/global.json) for the service, Schemathesis and harness steps.
     gates:
       - "npm ci && npm run verify"
     deviations:
@@ -389,12 +390,15 @@ projects:
       accepted 2026-10-05 (DR-038) and lifted from the frozen project-specs/ pack. Phase 1 closed
       2026-10-07: a pinned Prism mock serves all 36 contract operations, a typed TypeScript client is
       generated from the contract, and a Kanban board is drift-checked, all in CI. Phase 2 exit gate met
-      2026-10-07 (DR-049) after three independent re-review passes. Phase 3 in progress: an ASP.NET Core
+      2026-10-07 (DR-049) after three independent re-review passes. Phase 3 exit conditions met 2026-10-10: an ASP.NET Core
       minimal API on .NET 10 serves all 36 contract operations from an in-memory store (7 test control,
       29 business), validating every request against the contract at the edge (DR-050) and every served
       response in its own tests; the business and profile rules are a pure C# library tagged by rule ID
-      (234 tests) and the service has 290 tests (2026-10-08, DR-051 to DR-055). The Serenity/JS harness
-      (CDS-22) and the Schemathesis run (CDS-23) remain for the Phase 3 gate. Latest handover v13 in
+      (234 tests) and the service has 298 tests (DR-051 to DR-055). Schemathesis 4.29.4 runs clean against the
+      live service on every commit (CDS-23, DR-056), and a standalone Serenity/JS harness runs the 58 @api
+      scenarios against it with every response validated against the contract (CDS-22, DR-057). The Phase 3
+      gate is not yet recorded: decision brief 10 awaits the owner (record the gate, continue to the React UI
+      or close at the API). The 41 @ui scenarios are specified but not yet executed. Latest handover v14 in
       session-notes/.
 
   - project: portfolio-prompts
