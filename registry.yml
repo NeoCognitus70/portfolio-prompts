@@ -368,7 +368,7 @@ projects:
   - project: credit-dashboard-sut
     github: GBrooks1970/credit-dashboard-sut
     status: active
-    status_label: "Phase 3 closed 2026-10-10 (DR-058); the Phase 4 plan (CDS-29) is next"
+    status_label: "Phase 4 closed 2026-10-13 (DR-063); the Phase 5 plan (CDS-37) is next"
     presentation_role: showcase
     sdd: true
     orchestration_target: true
@@ -385,7 +385,7 @@ projects:
       implementation_plans: DOCS/implementation-plans/
     notes: >-
       Fictional UK credit-health dashboard (ScoreHarbour) built as a system under test, specification
-      first: one OpenAPI contract drives a planned ASP.NET Core minimal API, React UI, Prism mock and
+      first: one OpenAPI contract drives an ASP.NET Core minimal API, a React UI, a Prism mock and a
       Serenity/JS harness from one Gherkin store (73 scenarios; every business rule tagged). Phase 0
       accepted 2026-10-05 (DR-038) and lifted from the frozen project-specs/ pack. Phase 1 closed
       2026-10-07: a pinned Prism mock serves all 36 contract operations, a typed TypeScript client is
@@ -397,10 +397,16 @@ projects:
       (234 tests) and the service has 309 tests (DR-051 to DR-055). Schemathesis 4.29.4 runs clean against the
       live service on every commit (CDS-23, DR-056), and a standalone Serenity/JS harness runs the 59 @api
       scenarios against it with every response validated against the contract (CDS-22, DR-057). The gate is
-      recorded in decision brief 10 with its exceptions listed, and the project continues to Phase 4 (the React UI),
-      planned with a spike first (CDS-29); the remaining Phase 2 review Notes were closed in CDS-24 (2026-10-12). The details-edit request body is
-      typed per field in contract v16 (CDS-28). The 41 @ui scenarios are specified but not yet executed. Latest handover v15 in
-      session-notes/.
+      recorded in decision brief 10 with its exceptions listed. Phase 4 exit gate met 2026-10-13 (DR-063, decision
+      brief 12): a React 19 UI (Vite, TypeScript, React Router) is served by the service, and all 41 @ui scenarios
+      (51 executions) run against it through the same Serenity/JS harness and Gherkin store, with 135 component
+      tests and an axe-core scan of 37 pages and states with zero violations (WCAG 2.0 to 2.2 A and AA), the three
+      layouts checked, and a separate CI job; the 59 @api scenarios still run in the fourteen-step gate. The gate
+      is recorded with its exceptions listed, and an independent review of the UI and harness is commissioned
+      (CDS-38). The details-edit request body is typed per field in contract v16 (CDS-28), the remaining Phase 2
+      review Notes were closed in CDS-24, and the Kanban board is published on GitHub Pages (CDS-30). Phase 5
+      (bug flags, visual regression, the published Serenity report) is next, planned first (CDS-37). Latest
+      handover v16 in session-notes/.
 
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
