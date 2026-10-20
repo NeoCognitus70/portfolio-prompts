@@ -368,7 +368,7 @@ projects:
   - project: credit-dashboard-sut
     github: GBrooks1970/credit-dashboard-sut
     status: active
-    status_label: "Phase 5 in progress: all 30 bug flags caught (CDS-42 closed 2026-10-18); visual regression (CDS-43) awaits the owner"
+    status_label: "Phase 5 in progress: all 30 bug flags caught and visual regression on Linux CI (CDS-43 closed 2026-10-19); the published report (CDS-44) awaits the owner"
     presentation_role: showcase
     sdd: true
     orchestration_target: true
@@ -401,8 +401,8 @@ projects:
       brief 12): a React 19 UI (Vite, TypeScript, React Router) is served by the service, and all 41 @ui scenarios
       (51 executions) run against it through the same Serenity/JS harness and Gherkin store, with 135 component
       tests and an axe-core scan of 37 pages and states with zero violations (WCAG 2.0 to 2.2 A and AA), the three
-      layouts checked, and a separate CI job; the 59 @api scenarios still run in the fourteen-step gate. The gate is recorded with its exceptions listed. The independent review of the UI and harness (CDS-38, closed 2026-10-18, DR-065) ran two fresh-context rounds and its fixes are merged: every response object in the contract is closed, and at the close of the flags (CDS-42) the service has 437 tests, the rules 239 and the UI 208 component tests, with 60 @api and 59 @ui executions, 124 axe-core scans and 288 layout checks. The details-edit request body is typed per field in contract v16 (CDS-28), the remaining Phase 2
-      review Notes were closed in CDS-24, and the Kanban board is published on GitHub Pages (CDS-30). Phase 5 (defects and evidence) is in progress: the flag mechanism and proof runner (CDS-39) and all 30 bug flags (CDS-40 to CDS-42) are done, and npm run check:bug-flags catches 30 of 30 for the stated reason (7 API flags, plural, 11 UI display and semantics flags and 11 behaviour flags, two of them in the service); visual regression and the published Serenity report follow (CDS-43 to CDS-45) once the owner decides. Latest handover v18 in session-notes/.
+      layouts checked, and a separate CI job; the 59 @api scenarios still run in the fourteen-step gate. The gate is recorded with its exceptions listed. The independent review of the UI and harness (CDS-38, closed 2026-10-18, DR-065) ran two fresh-context rounds and its fixes are merged: every response object in the contract is closed, and at the close of the flags (CDS-42) the service has 437 tests, the rules 239 and the UI 208 component tests, with 60 @api and 59 @ui executions, 124 axe-core scans, 288 layout checks and 32 visual screenshots. The details-edit request body is typed per field in contract v16 (CDS-28), the remaining Phase 2
+      review Notes were closed in CDS-24, and the Kanban board is published on GitHub Pages (CDS-30). Phase 5 (defects and evidence) is in progress: the flag mechanism and proof runner (CDS-39) and all 30 bug flags (CDS-40 to CDS-42) are done, and npm run check:bug-flags catches 30 of 30 for the stated reason (7 API flags, plural, 11 UI display and semantics flags and 11 behaviour flags, two of them in the service); visual regression (CDS-43) is done: 32 screenshots at 375 and 1280 px in the light and dark theme are compared with baselines made on Linux CI, and two flags are each also caught by one image; the published Serenity report and the exit follow (CDS-44, CDS-45) once the owner decides. Latest handover v19 in session-notes/.
 
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
