@@ -10,6 +10,7 @@ Python 3; `render-registry.py` and `check-library.py` additionally require PyYAM
 | [`check-library.py`](check-library.py) | The library's **self-gate**: registry/classification safety (including presentation roles), generated README, links, working norms, invocation paths, worklist format, deterministic tool-test scenarios, and handover pair integrity (when the sibling `session-notes/` archive is present). | PP-15, PP-17, PP-18, PP-25, PP-26, PP-31 |
 | [`build-handover-manifest.py`](build-handover-manifest.py) | Rebuild `session-notes/manifest.json` (the handover index) by scanning the folder, so readers resolve "latest per project" without re-deriving it from filenames. Run by `write-handover`; both modes exit non-zero when a Markdown handover lacks its HTML companion (P-09 pair integrity), and `--check` additionally fails if the manifest is missing or stale. Freshness stays advisory in the preflight. The root repository tracks the handover pairs but deliberately ignores this generated manifest. | PP-14, PP-26 |
 | [`workspace_preflight.py`](workspace_preflight.py) | Read-only registry-driven safety report for orchestration: checkout presence/state, upstream/ahead/behind, backlog, gates, latest handover pair, and advisory freshness against the already-fetched default head. | PP-25 / portfolio P-06 |
+| [`docker_inventory.py`](docker_inventory.py) | Read-only Docker record: maps every local image, container and volume to the project (or `docker_external` owner) whose `docker:` registry block claims it, lists what nothing claims with a suggested review action, and writes the snapshot into the portfolio's `portfolio-docs/PORTFOLIO_DOCKER_INVENTORY.md`. Never removes anything. | portfolio Docker record |
 | [`generate_sut_pedagogical_reports_html.py`](generate_sut_pedagogical_reports_html.py) | Generate responsive, standalone HTML presentation companions with native Mermaid 10 rendering for all pedagogical SUT architecture reports and README in `portfolio-pedagogical-reports/`. | — |
 
 ## Workspace preflight
@@ -34,6 +35,27 @@ fetches, pulls, switches, resets, cleans, stages, or changes any checkout.
 
 Exit `0` means no target blockers, `1` means at least one blocked target, and `2` means the
 registry/invocation itself could not be evaluated. `--json` emits the same fields for automation.
+
+## Docker inventory
+
+Run from the portfolio root with Docker Desktop running:
+
+```bash
+python <LIBRARY_ROOT>/tools/docker_inventory.py                    # Markdown report to stdout
+python <LIBRARY_ROOT>/tools/docker_inventory.py --json             # the same data as JSON
+python <LIBRARY_ROOT>/tools/docker_inventory.py --write portfolio-docs/PORTFOLIO_DOCKER_INVENTORY.md
+```
+
+What each project needs is declared in the optional `docker:` block of its `registry.yml` row
+(Compose files, Dockerfiles, script-run images with the file that pins them, named volumes);
+Docker objects owned by work outside the portfolio are claimed under `docker_external:`. The
+tool asks Docker only `system df` and `version` (an allowlist enforced in code), so it never
+removes, stops, pulls or builds anything. Removal stays a manual step: review the "Unclaimed"
+section, get approval, remove, then add a row to the cleanup log in the record. A declared ref
+that no longer appears in its `source` file is reported as possible pin drift.
+
+Exit `0` means a report was produced; `2` means the registry, a `docker:` block or the Docker
+engine could not be read.
 
 ## The library's verify gate
 
