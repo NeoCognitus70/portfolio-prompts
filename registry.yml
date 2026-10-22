@@ -76,6 +76,14 @@ projects:
       (tracker in `docs/qa-strategy.md`, currently Firefox 0/3, WebKit 0/3; each exploratory CI leg prints
       a `MAG-15 promotion` summary line). Latest handover v22 in `session-notes/`; optional proposals in
       `docs/planning/`.
+    docker:
+      compose: [docker-compose.yml, docker-compose.ci.yml]
+      compose_env: { GHCR_OWNER: gbrooks1970 }
+      dockerfiles: [Dockerfile.store-app, Dockerfile.store-db]
+      notes: >-
+        Local runs use the pre-baked public GHCR overlay (README): six images, about 4.2 GB. The
+        Dockerfile bases (magento-php, mariadb) are only needed to re-bake the images (bake.yml,
+        docs/docker-magento-setup.md). Volumes are disposable: the README tears down with `down -v`.
 
   - project: hand-baked-screenplay-pattern
     github: NeoCognitus70/hand-baked-screenplay-pattern
@@ -129,6 +137,16 @@ projects:
       https://gbrooks1970.github.io/gb.automation.smoketests.sudoku.poc/ and the three-stack parity evidence page, built by CI from each Stack's own results, at
       https://gbrooks1970.github.io/gb.automation.smoketests.sudoku.poc/parity/. Run stack defaults inside
       the touched stack's directory, never at the repo root.
+    docker:
+      compose: [docker-compose.yml]
+      dockerfiles:
+        - demo-apps/demoapp001-typescript-cypress/Dockerfile
+        - demo-apps/demoapp002-python-pytest/Dockerfile
+        - demo-apps/demoapp003-csharp-specflow/Dockerfile
+        - tooling/performance/Dockerfile
+      notes: >-
+        The three `*-tests` images are built by Compose from the stack Dockerfiles; the `api` and
+        `benchmark` profile services are only built when those profiles are used.
 
   - project: bfx-ws-screenplay
     github: GBrooks1970/bfx-ws-screenplay
@@ -167,6 +185,11 @@ projects:
       table (not the scored template). All six backlog items are closed; Item #4 retains an
       accepted demo-fixture caveat but no required follow-up. Live docs:
       gbrooks1970.github.io/orangehrm-pim-automation.
+    docker:
+      compose: [docker-compose.yml]
+      notes: >-
+        Both images are digest-pinned, so Docker lists the MySQL image as `mysql:<none>`. The
+        `db-data` and `app-data` volumes hold the installed OrangeHRM state between runs.
 
   - project: markdown-renderer
     github: GBrooks1970/markdown-renderer
@@ -225,6 +248,23 @@ projects:
       the published /perf/ page rather than failing the deploy. Decisions are in
       docs/decision-register.md (DR-PB-01..11); latest handover is v5 in session-notes/ and
       predates the v29-v30 backlog reconciliations, so the backlog governs current lifecycle state.
+    docker:
+      compose: [docker-compose.yml]
+      images:
+        - ref: maven:3.9.16-eclipse-temurin-17-noble@sha256:1a352420f7aba21f5ad08df31bab55f74c013fb491f1ae8ab1dd7ff9ed698584
+          purpose: Builds the ParaBank WAR in scripts/build-sut.ps1 (pin MavenBuilder)
+          source: config/container-image-pins.psd1
+        - ref: tomcat:10.1.57-jre21-temurin-noble@sha256:0d187897e49c9ef3f642f52d19db7f4eab20657f4ab086e680481e10eb69d3fa
+          purpose: Runtime base of parabank:d1bf006 (pin ParaBankRuntime); only present after a fresh build
+          source: config/container-image-pins.psd1
+        - ref: grafana/k6@sha256:e7eeddf1ce2361df6920d925297f487c0ba549c44be242c6a9c22f28d9b08efa
+          purpose: Performance lane (perf workflow and local perf runs)
+          source: .github/workflows/perf.yml
+      volumes: [parabank-m2]
+      notes: >-
+        `parabank:d1bf006` is built locally by scripts/build-sut.ps1 and is not in any registry; keep it
+        unless you are prepared to rebuild. `parabank-m2` is the Maven cache for that build. A pin
+        refresh leaves the previous Maven builder behind as an untagged `maven` image.
 
   - project: juice-shop-dast-automation
     github: GBrooks1970/juice-shop-dast-automation
@@ -260,6 +300,17 @@ projects:
       (Juice Shop 20.1.1, OWASP ZAP 2.17.0), and a pin bump re-triggers the Phase 0 probe (backlog DAST-M1).
       The labelled report is published at https://gbrooks1970.github.io/juice-shop-dast-automation/. Latest
       handover is v4 in session-notes/.
+    docker:
+      images:
+        - ref: bkimminich/juice-shop@sha256:e68144772ebaaca0ec117b38d44903af92416793230288ef7c5437fc4f26850a
+          purpose: Juice Shop 20.1.1 target, started and removed by each DAST and BDD run
+          source: scripts/docker-utils.mjs
+        - ref: ghcr.io/zaproxy/zaproxy@sha256:8d387b1a63e3425beef4846e39719f5af2a787753af2d8b6558c6257d7a577a2
+          purpose: OWASP ZAP 2.17.0 baseline scanner
+          source: scripts/docker-utils.mjs
+      notes: >-
+        No Compose file: the scripts run throw-away containers, so no containers or volumes are
+        expected between runs.
 
   - project: auth-separation
     github: GBrooks1970/auth-separation
@@ -327,6 +378,12 @@ projects:
       journeys across catalogue browsing, customer authentication, multi-line checkout, and staff
       fulfilment, with read-only smoke safety profiles, Docker Compose SUT orchestration, and comprehensive
       living documentation.
+    docker:
+      compose: [docker/docker-compose.yml]
+      compose_project: docker
+      notes: >-
+        The Compose file sits in `docker/`, so Docker names the project `docker` (containers
+        `docker-api-1` and so on). `valkey/valkey:8.1-alpine` is shared with magento-checkout-automation.
 
   - project: tradeblotter-wpf-screenplay
     github: GBrooks1970/tradeblotter-wpf-screenplay
@@ -431,3 +488,22 @@ support_repositories:
     status: active
     orchestration_target: false
     notes: Public landing page for the portfolio; support surface, not a test-automation target.
+
+# ---------------------------------------------------------------------------
+# Docker record. A project row's optional `docker:` block declares what that project needs in the
+# local Docker engine: `compose` files (relative to the project, in `-f` order), `compose_env` for
+# variables the files require, `compose_project` when Docker's derived name differs,
+# `dockerfiles` whose FROM images count as the project's, script-run `images` (`ref`, `purpose`,
+# `source` file that pins the ref) and named `volumes` created outside Compose.
+# `docker_external` claims Docker objects owned by work outside the portfolio, so the inventory
+# does not report them as orphans. `tools/docker_inventory.py` reads both, read-only, and writes
+# the snapshot in portfolio-docs/PORTFOLIO_DOCKER_INVENTORY.md.
+# ---------------------------------------------------------------------------
+docker_external:
+  - name: sdet-tech-test-rehearsal-suite
+    location: D:\gb-dev (NeoCognitus70/sdet-tech-test-rehearsal-suite)
+    compose_projects: [tech-test-proj-08, tech-test-proj-08-solution]
+    images: ["parabank:d1bf006"]
+    notes: >-
+      Practice Project 08 runs ParaBank as `parabank-proj08` on port 3007, reusing the image built by
+      parabank-bank-automation. Stop it with `npm run sut:stop` in the project folder.
