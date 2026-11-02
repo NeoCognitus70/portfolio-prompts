@@ -1,6 +1,8 @@
 # portfolio-prompts — Backlog
 
-**Version:** 30 — **`portfolio-kanban-generator@1.2.0` is published** (2026-09-10, MIT, dist-tag
+**Version:** 31 — PP-41 installed registry and handover-index refresh resolved locally; publication awaiting owner review (2026-11-01).
+
+**Previous version:** 30 — **`portfolio-kanban-generator@1.2.0` is published** (2026-09-10, MIT, dist-tag
 `latest`) carrying PP-40, and verified from a neutral directory: the published artefact regenerates
 `parabank-bank-automation` as **6 Done / 3 Parked / 0 Backlog**. Publish run
 [`34520241847`](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/34520241847). The
@@ -38,7 +40,7 @@ release `0.4.1` merged through PR #76, passed its exact-merge gate, was reinstal
 and produced no attributable warning in a fresh Codex process. The installed cache matches all 66
 release-bearing source files. The remaining icon warnings belong to the external bundled `spreadsheets`
 plugin.
-**Last Updated:** 2026-09-10
+**Last Updated:** 2026-11-01
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills, and its update review
@@ -67,7 +69,7 @@ test-automation projects, not the prompt library.
 
 ## Outstanding Items
 
-No outstanding items.
+No outstanding implementation items. PP-41 publication remains subject to owner review.
 
 ---
 
@@ -77,11 +79,11 @@ No outstanding items.
 |---|---|---|
 | HIGH (20–30) | 0 | — |
 | MEDIUM (10–19) | 20 | **20 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36, PP-37, PP-38, PP-40) — 0 open |
-| LOW (0–9) | 21 | **21 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30, PP-35) — 0 open |
+| LOW (0–9) | 22 | **22 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30, PP-35, PP-41) — 0 open |
 | **Total Outstanding** | **0** | — |
-| Resolved | 41 | PP-00..PP-40 |
+| Resolved | 42 | PP-00..PP-41 |
 
-**Outstanding, by suggested order:** none.
+**Outstanding, by suggested order:** None.
 
 ---
 
@@ -89,6 +91,24 @@ No outstanding items.
 
 Resolved items are kept as a record that the gap existed, verbatim as last written, grouped by the
 review cycle that produced them (newest first) and in item order within each group.
+
+### From the 2026-11-01 installed-status reconciliation (PP-41)
+
+#### PP-41: Refresh the installed registry and handover index — Score: 8
+
+**Status:** RESOLVED locally on 2026-11-01; repository publication awaits owner review. The supported 0.7.4 installation matches all 103 checked release-bearing files and all 17 source registry rows. Credit Dashboard is resting and its existing v22 is selected. The complete library gate passed.
+
+**Evidence:** [implementation log](implementation-logs/2026-11-01_pp-41-installed-registry-refresh.md).
+
+**Original finding:** source registry at `78cda57` already recorded Credit Dashboard resting/closed,
+but the installed 0.7.3 cache said active. The generated handover manifest selected v21 instead of
+the existing terminal v22. The completed correction assigns an unambiguous 0.7.4 installation
+identity, uses the supported installer, verifies source/cache parity and regenerates the ignored
+manifest while preserving terminal v22.
+
+**Plan:** [PP-41](implementation-plans/2026-11-01_pp-41-installed-registry-refresh.md).
+**Acceptance:** installed registry matches all 17 source rows; Credit Dashboard is resting;
+manifest selects v22; library/registry/manifest checks pass; separate log and v10 handover exist.
 
 ### From the 2026-09-10 P-13 Phase 2 adapter-probe cycle (PP-40)
 
