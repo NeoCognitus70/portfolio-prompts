@@ -59,16 +59,65 @@ For each registry project, gather these fields without changing its checkout:
    file is missing.
 5. **Open PRs** — count and numbers from a read-only query such as
    `gh pr list --repo <owner/repo> --state open --json number,title,url,isDraft,headRefName`.
-6. **Default-branch CI** — discover the default branch read-only, then inspect recent workflow runs
-   with a query such as
-   `gh run list --repo <owner/repo> --branch <default> --json workflowName,status,conclusion,createdAt,url`.
-   Select the newest run per workflow and report:
-   - `GREEN` only when every latest workflow run completed successfully;
-   - `RED` when any latest workflow run failed, timed out, or needs action;
-   - `RUNNING` when at least one latest run is queued/in progress and none is red;
-   - `MIXED` for other disagreeing or non-success conclusions;
-   - `NO RUNS` when the query succeeds but returns no workflow runs; or
-   - `UNAVAILABLE` when it cannot be queried.
+6. **Current default-branch CI** — collect the following evidence read-only. Keep workflow
+   inventory, latest runs and historical observations separate; run history alone is not a list
+   of current workflows.
+
+   **Inventory and identity**
+   - Discover the default branch and its current head SHA. Retrieve the complete, paginated
+     workflow inventory, retaining `id`, `name`, `path` and `state`, for example with
+     `gh api --paginate 'repos/<owner/repo>/actions/workflows?per_page=100'`.
+     Confirm pagination completed successfully; a failed or truncated inventory is unavailable
+     evidence, not proof that an omitted workflow was retired.
+   - Join runs to inventory by `workflow_id`/`id`, never by display name. Renames must not split
+     one workflow, and two workflows with the same name must not overwrite each other.
+   - For each inventoried workflow, query its newest run on the discovered default branch,
+     for example `gh api 'repos/<owner/repo>/actions/workflows/<id>/runs?branch=<default>&per_page=1'`.
+     URL-encode substituted path/query values. Retain workflow ID, status, conclusion, timestamp,
+     head SHA, event and URL. Do not rely on a fixed global run list to cover every active workflow:
+     it can omit a low-frequency workflow behind many runs of another workflow.
+   - Partition inventory into `active` workflows and explicitly inactive workflows (including
+     `disabled_manually`, `disabled_inactivity`, `disabled_fork` and `deleted` if returned).
+     Report every inactive workflow's exact state and latest known run separately. An inventoried
+     workflow is not absent/retired merely because it is disabled. An unrecognised state makes
+     the current classification `UNAVAILABLE`; retain the raw state for investigation.
+
+   **Aggregate current CI in this order**
+   1. `UNAVAILABLE` if inventory is incomplete/unqueryable, a workflow state cannot be classified,
+      an inventoried workflow's latest-run query fails, or required identity/status fields are
+      missing or malformed. Keep any known active failure visible
+      in Attention needed even when the aggregate is unavailable. Failure of an optional history
+      query does not invalidate otherwise complete current evidence; mark that history unavailable.
+   2. `RED` if any active workflow's latest run concluded `failure`, `timed_out` or `action_required`.
+   3. `RUNNING` if any active workflow's latest run has status `queued`, `requested`, `waiting`,
+      `pending` or `in_progress` and none is red. An unknown run status is unavailable evidence,
+      not proof that a run is in progress.
+   4. `NO RUNS` if there are no active workflows, or at least one active workflow has no run from a
+      successful query. Name the missing coverage; known RED/RUNNING takes precedence, but the
+      missing coverage still appears in Attention needed.
+   5. `MIXED` if any remaining active latest run has a conclusion other than `success`, including
+      cancelled, skipped, neutral, stale, missing or unrecognised conclusions. Never round these
+      up to GREEN, even when every workflow has the same non-success conclusion.
+   6. `GREEN` only when at least one active workflow exists and every active workflow's latest run
+      completed successfully. Inactive workflow results do not contribute to this current colour.
+
+   **History and freshness**
+   - Inspect a bounded default-branch history window, for example the newest 100 runs from
+     `gh api 'repos/<owner/repo>/actions/runs?branch=<default>&per_page=100'`. State the retrieved
+     count and oldest/newest observed timestamps; if history is limited or unavailable, say so.
+     Do not claim an exhaustive historical audit. This window supplements per-workflow discovery.
+   - Only after a complete successful inventory, classify runs whose workflow IDs are absent
+     from it as historical runs of absent/retired workflows. Keep the newest observed run per
+     absent ID, with its name, conclusion, date and link, outside current CI totals. Say "absent
+     from the current inventory"; the API observation does not establish why it was removed.
+   - Historical failures must remain visible in a historical-workflow note; do not delete,
+     rerun or change them. A history-only failure must not increment the current RED count.
+   - Retain evidence dates and SHAs. If a selected run predates or differs from the observed
+     default-branch head, explicitly state that it does not establish exact-head coverage.
+     Failure to query the head SHA leaves freshness unverified; never invent a match. A workflow's
+     latest successful run can still be GREEN as observed-run status, with that limitation shown.
+
+   Review examples: [CI classification scenarios](docs/portfolio-status-ci-scenarios.md).
 
 Keep the evidence timestamp in the report. Local and remote state can change after it is observed.
 
@@ -76,17 +125,24 @@ Keep the evidence timestamp in the report. Local and remote state can change aft
 
 Return one compact Markdown table in registry order with these columns:
 
-| Project | Registry | Repo | Open backlog (H/M/L) | Latest handover | Open PRs | CI |
+| Project | Registry | Repo | Open backlog (H/M/L) | Latest handover | Open PRs | Current CI |
 |---|---|---|---|---|---|---|
 
 Use short cells, but retain links for PRs or failing/running workflow evidence when available.
 After the table, include:
 
 - **Portfolio totals** — registered projects; missing/non-checkout/dirty repositories; open HIGH,
-  MEDIUM, LOW, and total backlog items where known; open PR count; and CI colour counts.
+  MEDIUM, LOW, and total backlog items where known; open PR count; and **current CI** colour counts
+  (one aggregate per registered project; absent/retired workflow runs are excluded).
 - **Attention needed** — every `RED`, `RUNNING`, `MIXED`, `UNAVAILABLE`, dirty checkout, missing
-  handover, unreliable backlog count, registry mismatch, or open HIGH/MEDIUM item. Say `None` only
-  when the evidence genuinely supports it.
+  handover, unreliable backlog count, registry mismatch, or open HIGH/MEDIUM item. Also list disabled
+  or otherwise inactive workflows, missing run coverage, known active failures obscured by an
+  UNAVAILABLE aggregate, and run/head freshness limitations. A GREEN current colour does not remove
+  those notes. Say `None` only when the evidence genuinely supports it.
+- **Historical workflows** — absent/retired workflow observations, including failure links and
+  dates, kept separate from current attention and totals. State the inspected history windows and
+  any unavailable history or uncertain retirement classification. Say `None observed within the
+  inspected windows` only when supported; never imply that all historical runs were audited.
 - **Registry-drift watchlist** — repeat `unregistered_candidates` exactly as candidates, or `None`.
 - **Read-only confirmation** — state that no files or repositories were changed and no remote Git
   state was refreshed.
