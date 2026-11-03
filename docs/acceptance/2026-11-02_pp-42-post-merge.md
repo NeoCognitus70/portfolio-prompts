@@ -97,4 +97,3 @@ Each query requested at most 100 newest default-branch runs. No exhaustive histo
 **Registry-drift watchlist:** None declared.
 
 **Read-only confirmation:** The portfolio inspection made no repository changes, ran no tests, and refreshed no remote Git state. This acceptance artifact is outside the repositories. It records the merged source and installed behaviour without creating a new branch or changing backlog state.
-

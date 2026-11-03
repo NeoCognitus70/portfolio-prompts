@@ -18,7 +18,7 @@ Recorded the completed 2 November installation and acceptance of PP-42 in the du
 | Registry renderer check | PASS | README table already up to date |
 | Manifest build/check | PASS | 129 handovers, 19 subjects; all pairs complete |
 | v12 parity and local links | PASS | Generated body, metadata, eight sections and all local links verified |
-| Acceptance archive | PASS | Byte-for-byte equal to the external 2 November capture |
+| Acceptance archive | PASS | Content equal to the external 2 November capture; trailing blank line removed for Git whitespace compliance |
 | Both repository diffs | PASS | `git diff --check` |
 
 No application tests or workflow reruns were required.
@@ -27,7 +27,7 @@ No application tests or workflow reruns were required.
 
 ### Durable acceptance and backlog
 
-`docs/acceptance/2026-11-02_pp-42-post-merge.md` is a byte-for-byte copy of the original external evidence report. Its pending-backlog language describes that capture time. `docs/backlog.md` now records 43 resolved items and zero open items. The plan metadata, outcome and index record delivery; the approved steps are preserved.
+`docs/acceptance/2026-11-02_pp-42-post-merge.md` preserves the original external evidence report content, with only its trailing blank line removed for Git whitespace compliance. Its pending-backlog language describes that capture time. `docs/backlog.md` now records 43 resolved items and zero open items. The plan metadata, outcome and index record delivery; the approved steps are preserved.
 
 ### Session continuity
 
