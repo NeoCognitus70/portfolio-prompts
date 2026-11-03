@@ -464,15 +464,17 @@ projects:
   - project: azure-dotnet-platform
     github: GBrooks1970/azure-dotnet-platform
     status: active
-    status_label: "Onboarded 2026-11-02; milestone A0 (probe and pin) not started; repository private"
+    status_label: "Milestone A0 (probe and pin) in progress: versions pinned and gated; owner steps (Azure DevOps grant, budget) open; repository private"
     presentation_role: hidden   # private repository; becomes showcase when it is made public
-    orchestration_target: false # no toolchain or gates until A0
+    orchestration_target: false # becomes true at A2, when the Terraform gates exist (owner decision A0-3)
+    gates: ["pwsh -NoProfile -File tools/check-versions.ps1"]   # A0 version gate; needs Docker running
     notes: >-
       Project A of the skill-gap plan (portfolio-docs/PORTFOLIO_SKILL_GAP_PROJECT_PLANS_v2_2026-11-02.md):
       a tested .NET 10 API deployed to Azure Container Apps by Azure Pipelines YAML, with Terraform
       (plan on PR, apply after approval), Key Vault, Entra ID and OpenTelemetry to Grafana Cloud. The
-      system under test is an image built from a pinned tag of the closed credit-dashboard-sut. Private
-      until it has evidence to publish. No gates until A0 adds a toolchain.
+      system under test is an image built from a pinned commit of the closed credit-dashboard-sut, which
+      has no release tag (ADR 0002). Private until it has evidence to publish. The A0 gate checks the
+      pinned tool versions in versions.md (azure-dotnet-platform#2).
 
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
