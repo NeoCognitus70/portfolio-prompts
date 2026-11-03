@@ -4,9 +4,9 @@ created: 2026-11-02T18:40Z
 project: portfolio-prompts
 type: implementation-plan
 item: PP-42
-status: approved
+status: delivered
 approved: "2026-11-02, owner approved implementation; owner retains merge authority; install only after merge"
-delivered: not yet
+delivered: "2026-11-02; close-out recorded 2026-11-03"
 language: en-GB
 ---
 
@@ -78,4 +78,6 @@ Implementation branch: `codex/pp-42-current-workflow-ci`; support records branch
 
 ## Outcome
 
-Owner approved the plan on 2 November 2026. The canonical prompt, 18-row manual scenario review and 0.7.5 release metadata are implemented in the source branch. Both executed negative checks passed by rejecting their deliberately incorrect results; the Loan Origination source preview is current GREEN with the failed Pages run retained as historical evidence. The initial combined registry/library gate passed in 39.790 s and the final rerun passed in 39.405 s. Handover parity/link checks and the 128-pair manifest check passed. The separate implementation log and v11 Markdown/HTML handover record this review boundary. Owner-approved merge, exact-main CI, installation/parity and refreshed whole-portfolio acceptance remain later gates.
+Delivered and accepted on 2 November 2026; close-out recorded on 3 November. Source PR #131 merged as `d8b906671ca5111ead9b490cb559912c0ccf0b15` and support PR #345 as `824a9296e70247dcb1da86cb675667c3e4161774`. Exact-merge CI run 41510446495 passed. Supported installation produced `0.7.5+codex.20261102190301`; all 103 checked release-bearing files, scenario documentation and 18 registry rows matched source. The fresh installed whole-portfolio report at 22:18 UTC classified Loan Origination current GREEN while preserving the absent Pages failure as historical evidence. Original task branches were deleted locally/remotely after synchronising both main checkouts.
+
+The 18-row manual scenario review and two executed negative checks are recorded in the original implementation log; the final source gate passed in 39.405 s. The [archived post-merge acceptance](../acceptance/2026-11-02_pp-42-post-merge.md) preserves the dated complete report. The [new close-out log](../implementation-logs/2026-11-03_pp-42-acceptance-closeout.md) and v12 paired handover supersede the earlier pending-acceptance statements. PP-42 is resolved; publication of these close-out records remains subject to owner merge.

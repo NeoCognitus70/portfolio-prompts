@@ -1,6 +1,6 @@
 # portfolio-prompts — Backlog
 
-**Version:** 32 — PP-42 current versus historical CI reporting in progress (2026-11-02). PP-41 merged in PR #129 as `ef43b0e`; its support records merged in PR #342 as `8387bcb`.
+**Version:** 33 — PP-42 resolved; installed acceptance completed 2026-11-02 and close-out recorded 2026-11-03. PP-41 merged in PR #129 as `ef43b0e`; its support records merged in PR #342 as `8387bcb`.
 
 **Previous version:** 30 — **`portfolio-kanban-generator@1.2.0` is published** (2026-09-10, MIT, dist-tag
 `latest`) carrying PP-40, and verified from a neutral directory: the published artefact regenerates
@@ -40,7 +40,7 @@ release `0.4.1` merged through PR #76, passed its exact-merge gate, was reinstal
 and produced no attributable warning in a fresh Codex process. The installed cache matches all 66
 release-bearing source files. The remaining icon warnings belong to the external bundled `spreadsheets`
 plugin.
-**Last Updated:** 2026-11-02
+**Last Updated:** 2026-11-03
 **Based on:** Second full library review ([`docs/library-review_2026-07-13.md`](library-review_2026-07-13.md)),
 whose theme is turning the prose registry into machine-readable config and packaging the prompts as
 portable skills, and its update review
@@ -69,16 +69,7 @@ test-automation projects, not the prompt library.
 
 ## Outstanding Items
 
-### PP-42: Separate current CI from retired workflow history — Score: 10
-
-**Score:** Security (0) + Drift (7) + Maintenance (3) = **10 (MEDIUM)**
-**Status:** SOURCE IMPLEMENTED — approved by owner on 2026-11-02; source-preview, scenario review and initial library checks passed; awaiting owner review. Owner-approved merge, exact-main CI, supported installation/parity and fresh installed whole-portfolio acceptance remain required.
-
-The status prompt previously aggregated the newest historical run per workflow without checking current inventory. Loan Origination was consequently RED because of an absent Pages workflow despite its current CI succeeding. Inventory-aware selection must keep inactive workflows, missing coverage and historical failures visible without conflating their meanings.
-
-**Plan:** [PP-42](implementation-plans/2026-11-02_pp-42-current-workflow-ci-aggregation.md).
-**Acceptance evidence:** [classification scenarios](portfolio-status-ci-scenarios.md).
-**Remaining acceptance:** current/historical separation follows the approved rules; active failures cannot be hidden; library and scenario checks pass; release 0.7.5 is merged, installed and compared with source; a fresh installed portfolio-status report confirms the outcome; implementation log and next paired handover preserve the publication boundary.
+None. PP-00..PP-42 are resolved.
 
 ---
 
@@ -87,12 +78,12 @@ The status prompt previously aggregated the newest historical run per workflow w
 | Priority | Count | Status Distribution |
 |---|---|---|
 | HIGH (20–30) | 0 | — |
-| MEDIUM (10–19) | 21 | **20 complete; PP-42 in progress** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36, PP-37, PP-38, PP-40) — 1 open (PP-42) |
+| MEDIUM (10–19) | 21 | **21 complete** (PP-00, PP-03, PP-04, PP-05, PP-10, PP-13, PP-14, PP-15, PP-16, PP-25, PP-26, PP-31, PP-32, PP-33, PP-34, PP-36, PP-37, PP-38, PP-40, PP-42) — 0 open |
 | LOW (0–9) | 22 | **22 complete** (PP-01, PP-02, PP-06..PP-09, PP-11, PP-12, PP-17..PP-24, PP-27, PP-28, PP-29, PP-30, PP-35, PP-41) — 0 open |
-| **Total Outstanding** | **1** | — |
-| Resolved | 42 | PP-00..PP-41 |
+| **Total Outstanding** | **0** | — |
+| Resolved | 43 | PP-00..PP-42 |
 
-**Outstanding, by suggested order:** PP-42.
+**Outstanding, by suggested order:** None.
 
 ---
 
@@ -100,6 +91,21 @@ The status prompt previously aggregated the newest historical run per workflow w
 
 Resolved items are kept as a record that the gap existed, verbatim as last written, grouped by the
 review cycle that produced them (newest first) and in item order within each group.
+
+### From the 2026-11-02 current-CI reporting correction (PP-42)
+
+#### PP-42: Separate current CI from retired workflow history — Score: 10
+
+**Score:** Security (0) + Drift (7) + Maintenance (3) = **10 (MEDIUM)**
+**Status:** RESOLVED — technical acceptance completed 2026-11-02; close-out recorded 2026-11-03.
+
+**Update (2026-11-03):** Source PR #131 merged as `d8b906671ca5111ead9b490cb559912c0ccf0b15`; support PR #345 merged as `824a9296e70247dcb1da86cb675667c3e4161774`. Exact-merge integrity run [41510446495](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/41510446495) passed. Supported installation of `0.7.5+codex.20261102190301` matched all 103 checked release-bearing files, scenario documentation and 18 registry rows. The fresh installed report at 22:18 UTC on 2 November classified Loan Origination current GREEN and retained its failed absent Pages workflow separately. Both main checkouts were synchronised and the two original task branches deleted locally and remotely. This documentation close-out uses separate owner-reviewed PRs.
+
+**Original finding:** History-only aggregation reported Loan Origination RED because of an absent Pages workflow despite successful current CI. The correction uses complete workflow inventory and per-workflow default-branch runs; inactive workflows, missing coverage and historical failures remain visible.
+
+**Acceptance:** 18 manual scenario rows reviewed; two executed negative assertions rejected incorrect aggregation. Fresh whole-registry acceptance covered 18 projects: 13 GREEN / 2 RED / 3 NO RUNS. These are dated observations, not a new status scan or a claim of exact-head coverage everywhere.
+
+**Evidence:** [archived acceptance report](acceptance/2026-11-02_pp-42-post-merge.md), [scenarios](portfolio-status-ci-scenarios.md), [close-out log](implementation-logs/2026-11-03_pp-42-acceptance-closeout.md), [approved plan](implementation-plans/2026-11-02_pp-42-current-workflow-ci-aggregation.md).
 
 ### From the 2026-11-01 installed-status reconciliation (PP-41)
 
