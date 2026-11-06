@@ -33,7 +33,7 @@ Checks:
 Usage (from the portfolio-prompts/ directory):
     python tools/check-library.py            # exit 0 if all checks pass, 1 otherwise
 
-Requires PyYAML (`pip install pyyaml`). No other dependencies.
+Requires PyYAML (`pip install pyyaml`). Review-index tests also use pinned Markdown. No other dependencies.
 """
 from __future__ import annotations
 
