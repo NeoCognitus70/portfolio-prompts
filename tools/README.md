@@ -1,8 +1,8 @@
 # tools/
 
 Maintenance scripts for the prompt library, run from the `portfolio-prompts/` directory. All use
-Python 3; `render-registry.py` and `check-library.py` additionally require PyYAML
-(`python -m pip install PyYAML`).
+Python 3. Install the pinned PyYAML and Markdown dependencies with
+`python -m pip install -r requirements-dev.txt`.
 
 | Script | Purpose | PP |
 |---|---|---|
@@ -76,3 +76,15 @@ and handover-pair checks are skipped automatically.
 
 The same gate runs in `.github/workflows/library-integrity.yml` for pull requests and pushes to
 `main`, with read-only repository permissions.
+
+## Review index publication
+
+`build-portfolio-reviews.py` delegates discovery/rendering to `review_index.py`. Follow
+[the summary prompt](../portfolio-reviews-summary.prompt.md) for explicit workspace, registry,
+output and archive-date arguments. It emits the internal Markdown/HTML pair plus a filtered
+public HTML/JSON pair. Only published review content is eligible for the public export; source
+links use full captured Git SHAs. All parallel reviews in the selected date window remain indexed.
+`--check` compares bytes without writing. No sibling landing file is ever modified.
+
+Tests use disposable Git fixtures to verify publication, privacy, link resolution, grade parsing,
+parallel review preservation, stale-output detection and output isolation.
