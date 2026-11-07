@@ -404,7 +404,7 @@ projects:
 
   - project: loan-origination-parity
     github: GBrooks1970/loan-origination-parity
-    status: active
+    status: resting
     status_label: "All 4 phases complete 2026-09-28"
     presentation_role: showcase
     sdd: true
@@ -420,7 +420,9 @@ projects:
       Screenplay harness reading one Gherkin store (106 scenarios). The CI parity gate compares
       scenario counts and step text per folder across surfaces; server-side authorisation is proven
       by forced-command scenarios that bypass the UI. Phase 4 stability proof: 10/10 dispatched runs
-      green on first attempt (2026-09-28).
+      green on first attempt (2026-09-28). Backlog v8 has zero open and four resolved risks;
+      Windows report-tooling maintenance merged in PR #21 as 71089ca on 2026-11-03, with all eight
+      main CI jobs and the published parity evidence verified. Optional future work remains unpromoted.
 
   - project: credit-dashboard-sut
     github: GBrooks1970/credit-dashboard-sut
