@@ -4,9 +4,9 @@ created: 2026-11-07T17:30Z
 project: portfolio-prompts
 type: implementation-plan
 item: publish-kanban-generator CI coverage
-status: proposed
-approved: "pending owner approval"
-delivered: not yet
+status: delivered
+approved: "2026-11-07, owner approved Option 1 (add main-branch package check and dry run)"
+delivered: "2026-11-07, merged in PR #139 (commit 6515f44075ffbdda542c3e92be97fd3fcbf6dfed)"
 language: en-GB
 ---
 
@@ -67,7 +67,7 @@ A read-only investigation was conducted across GitHub Actions workflows, `portfo
   2. Requires bumping prompt library versions, re-running scenario acceptance suites, updating documentation, and reinstalling plugin caches across agent environments.
   3. Distinguishing release workflows reliably from core CI purely via GitHub API metadata is ambiguous and fragile.
 
-## Recommended implementation steps (Option 1)
+## Implementation steps (Option 1)
 
 1. **Branch creation**:
    Create a dedicated branch `codex/publish-kanban-main-check-20261107` from clean `main`.
@@ -87,7 +87,7 @@ A read-only investigation was conducted across GitHub Actions workflows, `portfo
    ```yaml
    jobs:
      publish:
-       name: ${{ startsWith(github.ref, 'refs/tags/kanban-v') && 'publish to npm' || 'verify package' }}
+       name: publish to npm
        runs-on: ubuntu-latest
        timeout-minutes: 5
        defaults:
@@ -121,13 +121,13 @@ A read-only investigation was conducted across GitHub Actions workflows, `portfo
    ```
 
 3. **Local validation**:
-   - Run `cd tools/kanban && node --test` (49 tests pass).
-   - Run `cd tools/kanban && npm pack --dry-run` to verify packaging output.
+   - Run `cd tools/kanban && node --test` (60 tests pass).
+   - Run `cd tools/kanban && npm pack --dry-run` to verify packaging output (8 files).
    - Run `python -B tools/check-library.py` to ensure self-gate passes.
 
 4. **PR and merge**:
    - Commit changes, push branch, and open PR for owner review.
-   - Upon owner merge to `main`, GitHub Actions will trigger both `library-integrity.yml` and `publish-kanban.yml` on `main`.
+   - Upon owner merge to `main`, GitHub Actions triggers both `library-integrity.yml` and `publish-kanban.yml` on `main`.
 
 5. **Post-merge verification**:
    - Query `gh api 'repos/NeoCognitus70/portfolio-prompts/actions/workflows/352366703/runs?branch=main&per_page=1'`.
@@ -136,17 +136,29 @@ A read-only investigation was conducted across GitHub Actions workflows, `portfo
 
 ## Verification
 
-| Check | Tool / Command | Acceptance criteria |
-|---|---|---|
-| Local test suite | `cd tools/kanban && node --test` | 49 passing tests, 0 failures |
-| Package dry-run | `cd tools/kanban && npm pack --dry-run` | Tarball contains only intended 8 distribution files; 0 errors |
-| Library self-gate | `python -B tools/check-library.py` | All library integrity checks pass |
-| Default-branch workflow run | `gh api 'repos/NeoCognitus70/portfolio-prompts/actions/workflows/352366703/runs?branch=main&per_page=1'` | Returns run with `conclusion: "success"`, matching main HEAD SHA |
-| Portfolio status classification | Portfolio status prompt / query | `portfolio-prompts` current CI evaluates to `GREEN` |
+| Check | Tool / Command | Acceptance criteria | Result |
+|---|---|---|---|
+| Local test suite | `cd tools/kanban && node --test` | 60 passing tests, 0 failures | PASS |
+| Package dry-run | `cd tools/kanban && npm pack --dry-run` | Tarball contains 8 distribution files; 0 errors | PASS |
+| Library self-gate | `python -B tools/check-library.py` | All library integrity checks pass | PASS |
+| PR CI check | `gh pr checks 139 -R NeoCognitus70/portfolio-prompts` | Check-library succeeds on PR #139 | PASS (run 42399872942) |
+| Default-branch workflow run | `gh api 'repos/NeoCognitus70/portfolio-prompts/actions/workflows/352366703/runs?branch=main&per_page=1'` | Run completed/success matching main HEAD | PASS (run 42399906274, SHA 6515f44) |
+| Core integrity workflow run | `gh api 'repos/NeoCognitus70/portfolio-prompts/actions/workflows/313043196/runs?branch=main&per_page=1'` | Run completed/success matching main HEAD | PASS (run 42399906298, SHA 6515f44) |
+| Portfolio status classification | Portfolio status prompt / query | `portfolio-prompts` current CI evaluates to `GREEN` | PASS |
 
 ## Decisions put to the owner
 
-| Decision | Options | Recommended |
-|---|---|---|
-| Resolution strategy | Option 1 (dry-run on main) / Option 2 (disable manually) / Option 3 (prompt rule change) | **Option 1**: adds continuous package verification and resolves NO RUNS cleanly without manual operational overhead |
-| Branch creation and execution | Proceed with implementation branch upon approval / Defer | Proceed upon approval |
+| Decision | Options | Recommended | Owner decision |
+|---|---|---|---|
+| Resolution strategy | Option 1 (dry-run on main) / Option 2 (disable manually) / Option 3 (prompt rule change) | **Option 1**: adds continuous package verification and resolves NO RUNS cleanly without manual operational overhead | Approved Option 1 (2026-11-07) |
+| Branch creation and execution | Proceed with implementation branch upon approval / Defer | Proceed upon approval | Approved and merged in PR #139 |
+
+## Outcome
+
+Delivered on 2026-11-07:
+1. Workflow `.github/workflows/publish-kanban.yml` updated with `push: branches: [main]` and `workflow_dispatch` triggers, test suite execution, `npm pack --dry-run` packaging validation, and conditional publication.
+2. Changes delivered via branch `codex/publish-kanban-main-check-20261107` and merged in PR #139 (merge commit `6515f44075ffbdda542c3e92be97fd3fcbf6dfed`).
+3. Both active workflows executed and passed on `main` at head `6515f44`:
+   - `Publish kanban generator` (ID `352366703`): run [42399906274](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/42399906274) succeeded in 14s.
+   - `Prompt library integrity` (ID `313043196`): run [42399906298](https://github.com/NeoCognitus70/portfolio-prompts/actions/runs/42399906298) succeeded in 15s.
+4. Under `portfolio-status.prompt.md` rules, `portfolio-prompts` current CI successfully transitioned from `NO RUNS` to `GREEN` (0 inactive workflows, 0 missing coverage, exact-head coverage verified).
