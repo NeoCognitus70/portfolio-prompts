@@ -5,13 +5,19 @@ name: Publish kanban generator
 # the version in tools/kanban/package.json, and the generator's own Node test suite
 # must pass, before anything is published.
 #
+# On pushes to main or manual workflow_dispatch, runs the test suite and an npm pack
+# dry-run to provide continuous package validation on the default branch.
+#
 # Requires a repository secret NPM_TOKEN — an npm automation/publish token for an
 # account that owns the `portfolio-kanban-generator` name.
 
 on:
   push:
+    branches:
+      - main
     tags:
       - "kanban-v*"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -42,6 +48,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Verify tag matches package version
+        if: startsWith(github.ref, 'refs/tags/kanban-v')
         run: |
           pkg_version="$(node -p "require('./package.json').version")"
           tag_version="${GITHUB_REF_NAME#kanban-v}"
@@ -54,7 +61,11 @@ jobs:
       - name: Run generator test suite
         run: node --test
 
+      - name: Verify npm packaging (dry run)
+        run: npm pack --dry-run
+
       - name: Publish (public)
+        if: startsWith(github.ref, 'refs/tags/kanban-v')
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
