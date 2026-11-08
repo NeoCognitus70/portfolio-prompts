@@ -466,17 +466,20 @@ projects:
   - project: azure-dotnet-platform
     github: GBrooks1970/azure-dotnet-platform
     status: active
-    status_label: "Milestone A0 (probe and pin) in progress: versions pinned and gated; owner steps (Azure DevOps grant, budget) open; repository private"
+    status_label: "Milestone A1 (remote state and pipeline identity) in progress: bootstrap Terraform and the infrastructure gate merged; first Azure apply and pipeline run wait on the owner's sign-in; A0 owner steps (Azure DevOps grant, budget) open; repository private"
     presentation_role: hidden   # private repository; becomes showcase when it is made public
-    orchestration_target: false # becomes true at A2, when the Terraform gates exist (owner decision A0-3)
-    gates: ["pwsh -NoProfile -File tools/check-versions.ps1"]   # A0 version gate; needs Docker running
+    orchestration_target: false # becomes true at A2 (owner decision A0-3)
+    gates:                      # both need Docker running
+      - "pwsh -NoProfile -File tools/check-versions.ps1"   # A0 version gate
+      - "pwsh -NoProfile -File tools/check-infra.ps1"      # A1 offline Terraform gate: fmt, validate, test, TFLint, Trivy
     notes: >-
       Project A of the skill-gap plan (portfolio-docs/PORTFOLIO_SKILL_GAP_PROJECT_PLANS_v2_2026-11-02.md):
       a tested .NET 10 API deployed to Azure Container Apps by Azure Pipelines YAML, with Terraform
       (plan on PR, apply after approval), Key Vault, Entra ID and OpenTelemetry to Grafana Cloud. The
       system under test is an image built from a pinned commit of the closed credit-dashboard-sut, which
       has no release tag (ADR 0002). Private until it has evidence to publish. The A0 gate checks the
-      pinned tool versions in versions.md (azure-dotnet-platform#2).
+      pinned tool versions in versions.md (azure-dotnet-platform#2); the A1 gate checks the Terraform
+      offline, with no Azure credentials (azure-dotnet-platform#5).
 
   - project: portfolio-prompts
     github: NeoCognitus70/portfolio-prompts
