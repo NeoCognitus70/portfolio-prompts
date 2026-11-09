@@ -61,21 +61,20 @@ defaults:
 projects:
   - project: magento-checkout-automation
     github: GBrooks1970/magento-checkout-automation
-    status: resting
-    status_label: "Closed 2026-08-03"
+    status: active
+    status_label: "Maintenance reopened 2026-11-08"
     presentation_role: showcase
     reference: true
     gates: ["npm run verify"]
     orchestration_target: true
     notes: >-
-      Closed 2026-08-03 (terminal handover v22 FINAL). Reference project with zero outstanding backlog
-      items — all Items #1..#15 delivered, and both post-close review-derived worklist cycles complete
-      (CODEX-01..CODEX-11 + SEC-01). Remains a resting orchestration target per the library contract, so
-      the `*-all-*` fan-outs may still review it; treat any new findings as a deliberate reopen. Chromium
-      is the required CI gate; Firefox/WebKit stay non-blocking with an observable promotion counter
-      (tracker in `docs/qa-strategy.md`, currently Firefox 0/3, WebKit 0/3; each exploratory CI leg prints
-      a `MAG-15 promotion` summary line). Latest handover v22 in `session-notes/`; optional proposals in
-      `docs/planning/`.
+      Maintenance reopened 2026-11-08. MAG-MAINT-01 records dependency-audit and E2E recovery;
+      Phase 1 repair merged in project PR #68, with exact-main acceptance tracked in the project
+      backlog. MAG-MAINT-02 remains open for three MODERATE dependency findings and a separate
+      compatibility review. Historical Items #1..#15 and the earlier review cycles remain resolved.
+      Chromium is the required browser gate; Firefox/WebKit stay exploratory under the existing
+      promotion policy. See the latest Magento handover in session-notes/ for phase authority;
+      no later-phase work is implied by this active lifecycle classification.
     docker:
       compose: [docker-compose.yml, docker-compose.ci.yml]
       compose_env: { GHCR_OWNER: gbrooks1970 }

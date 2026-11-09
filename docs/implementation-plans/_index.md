@@ -7,3 +7,4 @@
 
 | Loan lifecycle | [Reconcile Loan Origination resting status](2026-11-07_loan-resting-registry.md) | Implemented and library gate passed 2026-11-07; owner merge pending |
 | Publish kanban CI | [Publish kanban generator workflow CI classification](2026-11-07_publish-kanban-workflow-resolution.md) | Delivered and merged in PR #139 (2026-11-07); current CI verified GREEN |
+| Magento lifecycle | [Phase 2 maintenance reconciliation](2026-11-09_magento-phase-2-registry.md) | Owner authorised 2026-11-09 |
