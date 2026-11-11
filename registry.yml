@@ -175,12 +175,14 @@ projects:
       e2e:
         bring_up: docker compose up -d --wait
         run: npm test
-      notes: CI (Node 20) also builds Serenity living docs and deploys Pages
+      notes: CI (Node 24.19.0) also builds Serenity living docs and deploys Pages
     notes: >-
       OrangeHRM PIM add-employee E2E (Serenity/JS + Playwright + Cucumber). Backlog is a simple
-      table (not the scored template). All six backlog items are closed; Item #4 retains an
-      accepted demo-fixture caveat but no required follow-up. Live docs:
-      gbrooks1970.github.io/orangehrm-pim-automation.
+      table (not the scored template) with zero outstanding: Items #1-#6, CODEX-01 to CODEX-13
+      and ORH-MAINT-01 to ORH-MAINT-03 are all closed. Item #4 retains an accepted demo-fixture
+      caveat but no required follow-up. ORH-MAINT-03 (false employee-row absence during a table
+      refresh) closed 2026-11-11 on main run 43099673702; handover v7 records the evidence.
+      Live docs: gbrooks1970.github.io/orangehrm-pim-automation.
     docker:
       compose: [docker-compose.yml]
       notes: >-
