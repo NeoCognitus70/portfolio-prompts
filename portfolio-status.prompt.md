@@ -40,8 +40,12 @@ Resolve paths from the registry defaults plus each row's deviations, as defined 
 and never inspect them as though they had a project contract.
 
 Load `session-notes/manifest.json` from the portfolio root and prefer its `latest` entry for each
-project. If the manifest is absent or invalid, find matching handovers using the naming rule in
-`project-layout.md` and compare version numbers numerically. Do not regenerate the manifest.
+project. If the manifest is absent, invalid, or stale (a project has a newer handover file on disk
+than the version recorded in `manifest.json`), dynamically resolve the latest version using the
+authoritative naming rule in `project-layout.md` and compare version numbers numerically. Do not
+regenerate the manifest (this prompt is read-only). Note any local manifest staleness as an
+informational local cache refresh suggestion (advising running `python portfolio-prompts/tools/build-handover-manifest.py`),
+not as a repository or project defect.
 
 ## Step 2 — Gather one evidence record per project
 
