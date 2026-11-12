@@ -68,10 +68,13 @@ projects:
     gates: ["npm run verify"]
     orchestration_target: true
     notes: >-
-      Maintenance accepted 2026-11-09. Backlog v14 records zero actionable items.
-      MAG-MAINT-01 and MAG-MAINT-02 are resolved. Main run 42717430993 passed audit,
-      required Chromium, Firefox and Pages. WebKit passed 11/12 and remains exploratory
-      under Item #15. Final handover v25 records the parked limitation and acceptance evidence.
+      Maintenance accepted 2026-11-09. Backlog v15 (2026-11-11) records zero authorised work.
+      MAG-MAINT-01 and MAG-MAINT-02 are resolved. MAG-MAINT-03 (scenario counts in the verify
+      dry runs) and MAG-MAINT-04 (API response shape checks) are unauthorised LOW candidates;
+      the owner chose on 2026-11-11 to keep the project resting with them recorded. Main run
+      42717430993 passed audit, required Chromium, Firefox and Pages. WebKit passed 11/12 and
+      remains exploratory under Item #15. Final handover v25 records the parked limitation and
+      acceptance evidence.
     docker:
       compose: [docker-compose.yml, docker-compose.ci.yml]
       compose_env: { GHCR_OWNER: gbrooks1970 }
