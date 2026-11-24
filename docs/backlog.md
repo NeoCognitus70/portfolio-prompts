@@ -183,7 +183,7 @@ Opened by portfolio backlog item **P-13** after decision **D9 — Option A, scop
 **Status:** RESOLVED 2026-09-08 — the board is bounded to the viewport; P-13 Phase 0 is cleared,
 so the fan-out is no longer gated on it.
 **Provenance:** portfolio backlog item **P-13** (per-project Kanban rollout), Phase 0, and the root
-decision note `portfolio-docs/PORTFOLIO_KANBAN_D9_ADAPTER_STRATEGY_2026-09-08.md` §11 — both at the
+decision note `portfolio-docs/programmes/p13-kanban/PORTFOLIO_KANBAN_D9_ADAPTER_STRATEGY_2026-09-08.md` §11 — both at the
 portfolio root, outside this repository.
 **Problem:** a generated board clips its right-hand columns and offers no usable horizontal
 scrollbar, so `In Review`, `Done` and `Parked` cannot be reached. The cause is a height/overflow
@@ -231,7 +231,7 @@ run against the previous rule and observed to fail before being committed. Detai
 **Status:** RESOLVED 2026-09-08 — the dialect ships. The combined `kanban-v1.1.0` release is still
 outstanding and is an owner npm-credential gate, not adapter work.
 **Provenance:** portfolio backlog item **P-13**, Phase 1, and the root decision note
-`portfolio-docs/PORTFOLIO_KANBAN_D9_ADAPTER_STRATEGY_2026-09-08.md` §9.2 (decision D9 — Option A,
+`portfolio-docs/programmes/p13-kanban/PORTFOLIO_KANBAN_D9_ADAPTER_STRATEGY_2026-09-08.md` §9.2 (decision D9 — Option A,
 scoped) — both at the portfolio root, outside this repository.
 **Problem:** `tools/kanban/lib/adapters.mjs` ships `auth-table` (graph-derived) plus a `risk-block`
 **scaffold** that its own header describes as carrying "no phase and no dependency edges, so its
